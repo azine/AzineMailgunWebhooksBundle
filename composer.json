@@ -1,0 +1,27 @@
+{
+    "name": "azine/mailgunwebhooks-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony2 Bundle to easily capture feedback from mailgun.com via their provided webhooks",
+    "keywords": ["Mailgun", "mailgun.com", "transactional email", "email", "webhooks"],
+    "homepage": "https://github.com/azine/AzineMailgunWebhooksBundle.git",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Azine IT Services AG",
+            "email": "github@azine-it.ch"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": ">=2.1",
+        "symfony/symfony": ">=2.1",
+        "twig/extensions": "1.0.*"      
+    },
+    "autoload": {
+        "psr-0": { "Azine\\MailgunWebhooksBundle": "" }
+    },
+    "minimum-stability": "dev",
+    "target-dir": "Azine/MailgunWebhooksBundle"
+}

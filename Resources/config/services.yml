@@ -1,0 +1,14 @@
+parameters:
+
+services:
+  azine.socialBarHelper:
+    class : Azine\MailgunWebhooksBundle\Templating\MailgunWebhooksHelper
+    tags : 
+      - {name : 'templating.helper', alias : 'social-buttons'} 
+    arguments : [ @templating ]
+
+  twig.extension.azine_social_bar:
+    class: Azine\MailgunWebhooksBundle\Templating\MailgunWebhooksTwigExtension
+    tags:
+        - { name: 'twig.extension' }
+    arguments : [ @service_container ]
