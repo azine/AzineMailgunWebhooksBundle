@@ -21,96 +21,80 @@ class AzineMailgunWebhooksExtensionTest extends \PHPUnit_Framework_TestCase{
 	protected $configuration;
 
 	/**
-	 * This should not throw an exception
+	 * This should throw an exception
+     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
 	 */
-	public function testMinimalConfig(){
+	public function testEmptyConfig(){
 		$loader = new AzineMailgunWebhooksExtension();
-		$config = $this->getMinimalConfig();
+		$config = $this->getEmptyConfig();
 		$loader->load(array($config), new ContainerBuilder());
 	}
 
 	/**
 	 * This should not throw an exception
 	 */
-	public function testFullConfigEmpty(){
-		$loader = new AzineMailgunWebhooksExtension();
-		$config = $this->getFullConfigEmpty();
-		$loader->load(array($config), new ContainerBuilder());
+	public function testMinimalConfigEmpty(){
+        $this->configuration = new ContainerBuilder();
+        $loader = new AzineMailgunWebhooksExtension();
+        $config = $this->getMinimalConfig();
+        $loader->load(array($config), $this->configuration);
+
+        $this->assertTrue($this->configuration instanceof ContainerBuilder);
+        $this->assertParameter("someKey_adf4343lki5432543cfcab54325fabiacbzfac", "azine_mailgun_webhooks_api_key");
 	}
 
 
-	public function testFullConfigWithValues(){
-		$this->configuration = new ContainerBuilder();
-		$loader = new AzineMailgunWebhooksExtension();
-		$config = $this->getFullConfigWithValues();
-		$loader->load(array($config), $this->configuration);
+	public function testFullConfig(){
+        $this->configuration = new ContainerBuilder();
+        $loader = new AzineMailgunWebhooksExtension();
+        $config = $this->getFullConfig();
+        $loader->load(array($config), $this->configuration);
 
-		$this->assertParameter("http://fb.profile.url.com", "azine_social_bar_fb_profile_url");
-		$this->assertParameter("http://xing.profile.url.com", "azine_social_bar_xing_profile_url");
-		$this->assertParameter("1234567890", "azine_social_bar_linked_in_company_id");
-		$this->assertParameter("http://google.plus.profile.url.com", "azine_social_bar_google_plus_profile_url");
-		$this->assertParameter("acme", "azine_social_bar_twitter_username");
+        $this->assertTrue($this->configuration instanceof ContainerBuilder);
+        $this->assertParameter("someKey_adf4343lki5432543cfcab54325fabiacbzfac", "azine_mailgun_webhooks_api_key");
+		$this->assertParameter("somePublicKey_adflkiacfcajkhkhkjhkj8767654654bfabiacbzfac", "azine_mailgun_webhooks_public_api_key");
 	}
 
+	/**
+	 * Get a full config for this bundle
+	 */
+	protected function getFullConfig(){
+		$yaml = <<<EOF
 
+# api-key
+api_key:       someKey_adf4343lki5432543cfcab54325fabiacbzfac
+
+# public api-key
+public_api_key:  somePublicKey_adflkiacfcajkhkhkjhkj8767654654bfabiacbzfac
+
+EOF;
+		$parser = new Parser();
+
+		return $parser->parse($yaml);
+	}
+
+	/**
+	 * Get a the minimal config for this bundle
+	 */
+	protected function getMinimalConfig(){
+		$yaml = <<<EOF
+
+# api-key
+api_key:       someKey_adf4343lki5432543cfcab54325fabiacbzfac
+
+EOF;
+		$parser = new Parser();
+
+		return $parser->parse($yaml);
+	}
 
 	/**
 	 * Get the minimal config
 	 * @return array
 	 */
-	protected function getMinimalConfig(){
+	protected function getEmptyConfig(){
 		$yaml = <<<EOF
-EOF;
-		$parser = new Parser();
 
-		return $parser->parse($yaml);
-	}
-
-
-	/**
-	 * Get a full config for this bundle
-	 */
-	protected function getFullConfigEmpty(){
-		$yaml = <<<EOF
-# the url to you Facebook profile
-fb_profile_url:       ~
-
-# the url to your Google+ profile
-google_plus_profile_url:  ~
-
-# the url to your xing profile
-xing_profile_url:     ~
-
-# your profile-id => get it here http://developer.linkedin.com/plugins
-linked_in_company_id:  ~
-
-# your twitter username
-twitter_username:     ~
-EOF;
-		$parser = new Parser();
-
-		return $parser->parse($yaml);
-	}
-
-	/**
-	 * Get a full config for this bundle
-	 */
-	protected function getFullConfigWithValues(){
-		$yaml = <<<EOF
-# the url to you Facebook profile
-fb_profile_url:       http://fb.profile.url.com
-
-# the url to your Google+ profile
-google_plus_profile_url:  http://google.plus.profile.url.com
-
-# the url to your xing profile
-xing_profile_url:     http://xing.profile.url.com
-
-# your profile-id => get it here http://developer.linkedin.com/plugins
-linked_in_company_id:  1234567890
-
-# your twitter username
-twitter_username:     acme
 EOF;
 		$parser = new Parser();
 

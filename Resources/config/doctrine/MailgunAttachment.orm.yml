@@ -1,0 +1,29 @@
+Azine\MailgunWebhooksBundle\Entity\MailgunAttachment:
+    type: entity
+    table: mailgun_attachment
+    repositoryClass: Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunAttachmentRepository
+    fields:
+        id:            
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+                
+        eventId:         { type: integer, nullable: false, column: event_id   } # MailgunEvent id
+        counter:         { type: integer, nullable: false                     } # Attachment index
+        content:         { type: blob                                          } # Attachment 
+        name:            { type: string(255)                                   } # Original filename
+        type:            { type: string(30)                                    } # File type
+        size:            { type: integer(9)                                    } # File size
+        
+    lifecycleCallbacks: {  }
+    
+# many-attachments-belong-to-the-same-event
+    manyToOne:
+        event:
+            targetEntity: MailgunEvent
+            inversedBy: attachments
+            joinColumn:
+                name: event_id
+                referencedColumnName: id
+    

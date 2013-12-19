@@ -1,5 +1,4 @@
 <?php
-
 namespace Azine\MailgunWebhooksBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -14,12 +13,9 @@ use Symfony\Component\DependencyInjection\Loader;
  */
 class AzineMailgunWebhooksExtension extends Extension{
 
-	const PREFIX = "azine_social_bar_";
-	const FB_PROFILE = "fb_profile_url";
-	const XING_PROFILE = "xing_profile_url";
-	const LINKED_IN_PROFILE ="linked_in_company_id";
-	const GOOGLE_PLUS_PROFILE = "google_plus_profile_url";
-	const TWITTER_PROFILE ="twitter_username";
+	const PREFIX = "azine_mailgun_webhooks";
+	const API_KEY = "api_key";
+	const PUBLIC_API_KEY = "public_api_key";
 
 	/**
 	 * {@inheritDoc}
@@ -29,21 +25,11 @@ class AzineMailgunWebhooksExtension extends Extension{
 		$configuration = new Configuration();
 		$config = $this->processConfiguration($configuration, $configs);
 
-		if(array_key_exists(self::FB_PROFILE, $config))
-			$container->setParameter(self::PREFIX.self::FB_PROFILE, $config[self::FB_PROFILE]);
+		if(array_key_exists(self::API_KEY, $config))
+			$container->setParameter(self::PREFIX."_".self::API_KEY, $config[self::API_KEY]);
 
-		if(array_key_exists(self::XING_PROFILE, $config))
-			$container->setParameter(self::PREFIX.self::XING_PROFILE, $config[self::XING_PROFILE]);
-
-		if(array_key_exists(self::LINKED_IN_PROFILE, $config))
-			$container->setParameter(self::PREFIX.self::LINKED_IN_PROFILE, $config[self::LINKED_IN_PROFILE]);
-
-		if(array_key_exists(self::GOOGLE_PLUS_PROFILE, $config))
-			$container->setParameter(self::PREFIX.self::GOOGLE_PLUS_PROFILE, $config[self::GOOGLE_PLUS_PROFILE]);
-
-		if(array_key_exists(self::TWITTER_PROFILE, $config))
-			$container->setParameter(self::PREFIX.self::TWITTER_PROFILE, $config[self::TWITTER_PROFILE]);
-
+		if(array_key_exists(self::PUBLIC_API_KEY, $config))
+			$container->setParameter(self::PREFIX."_".self::PUBLIC_API_KEY, $config[self::PUBLIC_API_KEY]);
 
 		$loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 		$loader->load('services.yml');

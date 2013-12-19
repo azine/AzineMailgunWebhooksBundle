@@ -1,0 +1,130 @@
+{% extends 'AzineMailgunWebhooksBundle::layout.html.twig' %}
+
+{% block body -%}
+    <h1>MailgunEvent</h1>
+
+    <table class="record_properties">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Event</th>
+                <td>{{ entity.event }}</td>
+            </tr>
+            <tr>
+                <th>Domain</th>
+                <td>{{ entity.domain }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ entity.description }}</td>
+            </tr>
+            <tr>
+                <th>Notification</th>
+                <td>{{ entity.notification }}</td>
+            </tr>
+            <tr>
+                <th>Reason</th>
+                <td>{{ entity.reason }}</td>
+            </tr>
+            <tr>
+                <th>Recipient</th>
+                <td>{{ entity.recipient }}</td>
+            </tr>
+            <tr>
+                <th>Errorcode</th>
+                <td>{{ entity.errorCode }}</td>
+            </tr>
+            <tr>
+                <th>Ip</th>
+                <td>{{ entity.ip }}</td>
+            </tr>
+            <tr>
+                <th>Error</th>
+                <td>{{ entity.error }}</td>
+            </tr>
+            <tr>
+                <th>Country</th>
+                <td>{{ entity.country }}</td>
+            </tr>
+            <tr>
+                <th>City</th>
+                <td>{{ entity.city }}</td>
+            </tr>
+            <tr>
+                <th>Region</th>
+                <td>{{ entity.region }}</td>
+            </tr>
+            <tr>
+                <th>Campaignid</th>
+                <td>{{ entity.campaignId }}</td>
+            </tr>
+            <tr>
+                <th>Campaignname</th>
+                <td>{{ entity.campaignName }}</td>
+            </tr>
+            <tr>
+                <th>Clientname</th>
+                <td>{{ entity.clientName }}</td>
+            </tr>
+            <tr>
+                <th>Clientos</th>
+                <td>{{ entity.clientOs }}</td>
+            </tr>
+            <tr>
+                <th>Clienttype</th>
+                <td>{{ entity.clientType }}</td>
+            </tr>
+            <tr>
+                <th>Devicetype</th>
+                <td>{{ entity.deviceType }}</td>
+            </tr>
+            <tr>
+                <th>Mailinglist</th>
+                <td>{{ entity.mailingList }}</td>
+            </tr>
+            <tr>
+                <th>Messageheaders</th>
+                <td>{{ entity.messageHeaders }}</td>
+            </tr>
+            <tr>
+                <th>Messageid</th>
+                <td>{{ entity.messageId }}</td>
+            </tr>
+            <tr>
+                <th>Tag</th>
+                <td>{{ entity.tag }}</td>
+            </tr>
+            <tr>
+                <th>Customvariables</th>
+                <td>{{ entity.customVariables }}</td>
+            </tr>
+            <tr>
+                <th>Useragent</th>
+                <td>{{ entity.userAgent }}</td>
+            </tr>
+            <tr>
+                <th>Url</th>
+                <td>{{ entity.url }}</td>
+            </tr>
+            <tr>
+                <th>Token</th>
+                <td>{{ entity.token }}</td>
+            </tr>
+            <tr>
+                <th>Timestamp</th>
+                <td>{{ entity.timestamp }}</td>
+            </tr>
+            <tr>
+                <th>Signature</th>
+                <td>{{ entity.signature }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+<ul class="record_actions">
+    <li>{{ form(delete_form) }}</li>
+</ul>
+{% endblock %}

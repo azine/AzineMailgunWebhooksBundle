@@ -1,0 +1,25 @@
+Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable:
+    type: entity
+    table: mailgun_custom_variable
+    repositoryClass: Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunCustomVariableRepository
+    fields:
+        id:            
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+                
+        eventId:         { type: integer, nullable: false, column: event_id        } # MailgunEvent id
+        variableName:    { type: integer, nullable: false, column: variable_name   } # Name of custom variable
+        content:         { type: json_array, nullable: false,                      } # Content of custom variable 
+        
+    lifecycleCallbacks: {  }
+
+# many-custom-vars-belong-to-the-same-event
+    manyToOne:
+        event:
+            targetEntity: MailgunEvent
+            inversedBy: custom_variables
+            joinColumn:
+                name: event_id
+                referencedColumnName: id

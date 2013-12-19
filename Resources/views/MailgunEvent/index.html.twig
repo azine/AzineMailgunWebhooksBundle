@@ -1,0 +1,79 @@
+{% extends 'AzineMailgunWebhooksBundle::layout.html.twig' %}
+
+{% block body %}
+    <h1>MailgunEvent list</h1>
+
+    <table class="records_list">
+        <thead>
+            <tr>
+                <th>Event</th>
+                <th>Domain</th>
+                <th>Recipient</th>
+                <th>Description</th>
+                <th>Notification</th>
+                <th>Reason</th>
+                <th>Errorcode</th>
+                <th>Source</th>
+                <th>Error</th>
+                <th>Campaignid</th>
+                <th>Campaignname</th>
+                <th>Clientname</th>
+                <th>Clientos</th>
+                <th>Clienttype</th>
+                <th>Devicetype</th>
+                <th>Mailinglist</th>
+                <th>Messageheaders</th>
+                <th>Messageid</th>
+                <th>Tag</th>
+                <th>Customvariables</th>
+                <th>Useragent</th>
+                <th>Url</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entity in entities %}
+            <tr>
+                <td><a href="{{ path('mailgunevent_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+                <td>{{ entity.event }}</td>
+                <td>{{ entity.domain }}</td>
+                <td>{{ entity.description }}</td>
+                <td>{{ entity.notification }}</td>
+                <td>{{ entity.reason }}</td>
+                <td>{{ entity.recipient }}</td>
+                <td>{{ entity.errorCode }}</td>
+                <td>
+                	IP: {{ entity.ip }}<br />
+                	Counrty: {{ entity.country }}<br />
+                	City: {{ entity.city }}<br />
+                	Region: {{ entity.region }}
+                </td>
+                <td>{{ entity.error }}</td>
+                <td>{{ entity.campaignId }}</td>
+                <td>{{ entity.campaignName }}</td>
+                <td>{{ entity.clientName }}</td>
+                <td>{{ entity.clientOs }}</td>
+                <td>{{ entity.clientType }}</td>
+                <td>{{ entity.deviceType }}</td>
+                <td>{{ entity.mailingList }}</td>
+                <td>{{ entity.messageHeaders }}</td>
+                <td>{{ entity.messageId }}</td>
+                <td>{{ entity.tag }}</td>
+                <td>{{ entity.customVariables }}</td>
+                <td>{{ entity.userAgent }}</td>
+                <td>{{ entity.url }}</td>
+                <td>
+                <ul>
+                    <li>
+                        <a href="{{ path('mailgunevent_show', { 'id': entity.id }) }}">show</a>
+                    </li>
+                </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+        <ul>
+    </ul>
+    {% endblock %}

@@ -18,16 +18,13 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('azine_social_bar');
+        $rootNode = $treeBuilder->root(AzineMailgunWebhooksExtension::PREFIX);
 
         $rootNode
         	->children()
-	        	->scalarNode(AzineMailgunWebhooksExtension::FB_PROFILE)->defaultValue("")->info("the url to you Facebook profile: will be used for the 'url' parameter when showing the 'follow' button")->end()
-	        	->scalarNode(AzineMailgunWebhooksExtension::GOOGLE_PLUS_PROFILE)->defaultValue("")->info("the url to your Google+ profile: will be used for the 'url' parameter when showing the 'follow' button")->end()
-	        	->scalarNode(AzineMailgunWebhooksExtension::XING_PROFILE)->defaultValue("")->info("the url to your xing profile: will be used for the 'url' parameter when showing the 'follow' button")->end()
-	        	->scalarNode(AzineMailgunWebhooksExtension::LINKED_IN_PROFILE)->defaultValue("")->info("your profile-id (=> get it here http://developer.linkedin.com/plugins) : will be used for the 'companyId' parameter when showing the 'follow' button")->end()
-	        	->scalarNode(AzineMailgunWebhooksExtension::TWITTER_PROFILE)->defaultValue("")->info("your twitter username: will be used for the 'action' parameter when showing the 'follow' button and also for the 'tag' and 'via' parameters of all twitter buttons ")->end()
-	        	->end();
+	        	->scalarNode(AzineMailgunWebhooksExtension::API_KEY)->isRequired()->cannotBeEmpty()->info("Your api-key for mailgun => see https://mailgun.com/cp")->end()
+	        	->scalarNode(AzineMailgunWebhooksExtension::PUBLIC_API_KEY)->defaultValue("")->info("Your public-api-key for mailgun => see https://mailgun.com/cp")->end()
+	        ->end();
 
 
         return $treeBuilder;
