@@ -1,5 +1,5 @@
 mailgunevent_list:
-    pattern:  /mailgun/event/
+    pattern:  /mailgun/events/{page}/{pageSize}
     defaults: { _controller: "AzineMailgunWebhooksBundle:MailgunEvent:index" }
 
 mailgunevent_show:
@@ -9,4 +9,3 @@ mailgunevent_show:
 mailgunevent_delete:
     pattern:  /mailgun/event/{id}/delete
     defaults: { _controller: "AzineMailgunWebhooksBundle:MailgunEvent:delete" }
-    requirements: { _method: post|delete }

@@ -41,12 +41,15 @@ Azine\MailgunWebhooksBundle\Entity\MailgunEvent:
     
 # one-event-has-many-attachments
     oneToMany:
-        custom_variables:
+        variables:
             targetEntity: MailgunCustomVariable
             mappedBy: event
+            cascade: ["remove"]
 # one-event-has-many-custom-variables
         attachments:
             targetEntity: MailgunAttachment
             mappedBy: event
+            cascade: ["remove"]
+            
 
           

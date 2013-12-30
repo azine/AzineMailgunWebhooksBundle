@@ -9,6 +9,57 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class MailgunEvent{
 
+	public function getEventTitle(){
+		$title = "";
+		$headers = $this->getMessageHeaders();
+		if(array_key_exists("Subject", $headers)){
+			$title = $headers["Subject"];
+		}
+
+		return $title;
+	}
+
+	/**
+	 * Set messageHeaders
+	 *
+	 * @param array $messageHeaders
+	 * @return MailgunEvent
+	 */
+	public function setMessageHeaders($messageHeaders){
+		$headers = json_decode($messageHeaders);
+		$this->messageHeaders = array();
+		foreach ($headers as $next){
+			$this->messageHeaders[$next[0]] = $next[1];
+		}
+
+		return $this;
+	}
+
+	public function getDateTime(){
+		if($this->getTimestamp()){
+			return new \DateTime("@".$this->getTimestamp());
+		}
+		return null;
+	}
+
+	/**
+	 * Get messageHeaders
+	 *
+	 * @return array
+	 */
+	public function getMessageHeaders()
+	{
+		if(!is_array($this->messageHeaders)){
+			$this->setMessageHeaders($this->messageHeaders);
+		}
+		return $this->messageHeaders;
+	}
+
+
+	///////////////////////////////////////////////////////////////////
+    // generated stuff only below this line.
+    // @codeCoverageIgnoreStart
+    ///////////////////////////////////////////////////////////////////
     /**
      * @var integer
      */
@@ -125,11 +176,6 @@ class MailgunEvent{
     private $tag;
 
     /**
-     * @var array
-     */
-    private $customVariables;
-
-    /**
      * @var string
      */
     private $userAgent;
@@ -154,6 +200,24 @@ class MailgunEvent{
      */
     private $signature;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $variables;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $attachments;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->variables = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->attachments = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -603,29 +667,6 @@ class MailgunEvent{
     }
 
     /**
-     * Set messageHeaders
-     *
-     * @param array $messageHeaders
-     * @return MailgunEvent
-     */
-    public function setMessageHeaders($messageHeaders)
-    {
-        $this->messageHeaders = $messageHeaders;
-
-        return $this;
-    }
-
-    /**
-     * Get messageHeaders
-     *
-     * @return array
-     */
-    public function getMessageHeaders()
-    {
-        return $this->messageHeaders;
-    }
-
-    /**
      * Set messageId
      *
      * @param string $messageId
@@ -669,29 +710,6 @@ class MailgunEvent{
     public function getTag()
     {
         return $this->tag;
-    }
-
-    /**
-     * Set customVariables
-     *
-     * @param array $customVariables
-     * @return MailgunEvent
-     */
-    public function setCustomVariables($customVariables)
-    {
-        $this->customVariables = $customVariables;
-
-        return $this;
-    }
-
-    /**
-     * Get customVariables
-     *
-     * @return array
-     */
-    public function getCustomVariables()
-    {
-        return $this->customVariables;
     }
 
     /**
@@ -808,46 +826,38 @@ class MailgunEvent{
     {
         return $this->signature;
     }
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $custom_variables;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $attachments;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->custom_variables = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->attachments = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Add custom_variables
+     * Add variables
      *
-     * @param \Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $customVariables
+     * @param \Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $variables
      * @return MailgunEvent
      */
-    public function addCustomVariable(\Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $customVariables)
+    public function addVariable(\Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $variables)
     {
-        $this->custom_variables[] = $customVariables;
+        $this->variables[] = $variables;
 
         return $this;
     }
 
     /**
-     * Remove custom_variables
+     * Remove variables
      *
-     * @param \Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $customVariables
+     * @param \Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $variables
      */
-    public function removeCustomVariable(\Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $customVariables)
+    public function removeVariable(\Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $variables)
     {
-        $this->custom_variables->removeElement($customVariables);
+        $this->variables->removeElement($variables);
+    }
+
+    /**
+     * Get variables
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getVariables()
+    {
+        return $this->variables;
     }
 
     /**

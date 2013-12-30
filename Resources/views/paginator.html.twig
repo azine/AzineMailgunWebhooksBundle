@@ -1,0 +1,71 @@
+Total records in result: {{ totalItems }} <br />
+PageSize : <select class="pageSizeSelector">
+	<option value="25"  {% if (pageSize == 25)  %}selected{% endif %}>25</option>
+	<option value="50"  {% if (pageSize == 50)  %}selected{% endif %}>50</option>
+	<option value="100" {% if (pageSize == 100) %}selected{% endif %}>100</option>
+	<option value="-1"  {% if (pageSize == -1)  %}selected{% endif %}>all</option>
+</select>
+
+{#
+  Source: http://dev.dbl-a.com/symfony-2-0/symfony2-and-twig-pagination/
+  Updated by: Simon Schick <simonsimcity@gmail.com>
+
+  Parameters:
+    * currentFilters (array) : associative array that contains the current route-arguments
+    * currentPage (int) : the current page you are in
+    * paginationPath (string) : the route name to use for links
+    * showAlwaysFirstAndLast (bool) : Always show first and last link (just disabled)
+    * lastPage (int) : represents the total number of existing pages
+#}
+{% spaceless %}
+    {% if lastPage > 1 %}
+
+        {# the number of first and last pages to be displayed #}
+        {% set extremePagesLimit = 3 %}
+
+        {# the number of pages that are displayed around the active page #}
+        {% set nearbyPagesLimit = 2 %}
+
+        <div class="pagination">
+            {% if currentPage > 1 %}
+                <a href="{{ path(paginationPath, currentFilters|merge({page: currentPage-1})) }}">Previous</a>&nbsp;
+
+                {% for i in range(1, extremePagesLimit) if ( i < currentPage - nearbyPagesLimit ) %}
+                    <a href="{{ path(paginationPath, currentFilters|merge({page: i})) }}">{{ i }}</a>&nbsp;
+                {% endfor %}
+
+                {% if extremePagesLimit + 1 < currentPage - nearbyPagesLimit %}
+                    <span class="sep-dots">...</span>
+                {% endif %}
+
+                {% for i in range(currentPage-nearbyPagesLimit, currentPage-1) if ( i > 0 ) %}
+                    <a href="{{ path(paginationPath, currentFilters|merge({page: i})) }}">{{ i }}</a>&nbsp;
+                {% endfor %}
+            {% elseif showAlwaysFirstAndLast %}
+                <span class="disabled">Previous</span>&nbsp;
+            {% endif %}
+
+            <a href="{{ path(paginationPath, currentFilters|merge({ page: currentPage })) }}"
+               class="active">{{ currentPage }}</a>&nbsp;
+
+            {% if currentPage < lastPage %}
+                {% for i in range(currentPage+1, currentPage + nearbyPagesLimit) if ( i <= lastPage ) %}
+                    <a href="{{ path(paginationPath, currentFilters|merge({page: i})) }}">{{ i }}</a>&nbsp;
+                {% endfor %}
+
+                {% if  (lastPage - extremePagesLimit) > (currentPage + nearbyPagesLimit) %}
+                    <span class="sep-dots">...</span>&nbsp;
+                {% endif %}
+
+                {% for i in range(lastPage - extremePagesLimit+1, lastPage) if ( i > currentPage + nearbyPagesLimit ) %}
+                    <a href="{{ path(paginationPath, currentFilters|merge({page: i})) }}">{{ i }}</a>&nbsp;
+                {% endfor %}
+
+                <a href="{{ path(paginationPath, currentFilters|merge({page: currentPage+1})) }}">Next</a>&nbsp;
+            {% elseif showAlwaysFirstAndLast %}
+                <span class="disabled">Next</span>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endspaceless %}
+

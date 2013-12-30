@@ -1,6 +1,7 @@
 <?php
-
 namespace Azine\MailgunWebhooksBundle\Controller;
+
+use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
 
 use Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable;
 
@@ -29,15 +30,110 @@ class MailgunEventController extends Controller
 	 * Lists all MailgunEvent entities.
 	 *
 	 */
-	public function indexAction()
-	{
-		$em = $this->getDoctrine()->getManager();
+	public function indexAction($page, $pageSize)	{
+		$params = array();
 
-		$entities = $em->getRepository('AzineMailgunWebhooksBundle:MailgunEvent')->findAll();
+		// get general filter options
+		$params['filterOptions'] = array(
+				'orderBy' => $this->getRepository()->getFieldsToOrderBy(),
+				'eventTypes' => array_merge(array("all"), $this->getRepository()->getEventTypes()),
+				'domains' => $this->getRepository()->getDomains(),
+				'recipients' => $this->getRepository()->getRecipients(),
+		);
 
-		return $this->render('AzineMailgunWebhooksBundle:MailgunEvent:index.html.twig', array(
-			'entities' => $entities,
-		));
+		// get filter criteria from session
+		$request = $this->getRequest();
+		$session = $request->getSession();
+		$page = 		$session->get('page', $page);
+		$pageSize =		$session->get('pageSize', $pageSize);
+		$domain =		$session->get('domain', $params['filterOptions']['domains'][0]);
+		$eventType =	$session->get('eventType', $params['filterOptions']['eventTypes'][0]);
+		$search =		$session->get('search',"");
+		$recipient =	$session->get('recipient',"");
+		$orderBy =		$session->get('orderBy', 'timestamp');
+		$orderDirection=$session->get('orderDirection', 'desc');
+
+		// update filter criteria from get-request
+		$page = 		$request->get('page', $page);
+		$pageSize =		$request->get('pageSize', $pageSize);
+		if($session->get('pageSize') != $pageSize){
+			$page = 1;
+		}
+
+		// update filter criteria from post-request
+		$filter = $request->get('filter');
+		if(is_array($filter)){
+			$domain =		$filter['domain'];
+			$eventType =	$filter['eventType'];
+			$search =		$filter['search'];
+			$recipient =	$filter['recipient'];
+			$orderBy =		$filter['orderBy'];
+			$orderDirection =		$filter['orderDirection'];
+
+		} else {
+			$filter = array();
+			$filter['domain'] =	$domain;
+			$filter['eventType'] = $eventType;
+			$filter['search'] = $search;
+			$filter['recipient'] = $recipient;
+			$filter['orderBy'] = $orderBy;
+			$filter['orderDirection'] = $orderDirection;
+		}
+
+		// store filter criteria back to session
+		$session->set('page', $page);
+		$session->set('pageSize', $pageSize);
+		$session->set('domain', $domain);
+		$session->set('eventType', $eventType);
+		$session->set('search',$search);
+		$session->set('recipient',$recipient);
+		$session->set('orderBy', $orderBy);
+		$session->set('orderDirection', $orderDirection);
+
+
+		// set params for filter-form
+		$params['currentFilters'] = array(
+					'domain' => $domain,
+					'orderBy' => $orderBy,
+					'orderDirection' => $orderDirection,
+					'eventType' => $eventType,
+					'currentPage' => $page,
+					'pageSize' => $pageSize,
+					'search' => $search,
+					'recipient' => $recipient,
+				);
+
+
+
+		$eventCount = $this->getRepository()->getEventCount($filter);
+		// validate the page/pageSize and with the total number of result entries
+		if(($page -1 ) *$pageSize > $eventCount){
+			$page = 1;
+		}
+
+		// get the events
+		$params['events'] = $this->getRepository()->getEvents($filter, array($orderBy => $orderDirection), $pageSize, ($page-1)*$pageSize);
+
+		// set the params for the pager
+		$params['paginatorParams'] = array(
+					'paginationPath' => "mailgunevent_list",
+					'pageSize' => $pageSize,
+					'currentPage' => $page,
+					'currentFilters' => $params['currentFilters'],
+					'totalItems' => $eventCount,
+					'lastPage' => ceil($eventCount/$pageSize),
+					'showAlwaysFirstAndLast' => true,
+				);
+
+		return $this->render('AzineMailgunWebhooksBundle:MailgunEvent:index.html.twig', $params);
+	}
+
+	/**
+	 * Get the MailgunEvent Repository
+	 * @return MailgunEventRepository
+	 */
+	private function getRepository(){
+		return $this->getDoctrine()->getManager()->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
 	}
 
 	public function createFromWebhookAction(Request $request){
@@ -259,11 +355,8 @@ class MailgunEventController extends Controller
 			throw $this->createNotFoundException('Unable to find MailgunEvent entity.');
 		}
 
-		$deleteForm = $this->createDeleteForm($id);
-
 		return $this->render('AzineMailgunWebhooksBundle:MailgunEvent:show.html.twig', array(
 			'entity'	  => $entity,
-			'delete_form' => $deleteForm->createView(),
 		));
 	}
 
@@ -271,40 +364,21 @@ class MailgunEventController extends Controller
 	 * Deletes a MailgunEvent entity.
 	 *
 	 */
-	public function deleteAction(Request $request, $id)
-	{
-		$form = $this->createDeleteForm($id);
-		$form->handleRequest($request);
+	public function deleteAction(Request $request, $id) {
 
-		if ($form->isValid()) {
-			$em = $this->getDoctrine()->getManager();
-			$entity = $em->getRepository('AzineMailgunWebhooksBundle:MailgunEvent')->find($id);
+		$em = $this->getDoctrine()->getManager();
+		$entity = $em->getRepository('AzineMailgunWebhooksBundle:MailgunEvent')->find($id);
 
-			if (!$entity) {
-				throw $this->createNotFoundException('Unable to find MailgunEvent entity.');
-			}
-
-			$em->remove($entity);
-			$em->flush();
+		if (!$entity) {
+			throw $this->createNotFoundException('Unable to find MailgunEvent entity.');
 		}
 
-		return $this->redirect($this->generateUrl('mailgunevent'));
-	}
+		$em->remove($entity);
+		$em->flush();
 
-	/**
-	 * Creates a form to delete a MailgunEvent entity by id.
-	 *
-	 * @param mixed $id The entity id
-	 *
-	 * @return \Symfony\Component\Form\Form The form
-	 */
-	private function createDeleteForm($id)
-	{
-		return $this->createFormBuilder()
-			->setAction($this->generateUrl('mailgunevent_delete', array('id' => $id)))
-			->setMethod('DELETE')
-			->add('submit', 'submit', array('label' => 'Delete'))
-			->getForm()
-		;
+		$session = $this->getRequest()->getSession();
+		$page = 		$session->get('page', 1);
+		$pageSize =		$session->get('pageSize', 25);
+		return $this->redirect($this->generateUrl('mailgunevent_list', array('page' => $page, 'pageSize' => $pageSize)));
 	}
 }

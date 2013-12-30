@@ -7,8 +7,13 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * MailgunAttachment
  */
-class MailgunAttachment
-{
+class MailgunAttachment{
+
+	///////////////////////////////////////////////////////////////////
+	// generated stuff only below this line.
+	// @codeCoverageIgnoreStart
+	///////////////////////////////////////////////////////////////////
+
     /**
      * @var integer
      */
@@ -53,7 +58,7 @@ class MailgunAttachment
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -69,14 +74,14 @@ class MailgunAttachment
     public function setEventId($eventId)
     {
         $this->eventId = $eventId;
-    
+
         return $this;
     }
 
     /**
      * Get eventId
      *
-     * @return integer 
+     * @return integer
      */
     public function getEventId()
     {
@@ -92,14 +97,14 @@ class MailgunAttachment
     public function setCounter($counter)
     {
         $this->counter = $counter;
-    
+
         return $this;
     }
 
     /**
      * Get counter
      *
-     * @return integer 
+     * @return integer
      */
     public function getCounter()
     {
@@ -115,14 +120,14 @@ class MailgunAttachment
     public function setContent($content)
     {
         $this->content = $content;
-    
+
         return $this;
     }
 
     /**
      * Get content
      *
-     * @return string 
+     * @return string
      */
     public function getContent()
     {
@@ -138,14 +143,14 @@ class MailgunAttachment
     public function setName($name)
     {
         $this->name = $name;
-    
+
         return $this;
     }
 
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -161,14 +166,14 @@ class MailgunAttachment
     public function setType($type)
     {
         $this->type = $type;
-    
+
         return $this;
     }
 
     /**
      * Get type
      *
-     * @return string 
+     * @return string
      */
     public function getType()
     {
@@ -184,14 +189,14 @@ class MailgunAttachment
     public function setSize($size)
     {
         $this->size = $size;
-    
+
         return $this;
     }
 
     /**
      * Get size
      *
-     * @return integer 
+     * @return integer
      */
     public function getSize()
     {
@@ -207,14 +212,14 @@ class MailgunAttachment
     public function setEvent(\Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event = null)
     {
         $this->event = $event;
-    
+
         return $this;
     }
 
     /**
      * Get event
      *
-     * @return \Azine\MailgunWebhooksBundle\Entity\MailgunEvent 
+     * @return \Azine\MailgunWebhooksBundle\Entity\MailgunEvent
      */
     public function getEvent()
     {

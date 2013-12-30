@@ -7,8 +7,14 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * MailgunCustomVariable
  */
-class MailgunCustomVariable
-{
+class MailgunCustomVariable{
+
+
+	///////////////////////////////////////////////////////////////////
+	// generated stuff only below this line.
+	// @codeCoverageIgnoreStart
+	///////////////////////////////////////////////////////////////////
+
     /**
      * @var integer
      */
@@ -38,7 +44,7 @@ class MailgunCustomVariable
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -54,14 +60,14 @@ class MailgunCustomVariable
     public function setEventId($eventId)
     {
         $this->eventId = $eventId;
-    
+
         return $this;
     }
 
     /**
      * Get eventId
      *
-     * @return integer 
+     * @return integer
      */
     public function getEventId()
     {
@@ -77,14 +83,14 @@ class MailgunCustomVariable
     public function setVariableName($variableName)
     {
         $this->variableName = $variableName;
-    
+
         return $this;
     }
 
     /**
      * Get variableName
      *
-     * @return integer 
+     * @return integer
      */
     public function getVariableName()
     {
@@ -100,14 +106,14 @@ class MailgunCustomVariable
     public function setContent($content)
     {
         $this->content = $content;
-    
+
         return $this;
     }
 
     /**
      * Get content
      *
-     * @return array 
+     * @return array
      */
     public function getContent()
     {
@@ -123,14 +129,14 @@ class MailgunCustomVariable
     public function setEvent(\Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event = null)
     {
         $this->event = $event;
-    
+
         return $this;
     }
 
     /**
      * Get event
      *
-     * @return \Azine\MailgunWebhooksBundle\Entity\MailgunEvent 
+     * @return \Azine\MailgunWebhooksBundle\Entity\MailgunEvent
      */
     public function getEvent()
     {

@@ -1,79 +1,224 @@
 {% extends 'AzineMailgunWebhooksBundle::layout.html.twig' %}
+{% block stylesheets %}
+{{ parent() }}
+	<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.blue.css">
+{% endblock %}
 
 {% block body %}
-    <h1>MailgunEvent list</h1>
+	<h1>MailgunEvents</h1>
+	<hr/>
+	<h2>Filter criteria</h2>
+	<form id="filter_event_form" action="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : currentFilters.pageSize}) }}" method="post">
+		<table>
+			<tr>
+				<th>Domain :</th>
+				<td>
+					<select id="filter_domains" name="filter[domain]" >
+						{% for domain in filterOptions.domains %}
+						<option value="{{ domain }}"  {% if (domain == currentFilters.domain)  %}selected{% endif %}>{{ domain }}</option>
+						{% endfor %}
+					</select>
+				</td>
+				<th>Event Type :</th>
+				<td>
+					<select id="filter_eventTypes" name="filter[eventType]">
+						{% for eventType in filterOptions.eventTypes %}
+						<option value="{{ eventType }}"  {% if (eventType == currentFilters.eventType)  %}selected{% endif %}>{{ eventType }}</option>
+						{% endfor %}
+					</select>
+				</td>
+				<th>Recipient :</th>
+				<td>
+					<input id="filter_recipients" name="filter[recipient]" type="text" list="recipientList" value="{{ currentFilters.recipient }}"/>
+					<datalist id="recipientList">
+						{% for recipient in filterOptions.recipients %}
+						  <option value="{{ recipient }}" />
+						{% endfor %}
+					</datalist>
+				</td>
+				<th>Search :</th>
+				<td>
+					<input id="filter_search" name="filter[search]" type="text" value="{{ currentFilters.search }}"/>
+				</td>
+				<th>Order by :</th>
+				<td>
+					<select id="filter_orderBy" name="filter[orderBy]">
+						{% for field in filterOptions.orderBy %}
+						<option value="{{ field }}"  {% if (field == currentFilters.orderBy)  %}selected{% endif %}>{{ field }}</option>
+						{% endfor %}
+					</select>
+					<select id="filter_orderDirection" name="filter[orderDirection]">
+						<option value="asc"  {% if ('asc' == currentFilters.orderDirection)  %}selected{% endif %}>asc</option>
+						<option value="desc"  {% if ('desc' == currentFilters.orderDirection)  %}selected{% endif %}>desc</option>
+					</select>
+								</td>
+				<td>
+					<button class="button" type="filter_submit">Filter</button>
+				</td>
+			</tr>
+		</table>
+	</form>
+<hr/>
 
-    <table class="records_list">
-        <thead>
-            <tr>
-                <th>Event</th>
-                <th>Domain</th>
-                <th>Recipient</th>
-                <th>Description</th>
-                <th>Notification</th>
-                <th>Reason</th>
-                <th>Errorcode</th>
-                <th>Source</th>
-                <th>Error</th>
-                <th>Campaignid</th>
-                <th>Campaignname</th>
-                <th>Clientname</th>
-                <th>Clientos</th>
-                <th>Clienttype</th>
-                <th>Devicetype</th>
-                <th>Mailinglist</th>
-                <th>Messageheaders</th>
-                <th>Messageid</th>
-                <th>Tag</th>
-                <th>Customvariables</th>
-                <th>Useragent</th>
-                <th>Url</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for entity in entities %}
-            <tr>
-                <td><a href="{{ path('mailgunevent_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                <td>{{ entity.event }}</td>
-                <td>{{ entity.domain }}</td>
-                <td>{{ entity.description }}</td>
-                <td>{{ entity.notification }}</td>
-                <td>{{ entity.reason }}</td>
-                <td>{{ entity.recipient }}</td>
-                <td>{{ entity.errorCode }}</td>
-                <td>
-                	IP: {{ entity.ip }}<br />
-                	Counrty: {{ entity.country }}<br />
-                	City: {{ entity.city }}<br />
-                	Region: {{ entity.region }}
-                </td>
-                <td>{{ entity.error }}</td>
-                <td>{{ entity.campaignId }}</td>
-                <td>{{ entity.campaignName }}</td>
-                <td>{{ entity.clientName }}</td>
-                <td>{{ entity.clientOs }}</td>
-                <td>{{ entity.clientType }}</td>
-                <td>{{ entity.deviceType }}</td>
-                <td>{{ entity.mailingList }}</td>
-                <td>{{ entity.messageHeaders }}</td>
-                <td>{{ entity.messageId }}</td>
-                <td>{{ entity.tag }}</td>
-                <td>{{ entity.customVariables }}</td>
-                <td>{{ entity.userAgent }}</td>
-                <td>{{ entity.url }}</td>
-                <td>
-                <ul>
-                    <li>
-                        <a href="{{ path('mailgunevent_show', { 'id': entity.id }) }}">show</a>
-                    </li>
-                </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+	{{ include('AzineMailgunWebhooksBundle::paginator.html.twig', paginatorParams) }}
 
-        <ul>
-    </ul>
-    {% endblock %}
+	<table class="tablesorter-blue eventsTable">
+		<thead>
+			<tr>
+				<th>Event</th>
+				<th>Subject / Recipient</th>
+				<th>Description / Notification</th>
+				<th>Reason / Errorcode</th>
+				<th>Location</th>
+				<th>Error</th>
+				<th>Campaignid / Campaignname</th>
+				<th>Client</th>
+				<th>Messageid / Messageheaders</th>
+				<th>Tag</th>
+				<th>Customvariables</th>
+				<th>Url</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for eventEntry in events %}
+			<tr class="{{ cycle(['odd', 'even'], loop.index) }}">
+				<td event="{{ eventEntry.event }}" timestamp="{{ eventEntry.timestamp }}">
+					<a href="{{ path('mailgunevent_show', { 'id': eventEntry.id }) }}">
+						{{ eventEntry.event }}<br />
+						{{ eventEntry.dateTime | date("Y-m-d H:i:m") }}
+					</a>
+					<br />
+					<a href="{{ path('mailgunevent_delete', {'id' : eventEntry.id }) }}">delete</a>
+				</td>
+				<td>
+					{{ eventEntry.eventTitle }}<br />
+					{{ eventEntry.recipient }}
+
+				</td>
+				<td>
+					{{ eventEntry.description }}<br />
+					{{ eventEntry.notification }}
+				</td>
+				<td>
+					{{ eventEntry.reason }}<br />
+					{{ eventEntry.errorCode }}
+				</td>
+				<td title="IP: {{ eventEntry.ip }} Region: {{ eventEntry.region }}">
+					{{ eventEntry.city }}
+					{% if eventEntry.country %} ({{ eventEntry.country }}) {% endif %}
+				</td>
+				<td>
+					{{ eventEntry.error }}
+				</td>
+				<td campaignId="{{ eventEntry.campaignId }}" campaignName="{{ eventEntry.campaignName }}">
+					{{ eventEntry.campaignId }}<br />
+					{{ eventEntry.campaignName }}
+				</td>
+				<td client="{{ eventEntry.clientName }}" os="{{ eventEntry.clientOs }}" device="{{ eventEntry.deviceType }}">
+					<span title="User-Agent: {{ eventEntry.userAgent }}">{{ eventEntry.clientName }}</span><br />
+					<span title="ClientType: {{ eventEntry.clientType }} | DeviceType: {{ eventEntry.deviceType }}">{{ eventEntry.clientOs }}</span>
+				</td>
+				<td>
+					{{ eventEntry.messageId }}
+					{% if eventEntry.messageHeaders | length > 0 %}
+					<br />
+					{{ dump( eventEntry.messageHeaders) }}
+					{% endif %}
+				</td>
+				<td>
+					{{ eventEntry.tag }}
+				</td>
+				<td>
+					{% if eventEntry.variables | length > 0 %}
+						<ul>
+						{% for item in eventEntry.variables %}
+							<li>{% if item.variableName != 0 %}{{ item.variableName }} : {% endif %}{{ dump(item.content) }}</li>
+						{% endfor %}
+						</ul>
+					{% endif %}
+				</td>
+				<td>
+					{{ eventEntry.url }}
+				</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+
+	{{ include('AzineMailgunWebhooksBundle::paginator.html.twig', paginatorParams) }}
+
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script type="text/javascript">
+<!--
+function loadLibrary(url, callback) {
+	var script_tag = document.createElement('script');
+	script_tag.setAttribute("src", url)
+	script_tag.onload = callback; // Run callback once jQuery has loaded
+	script_tag.onreadystatechange = function () { // Same thing but for IE
+		if (this.readyState == 'complete' || this.readyState == 'loaded') callback();
+	}
+
+	document.getElementsByTagName("head")[0].appendChild(script_tag);
+}
+
+// make sure jquery is loaded
+if (typeof jQuery === "undefined") {
+	loadLibrary("https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js", loadjQueryUI);
+} else {
+	$(document).ready(function() {
+		loadjQueryUI();
+	});
+}
+
+// make sure jquery ui is loaded
+function loadjQueryUI(){
+	if(!$.ui){
+		loadLibrary("https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js", loadTableSorter);
+	} else {
+		loadTableSorter();
+	}
+}
+
+// make sure jquery tablesorter plugin is loaded
+function loadTableSorter(){
+	if(!$.tablesorter){
+		loadLibrary("https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js", main);
+	} else {
+		main();
+	}
+}
+
+function main() {
+		$(document).ready(function() {
+
+			//$.tablesorter.addParser({
+			//		id: 'localeDate',
+			//		is: function(s, table, cell) {
+						// see http://mottie.github.io/tablesorter/docs/example-parsers.html
+			//			return false;
+			//			},
+			//		format: function(s, table, cell, cellIndex) {
+			//				return cell.getAttribute("date");
+			//			},
+			//		type: 'decimal',
+			//});
+			$(".eventsTable").tablesorter({
+				//headers: { 6: { sorter: 'localeDate' } }
+			});
+		});
+
+		$(".pageSizeSelector").change(function(){
+			// reload the page with the new pagesize
+			var newSize = this.value;
+			var baseUrl = '{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : '-1'}) }}';
+			window.location.href = baseUrl.substring(0, baseUrl.length - 2) + newSize;
+		});
+	}
+
+//-->
+</script>
+{% endblock %}

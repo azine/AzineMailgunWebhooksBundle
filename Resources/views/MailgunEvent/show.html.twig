@@ -1,8 +1,7 @@
 {% extends 'AzineMailgunWebhooksBundle::layout.html.twig' %}
 
 {% block body -%}
-    <h1>MailgunEvent</h1>
-
+    <h1>MailgunEvent: {% if entity.eventTitle != ''  %}{{ entity.eventTitle }} {% endif %} => {{ entity.recipient }} </h1>
     <table class="record_properties">
         <tbody>
             <tr>
@@ -99,7 +98,15 @@
             </tr>
             <tr>
                 <th>Customvariables</th>
-                <td>{{ entity.customVariables }}</td>
+                <td>
+					{% if entity.variables | length > 0 %}
+						<ul>
+						{% for item in entity.variables %}
+							<li>{% if item.variableName != 0 %}{{ item.variableName }} : {% endif %}{{ dump(item.content) }}</li>
+						{% endfor %}
+						</ul>
+					{% endif %}
+                </td>
             </tr>
             <tr>
                 <th>Useragent</th>
@@ -125,6 +132,6 @@
     </table>
 
 <ul class="record_actions">
-    <li>{{ form(delete_form) }}</li>
+    <li><a href="{{ path('mailgunevent_delete', {'id' : entity.id }) }}">delete</a></li>
 </ul>
 {% endblock %}

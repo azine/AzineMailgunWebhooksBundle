@@ -2,6 +2,8 @@
 
 namespace Azine\MailgunWebhooksBundle\Entity\Repositories;
 
+use Doctrine\ORM\QueryBuilder;
+
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -11,4 +13,123 @@ use Doctrine\ORM\EntityRepository;
  * repository methods below.
  */
 class MailgunEventRepository extends EntityRepository{
+
+	public function getEventCount($criteria){
+		return sizeof($this->getEventsQuery($criteria)->getQuery()->execute());
+	}
+
+	public function getEvents($criteria, $orderBy, $limit, $offset){
+		$qb = $this->getEventsQuery($criteria);
+		$orderField = key($orderBy);
+		$orderDirection = $orderBy[$orderField];
+		$qb->orderBy("e.".$orderField, $orderDirection);
+		if($limit != -1){
+			$qb->setMaxResults($limit);
+			$qb->setFirstResult($offset);
+		}
+		return $qb->getQuery()->execute();
+	}
+
+	/**
+	 * @param array $criteria
+	 * @return QueryBuilder
+	 */
+	private function getEventsQuery($criteria){
+		$qb = $this->createQueryBuilder("e")
+			->andWhere("e.domain = :domain")
+			->setParameter("domain", $criteria['domain'])
+			;
+
+		if(array_key_exists('recipient', $criteria) && $criteria['recipient'] != ""){
+			$qb->andWhere("e.recipient like :recipient")
+				->setParameter("recipient", "%".$criteria['recipient']."%");
+		}
+
+		if(array_key_exists('eventType', $criteria) && $criteria['eventType'] != "all"){
+			$qb->andWhere("e.event = :eventType")
+				->setParameter("eventType", $criteria['eventType']);
+		}
+
+		if(array_key_exists('search', $criteria) && $criteria['search'] != ""){
+			$qb->andWhere("(e.description like :search OR e.description like :search OR e.notification like :search OR e.reason like :search OR e.errorCode like :search OR e.ip like :search OR e.error like :search OR e.country like :search OR e.city like :search OR e.campaignId like :search OR e.campaignName like :search OR e.clientName like :search OR e.clientOs like :search OR e.clientType like :search OR e.deviceType like :search OR e.mailingList like :search OR e.messageId like :search OR e.tag like :search OR e.userAgent like :search OR e.url like :search)")
+				->setParameter("search", "%".$criteria['search']."%");
+		}
+		return $qb;
+	}
+
+
+	public function getEventTypes(){
+		$q = $this->getEntityManager()->createQueryBuilder()
+			->select("e.event as event")
+			->from($this->getEntityName(), "e")
+			->distinct()
+			->orderBy('e.event ', 'asc')
+			->getQuery();
+		$result = array();
+		foreach ($q->execute() as $next){
+			$result[] = $next['event'];
+		}
+		return $result;
+	}
+
+	public function getDomains(){
+		$q = $this->getEntityManager()->createQueryBuilder()
+			->select("e.domain as domain")
+			->from($this->getEntityName(), "e")
+			->distinct()
+			->orderBy('e.domain ', 'asc')
+			->getQuery();
+
+		$result = array();
+		foreach ($q->execute() as $next){
+			$result[] = $next['domain'];
+		}
+		return $result;
+	}
+
+	public function getRecipients(){
+		$q = $this->getEntityManager()->createQueryBuilder()
+			->select("e.recipient as recipient")
+			->from($this->getEntityName(), "e")
+			->distinct()
+			->orderBy('e.recipient ', 'asc')
+			->getQuery();
+
+		$result = array();
+		foreach ($q->execute() as $next){
+			$result[] = $next['recipient'];
+		}
+		return $result;
+	}
+
+	public function getFieldsToOrderBy(){
+		return array(
+				'campaignId',
+				'campaignName',
+				'city',
+				'clientName',
+				'clientOs',
+				'clientType',
+				'country',
+				'description',
+				'deviceType',
+				'domain',
+				'error',
+				'errorCode',
+				'event',
+				'ip',
+				'mailingList',
+				'messageHeaders',
+				'messageId',
+				'notification',
+				'reason',
+				'recipient',
+				'region',
+				'tag',
+				'timestamp',
+				'type',
+				'userAgent',
+				'url',
+			);
+	}
 }

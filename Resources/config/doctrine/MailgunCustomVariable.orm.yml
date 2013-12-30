@@ -19,7 +19,7 @@ Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable:
     manyToOne:
         event:
             targetEntity: MailgunEvent
-            inversedBy: custom_variables
+            inversedBy: variables
             joinColumn:
                 name: event_id
                 referencedColumnName: id
