@@ -6,9 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class MailgunEventControllerTest extends WebTestCase
 {
+    public function testCompleteScenario()   { }
     /*
-    public function testCompleteScenario()
-    {
         // Create a new client to browse the application
         $client = static::createClient();
 
