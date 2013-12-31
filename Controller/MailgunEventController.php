@@ -1,6 +1,10 @@
 <?php
 namespace Azine\MailgunWebhooksBundle\Controller;
 
+use Symfony\Component\EventDispatcher\Event;
+
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
 
 use Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable;
@@ -337,6 +341,9 @@ class MailgunEventController extends Controller
 			return new Response(print_r($params), 500);
 		}
 
+		// dispatch event
+		$this->dispatchEvent($event);
+
 		// send response
 		return new Response(print_r($params)."Thanx, for the info.", 200);
 	}
@@ -381,4 +388,16 @@ class MailgunEventController extends Controller
 		$pageSize =		$session->get('pageSize', 25);
 		return $this->redirect($this->generateUrl('mailgunevent_list', array('page' => $page, 'pageSize' => $pageSize)));
 	}
+
+	/**
+	 * Dispatch an event about the logging of a Webhook-call
+	 * @param MailgunEvent $mailgunEvent
+	 * @param string $name
+	 */
+	private function dispatchEvent(MailgunEvent $mailgunEvent, $name = "azine.mailgun.webhooks.event."){
+		$eventDispatcher = $this->get("event_dispatcher");
+		$event = new MailgunWebhookEvent($mailgunEvent);
+		$eventDispatcher->dispatch($name, $event);
+	}
+
 }

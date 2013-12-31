@@ -85,12 +85,19 @@ azine_mailgun_webhooks:
     public_api_key:       ''
 ```
 
+## Events
+Whenever mailgun posts an event via the webhook, an MailgunWebhookEvent containing the 
+new MailgunEvent is dispatched.
+
+You can implement your own means of notification for failures or if you configured your
+application to use the swiftmailer, you can use the SwiftMailerMailgunWebhookEventListener,
+to send emails to an address you specified.
+
 # ToDos
-- create index-page showing all the options of this bundle
 - write unit-tests
 - add filter-options to only keep "interesting" events => delete "warnings" that were resolved later
 - add commands to "cleanup" the database periodically
-- add extension-hooks/throw events to notify admins when certain events occur => email upon email-failure
+- add SwiftMailerMailgunWebhookEventListener to notify admins when certain events occur => email upon email-failure
 - write ajax action to delete single entries from list without reload
 
 
