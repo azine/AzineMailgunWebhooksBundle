@@ -1,0 +1,20 @@
+{% extends 'AzineMailgunWebhooksBundle::layout.html.twig' %}
+
+{% block body -%}
+    <h1>Mailgun Overview</h1>
+
+	<ul>
+	    <li>
+			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}" target="mailgun_event_list">EventList</a>
+	    </li>
+	    <li>
+	    	Show failures/errors/bounces
+	    </li>
+	    <li>
+	    	Remove entries older than <input type="text" />. <button type="submit">Execute!</button>
+	    </li>
+	    <li>
+	    	Remove successful deliveries older than <input type="text" />. <button type="submit">Execute!</button>
+	    </li>
+	</ul>
+{% endblock %}
