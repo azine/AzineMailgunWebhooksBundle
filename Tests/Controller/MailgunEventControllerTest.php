@@ -98,6 +98,8 @@ class MailgunEventControllerTest extends WebTestCase {
 	}
 
 	public function testSignature(){
+		$this->checkApplication();
+
 		$this->assertEquals('cc47468e81de0818af77f3e14a728602a2919b7fc09162e18f76ca12a9f8051d', $this->getValidSignature("some-token", 1387529061), "Valid signature expected.");
 	}
 	private function getValidSignature($token, $timestamp){
