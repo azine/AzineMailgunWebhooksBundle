@@ -12,13 +12,11 @@ use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtensio
 
 use Doctrine\ORM\EntityManager;
 
-use Azine\PlatformBundle\Tests\AzineBaseTestWithServices;
-
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class MailgunEventControllerTest extends AzineBaseTestWithServices{
+class MailgunEventControllerTest extends WebTestCase {
 
 	public function testWebHookCreateAndEventDispatching(){
 		$this->checkApplication();
