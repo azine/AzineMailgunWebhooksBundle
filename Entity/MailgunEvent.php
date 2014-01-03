@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class MailgunEvent{
 
+	const CREATE_EVENT = "azine.mailgun.webhooks.event";
+
 	public function getEventTitle(){
 		$title = "";
 		$headers = $this->getMessageHeaders();

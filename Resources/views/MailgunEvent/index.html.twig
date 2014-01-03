@@ -6,6 +6,7 @@
 
 {% block body %}
 	<h1>MailgunEvents</h1>
+	<a class="backToOverview" href="{{ path('mailgun_overview') }}" target="mailgun">Back to overview</a>
 	<hr/>
 	<h2>Filter criteria</h2>
 	<form id="filter_event_form" action="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : currentFilters.pageSize}) }}" method="post">
@@ -119,11 +120,16 @@
 					<span title="ClientType: {{ eventEntry.clientType }} | DeviceType: {{ eventEntry.deviceType }}">{{ eventEntry.clientOs }}</span>
 				</td>
 				<td>
-					{{ eventEntry.messageId }}
+					MessageId: {{ eventEntry.messageId }}
 					{% if eventEntry.messageHeaders | length > 0 %}
 					<br />
-					{{ dump( eventEntry.messageHeaders) }}
+					MessageHeaders:
+						<ul>
+						{% for key, value in eventEntry.messageHeaders %}
+							<li>{{ key }}: {{ value }}</li>
+						{% endfor %}
 					{% endif %}
+					</ul>
 				</td>
 				<td>
 					{{ eventEntry.tag }}
@@ -132,7 +138,7 @@
 					{% if eventEntry.variables | length > 0 %}
 						<ul>
 						{% for item in eventEntry.variables %}
-							<li>{% if item.variableName != 0 %}{{ item.variableName }} : {% endif %}{{ dump(item.content) }}</li>
+							<li>{% if item.variableName != 0 %}{{ item.variableName }} : {% endif %}{{ item.content }}</li>
 						{% endfor %}
 						</ul>
 					{% endif %}
@@ -206,9 +212,7 @@ function main() {
 			//			},
 			//		type: 'decimal',
 			//});
-			$(".eventsTable").tablesorter({
-				//headers: { 6: { sorter: 'localeDate' } }
-			});
+			$(".eventsTable").tablesorter();
 		});
 
 		$(".pageSizeSelector").change(function(){

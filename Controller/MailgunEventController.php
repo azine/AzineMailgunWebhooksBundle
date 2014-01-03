@@ -1,6 +1,8 @@
 <?php
 namespace Azine\MailgunWebhooksBundle\Controller;
 
+use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
+
 use Symfony\Component\EventDispatcher\Event;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -101,7 +103,6 @@ class MailgunEventController extends Controller
 					'orderBy' => $orderBy,
 					'orderDirection' => $orderDirection,
 					'eventType' => $eventType,
-					'currentPage' => $page,
 					'pageSize' => $pageSize,
 					'search' => $search,
 					'recipient' => $recipient,
@@ -111,8 +112,9 @@ class MailgunEventController extends Controller
 
 		$eventCount = $this->getRepository()->getEventCount($filter);
 		// validate the page/pageSize and with the total number of result entries
-		if(($page -1 ) *$pageSize > $eventCount){
-			$page = 1;
+		if(($page -1 ) *$pageSize >= $eventCount){
+			$maxPage = max(1,floor($eventCount / $pageSize));
+			return $this->redirect($this->generateUrl("mailgunevent_list", array('page' => $maxPage, 'pageSize' => $pageSize))."?".$request->getQueryString());
 		}
 
 		// get the events
@@ -338,14 +340,14 @@ class MailgunEventController extends Controller
 		} catch (\Exception $e) {
 			$this->container->get('logger')->warn("AzineMailgunWebhooksBundle: creating entities failed: ".$e->getMessage());
 			$this->container->get('logger')->warn($e->getTraceAsString());
-			return new Response(print_r($params), 500);
+			return new Response(print_r($params, true), 500);
 		}
 
 		// dispatch event
 		$this->dispatchEvent($event);
 
 		// send response
-		return new Response(print_r($params)."Thanx, for the info.", 200);
+		return new Response(print_r($params, true)."Thanx, for the info.", 200);
 	}
 
 	/**
@@ -394,7 +396,7 @@ class MailgunEventController extends Controller
 	 * @param MailgunEvent $mailgunEvent
 	 * @param string $name
 	 */
-	private function dispatchEvent(MailgunEvent $mailgunEvent, $name = "azine.mailgun.webhooks.event."){
+	private function dispatchEvent(MailgunEvent $mailgunEvent, $name = MailgunEvent::CREATE_EVENT){
 		$eventDispatcher = $this->get("event_dispatcher");
 		$event = new MailgunWebhookEvent($mailgunEvent);
 		$eventDispatcher->dispatch($name, $event);

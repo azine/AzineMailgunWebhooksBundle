@@ -85,6 +85,64 @@ azine_mailgun_webhooks:
     public_api_key:       ''
 ```
 
+# Sidenote on "monolog" emails and web scanners
+You can configure monolog to send emails whenever an error occurs.
+=> http://symfony.com/doc/current/cookbook/logging/monolog_email.html 
+
+It is likely that many 404-errors occur on you site because web-scanners 
+try to see if you are hosting vulnerable scripts on your server. If 
+these errors are mailed via mailgun.com as well, you might send a lot more 
+mails than you want to (and exceed the limit of 10k free emails) and it  
+will clutter you database with more or less useless information.
+
+Since Symfony 2.4, to avoid these emails being sent, you can configure 
+monolog to ignore certain 404 errors.
+=> http://symfony.com/doc/current/cookbook/logging/monolog_regex_based_excludes.html  
+
+```
+// app/config/config.yml
+monolog:
+    handlers:
+        main:
+            type:         fingers_crossed
+            action_level: warning
+            handler:      yourNextHandler
+            excluded_404s:
+                - ".*/cgi-bin/php.*"
+                - ".*MyAdmin/scripts/setup.php.*"
+                - ".*autoconfig/mail/config-v1.1.xml.*"
+                - ".*vtigercrm/graph.php.*"
+                - ".*/HNAP1/.*"
+                - ".*calendar/install/index.php.*"
+                - ".*admin/config.php.*"
+```
+
+# Webhooks configuration of mailgun.com
+To tell mailgun.com to post the data to your database via the webhooks, just
+get the full url of the "mailgunevent_webhook"-route
+
+```
+# on a bash console execute this to get the absolute webhook path
+php app/console router:debug -e prod | grep mailgunevent_webhook
+```
+
+and copy it to all the input fields for the webhooks on:
+
+- https://mailgun.com/cp/log
+- https://mailgun.com/cp/stats
+- https://mailgun.com/cp/bounces
+- https://mailgun.com/cp/unsubscribes
+- https://mailgun.com/cp/spamreports
+- https://mailgun.com/cp/routes
+
+Then test if everything is setup ok by clicking the "Test" or "Send" button and check
+you database or the event-list.
+
+```
+# on a bash console execute this to get the absolute overview-page path
+php app/console router:debug -e prod | grep mailgun_overview
+```
+
 ## Events
 Whenever mailgun posts an event via the webhook, an MailgunWebhookEvent containing the 
 new MailgunEvent is dispatched.
