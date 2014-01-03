@@ -39,14 +39,15 @@ class MailgunEventControllerTest extends WebTestCase {
 		// post invalid data to the webhook-url and check the response & database
 		$webhookdata = json_encode($this->getInvalidPostData());
 		$crawler = $client->request("POST", $url, $this->getInvalidPostData());
-		$this->assertEquals(401, $client->getResponse()->getStatusCode(), "Response-Code 401 expected for invalid signature", $client);
+
+		$this->assertEquals(401, $client->getResponse()->getStatusCode(), "Response-Code 401 expected for invalid signature:");
 		$this->assertContains("Signature verification failed.", $crawler->text(), "Response expected.");
 		$this->assertEquals($count, sizeof($eventReop->findAll()), "No new db entry for the webhook expected!");
 
 		// post valid data to the webhook-url and check the response
 		$webhookdata = json_encode($this->getValidPostData());
 		$crawler = $client->request("POST", $url, $this->getValidPostData());
-		$this->assertEquals(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata", $client);
+		$this->assertEquals(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata");
 		$this->assertContains("Thanx, for the info.", $crawler->text(), "Response expected.");
 		$this->assertEquals($count + 1, sizeof($eventReop->findAll()), "One new db entry for the webhook expected!");
 
@@ -100,10 +101,15 @@ class MailgunEventControllerTest extends WebTestCase {
 	public function testSignature(){
 		$this->checkApplication();
 
-		$this->assertEquals('cc47468e81de0818af77f3e14a728602a2919b7fc09162e18f76ca12a9f8051d', $this->getValidSignature("some-token", 1387529061), "Valid signature expected.");
+		// boot the kernel
+		static::createClient();
+
+		$sig = $this->getValidSignature("some-token", 1387529061);
+		$this->assertEquals('cc47468e81de0818af77f3e14a728602a2919b7fc09162e18f76ca12a9f8051d', $sig, "Valid signature expected.");
 	}
+
 	private function getValidSignature($token, $timestamp){
-		$key = static::$kernel->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX."_".AzineMailgunWebhooksExtension::API_KEY);
+		$key = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX."_".AzineMailgunWebhooksExtension::API_KEY);
 		$signature = hash_hmac("SHA256", $timestamp.$token, $key);
 		return $signature;
 	}
@@ -123,7 +129,7 @@ class MailgunEventControllerTest extends WebTestCase {
 		$showUrl = $this->getRouter()->generate("mailgunevent_show", array('_locale' => "en", 'id' => 22));
 
 		// delete the event
-		$deleteUrl = $this->getRouter()->generate("mailgunevent_delete", array('_locale' => "en", 'id' => 22));
+		$deleteUrl = $this->getRouter()->generate("mailgunevent_delete", array('_locale' => "en", 'eventId' => 22));
 
 		// check that it is gone from the list
 

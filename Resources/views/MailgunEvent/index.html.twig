@@ -2,11 +2,12 @@
 {% block stylesheets %}
 {{ parent() }}
 	<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.blue.css">
+	<link type="text/css" rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/flick/jquery-ui.min.css" />
 {% endblock %}
 
 {% block body %}
 	<h1>MailgunEvents</h1>
-	<a class="backToOverview" href="{{ path('mailgun_overview') }}" target="mailgun">Back to overview</a>
+	<a class="backToOverview" href="{{ path('mailgun_overview') }}" >Back to overview</a>
 	<hr/>
 	<h2>Filter criteria</h2>
 	<form id="filter_event_form" action="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : currentFilters.pageSize}) }}" method="post">
@@ -82,14 +83,19 @@
 		</thead>
 		<tbody>
 		{% for eventEntry in events %}
-			<tr class="{{ cycle(['odd', 'even'], loop.index) }}">
-				<td event="{{ eventEntry.event }}" timestamp="{{ eventEntry.timestamp }}">
+			<tr id="event{{ eventEntry.id }}" class="{{ cycle(['odd', 'even'], loop.index) }}">
+				<td>
 					<a href="{{ path('mailgunevent_show', { 'id': eventEntry.id }) }}">
 						{{ eventEntry.event }}<br />
 						{{ eventEntry.dateTime | date("Y-m-d H:i:m") }}
 					</a>
 					<br />
-					<a href="{{ path('mailgunevent_delete', {'id' : eventEntry.id }) }}">delete</a>
+					<a class="deleteLink" href="{{ path('mailgunevent_delete', {'eventId' : eventEntry.id }) }}"
+						eventId="{{ eventEntry.id }}"
+						eventType="{{ eventEntry.event }}"
+						eventTime="{{ eventEntry.dateTime | date("Y-m-d H:i:m") }}"
+						eventRecipient="{{ eventEntry.recipient }}"
+						>delete</a>
 				</td>
 				<td>
 					{{ eventEntry.eventTitle }}<br />
@@ -221,8 +227,59 @@ function main() {
 			var baseUrl = '{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : '-1'}) }}';
 			window.location.href = baseUrl.substring(0, baseUrl.length - 2) + newSize;
 		});
-	}
+
+		$.confirmDeleteDialog = function(eventId, eventType, eventTime, eventRecipient){
+			 $( "#modalConfirmDialog" ).dialog({
+												 resizable: false,
+												 height:300,
+												 width: 500,
+												 modal: true,
+												 title: 'Delete event '+eventId+'?',
+												 open: function(){
+											           		$("#dialogContent").html('Should the event be deleted?<br/><br/>EventType:'+eventType+'<br/>Date/Time:'+eventTime+'<br/>Recipient:'+eventRecipient+'')
+											           },
+												 buttons: {
+													 "Delete event": function() {
+														 $.ajaxDeleteEvent(eventId);
+														 $( this ).dialog( "close" );
+													 },
+													 Cancel: function() {
+														 $( this ).dialog( "close" );
+													 },
+												 }
+											 });
+
+		};
+
+		$('.deleteLink').click(function(){
+			$.confirmDeleteDialog($(this).attr('eventId'), $(this).attr('eventType'), $(this).attr('eventTime'), $(this).attr('eventRecipient'));
+			return false;
+		});
+
+		$.ajaxDeleteEvent = function(eventId){
+			$.post('{{ path("mailgunevent_delete_ajax") | raw }}', { 'eventId' : eventId },
+		        function(response){
+	                if(response.success){
+	                	$('.eventsTable tr#event'+eventId).remove();
+	                } else {
+	                	alert('failed to delete event:'+eventId);
+	                }
+	            },
+	            "json");
+			};
+
+	}// end document ready
+
+
+
+
+
+
 
 //-->
 </script>
+<div id="modalConfirmDialog" style="display: none" title="Should the event be deleted?">
+	<p id="dialogContent">Should the event be deleted?</p>
+</div>
+
 {% endblock %}

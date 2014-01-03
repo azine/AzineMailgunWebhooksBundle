@@ -7,7 +7,11 @@ mailgunevent_show:
     defaults: { _controller: "AzineMailgunWebhooksBundle:MailgunEvent:show" }
 
 mailgunevent_delete:
-    pattern:  /mailgun/event/{id}/delete
+    pattern:  /mailgun/event/delete/{eventId}
+    defaults: { _controller: "AzineMailgunWebhooksBundle:MailgunEvent:delete" }
+
+mailgunevent_delete_ajax:
+    pattern:  /mailgun/event/delete
     defaults: { _controller: "AzineMailgunWebhooksBundle:MailgunEvent:delete" }
 
 mailgun_overview:

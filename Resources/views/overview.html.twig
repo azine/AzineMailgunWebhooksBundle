@@ -5,10 +5,24 @@
 
 	<ul>
 	    <li>
-			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}" target="mailgun_event_list">EventList</a>
+			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?clear=true">EventList ({{ events }})</a>
 	    </li>
 	    <li>
-	    	Show failures/errors/bounces
+	    	Show filtered events:
+	    	<ul>
+	    		<li>
+	    			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=bounced">bounced ({{ bounced }})</a>
+	    		</li>
+    	   		<li>
+	    			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=dropped">dropped ({{ dropped }})</a>
+    	   		</li>
+    	   		<li>
+    	   			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=complained">marked as spam by the user ({{ complained }})</a>
+	    			    	   		</li>
+    	   		<li>
+    	   			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=unsubscribed">unsubscribe requests by users ({{ unsubscribed }})</a>
+    	   		</li>
+	    	</ul>
 	    </li>
 	    <li>
 	    	Remove entries older than <input type="text" />. <button type="submit">Execute!</button>

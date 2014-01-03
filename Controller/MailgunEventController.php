@@ -1,6 +1,8 @@
 <?php
 namespace Azine\MailgunWebhooksBundle\Controller;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
 
 use Symfony\Component\EventDispatcher\Event;
@@ -65,6 +67,11 @@ class MailgunEventController extends Controller
 		if($session->get('pageSize') != $pageSize){
 			$page = 1;
 		}
+		if($request->get('clear')){
+			$eventType = "all";
+		} else {
+			$eventType =	$request->get('eventType', $eventType);
+		}
 
 		// update filter criteria from post-request
 		$filter = $request->get('filter');
@@ -112,7 +119,7 @@ class MailgunEventController extends Controller
 
 		$eventCount = $this->getRepository()->getEventCount($filter);
 		// validate the page/pageSize and with the total number of result entries
-		if(($page -1 ) *$pageSize >= $eventCount){
+		if($eventCount > 0 && (($page -1 ) *$pageSize >= $eventCount)){
 			$maxPage = max(1,floor($eventCount / $pageSize));
 			return $this->redirect($this->generateUrl("mailgunevent_list", array('page' => $maxPage, 'pageSize' => $pageSize))."?".$request->getQueryString());
 		}
@@ -373,7 +380,9 @@ class MailgunEventController extends Controller
 	 * Deletes a MailgunEvent entity.
 	 *
 	 */
-	public function deleteAction(Request $request, $id) {
+	public function deleteAction(Request $request) {
+
+		$id = $request->get('eventId');
 
 		$em = $this->getDoctrine()->getManager();
 		$entity = $em->getRepository('AzineMailgunWebhooksBundle:MailgunEvent')->find($id);
@@ -384,6 +393,10 @@ class MailgunEventController extends Controller
 
 		$em->remove($entity);
 		$em->flush();
+
+		if($request->isXmlHttpRequest()){
+			return new JsonResponse(array("success" => true));
+		}
 
 		$session = $this->getRequest()->getSession();
 		$page = 		$session->get('page', 1);

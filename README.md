@@ -128,11 +128,11 @@ php app/console router:debug -e prod | grep mailgunevent_webhook
 
 and copy it to all the input fields for the webhooks on:
 
-- https://mailgun.com/cp/log
-- https://mailgun.com/cp/stats
-- https://mailgun.com/cp/bounces
-- https://mailgun.com/cp/unsubscribes
-- https://mailgun.com/cp/spamreports
+- https://mailgun.com/cp/log#drop-callback
+- https://mailgun.com/cp/stats#open-webhook-url
+- https://mailgun.com/cp/bounces#bounce-callback
+- https://mailgun.com/cp/unsubscribes#unsubscribe-callback
+- https://mailgun.com/cp/spamreports#spam-callback
 - https://mailgun.com/cp/routes
 
 Then test if everything is setup ok by clicking the "Test" or "Send" button and check
@@ -152,11 +152,10 @@ application to use the swiftmailer, you can use the SwiftMailerMailgunWebhookEve
 to send emails to an address you specified.
 
 # ToDos
-- write unit-tests
-- add filter-options to only keep "interesting" events => delete "warnings" that were resolved later
+- write more unit-tests
 - add commands to "cleanup" the database periodically
-- add SwiftMailerMailgunWebhookEventListener to notify admins when certain events occur => email upon email-failure
-- write ajax action to delete single entries from list without reload
+- add SwiftMailerMailgunWebhookEventListener to notify admins when certain events occur => email upon "dropped" event
+
 
 
 
