@@ -151,10 +151,14 @@ You can implement your own means of notification for failures or if you configur
 application to use the swiftmailer, you can use the SwiftMailerMailgunWebhookEventListener,
 to send emails to an address you specified.
 
-# ToDos
+# ToDos / Contribute
+Anyone is welcome to contribute.
+
+Here's a list of open TODOs
 - write more unit-tests
 - add commands to "cleanup" the database periodically
 - add SwiftMailerMailgunWebhookEventListener to notify admins when certain events occur => email upon "dropped" event
+- write some CSS, style pages 
 
 
 

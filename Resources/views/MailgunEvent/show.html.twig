@@ -1,4 +1,9 @@
 {% extends 'AzineMailgunWebhooksBundle::layout.html.twig' %}
+{% block stylesheets %}
+{{ parent() }}
+	<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.blue.css">
+	<link type="text/css" rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/flick/jquery-ui.min.css" />
+{% endblock %}
 
 {% block body -%}
     <h1>MailgunEvent: {% if entity.eventTitle != ''  %}{{ entity.eventTitle }} {% endif %} => {{ entity.recipient }} </h1>
@@ -85,12 +90,23 @@
                 <td>{{ entity.mailingList }}</td>
             </tr>
             <tr>
-                <th>Messageheaders</th>
-                <td>{{ entity.messageHeaders }}</td>
-            </tr>
-            <tr>
                 <th>Messageid</th>
                 <td>{{ entity.messageId }}</td>
+            </tr>
+            <tr>
+                <th>Messageheaders</th>
+                <td>
+					MessageHeaders:
+					{% if entity.messageHeaders | length > 0 %}
+						<ul>
+						{% for key, value in entity.messageHeaders %}
+							<li>{{ key }}: {{ value }}</li>
+						{% endfor %}
+					</ul>
+					{% else %}
+					-
+					{% endif %}
+                </td>
             </tr>
             <tr>
                 <th>Tag</th>
@@ -102,7 +118,7 @@
 					{% if entity.variables | length > 0 %}
 						<ul>
 						{% for item in entity.variables %}
-							<li>{% if item.variableName != 0 %}{{ item.variableName }} : {% endif %}{{ dump(item.content) }}</li>
+							<li>{% if item.variableName != 0 %}{{ item.variableName }} : {% endif %}{{ item.content }}</li>
 						{% endfor %}
 						</ul>
 					{% endif %}
@@ -132,6 +148,6 @@
     </table>
 
 <ul class="record_actions">
-    <li><a href="{{ path('mailgunevent_delete', {'id' : entity.id }) }}">delete</a></li>
+    <li><a href="{{ path('mailgunevent_delete', {'eventId' : entity.id }) }}">delete</a></li>
 </ul>
 {% endblock %}
