@@ -7,6 +7,107 @@
         </head>
     <body>
     	{% block body %}{% endblock %}
-    	{% block javascripts %}{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript">
+<!--
+function loadLibrary(url, callback) {
+	var script_tag = document.createElement('script');
+	script_tag.setAttribute("src", url)
+	script_tag.onload = callback; // Run callback once jQuery has loaded
+	script_tag.onreadystatechange = function () { // Same thing but for IE
+		if (this.readyState == 'complete' || this.readyState == 'loaded') callback();
+	}
+
+	document.getElementsByTagName("head")[0].appendChild(script_tag);
+}
+
+// make sure jquery is loaded
+if (typeof jQuery === "undefined") {
+	loadLibrary("https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js", loadjQueryUI);
+} else {
+	$(document).ready(function() {
+		loadjQueryUI();
+	});
+}
+
+// make sure jquery ui is loaded
+function loadjQueryUI(){
+	if(!$.ui){
+		loadLibrary("https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js", loadTableSorter);
+	} else {
+		loadTableSorter();
+	}
+}
+
+// make sure jquery tablesorter plugin is loaded
+function loadTableSorter(){
+	if(!$.tablesorter){
+		loadLibrary("https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js", main);
+	} else {
+		main();
+	}
+}
+
+function main() {
+	$(document).ready(function() {
+
+		$(".eventsTable").tablesorter({widgets: ['zebra'] });
+
+		$.confirmDeleteDialog = function(eventId, eventType, eventTime, eventRecipient){
+			 $( "#modalConfirmDialog" ).dialog({
+												 resizable: false,
+												 height:300,
+												 width: 500,
+												 modal: true,
+												 title: 'Delete event '+eventId+'?',
+												 open: function(){
+											           		$("#dialogContent").html('Should the event be deleted?<br/><br/>EventType:'+eventType+'<br/>Date/Time:'+eventTime+'<br/>Recipient:'+eventRecipient+'')
+											           },
+												 buttons: {
+													 "Delete event": function() {
+														 $.ajaxDeleteEvent(eventId);
+														 $( this ).dialog( "close" );
+													 },
+													 Cancel: function() {
+														 $( this ).dialog( "close" );
+													 },
+												 }
+											 });
+
+		};
+
+		$('.deleteLink').click(function(){
+			$.confirmDeleteDialog($(this).attr('eventId'), $(this).attr('eventType'), $(this).attr('eventTime'), $(this).attr('eventRecipient'));
+			return false;
+		});
+
+		$.ajaxDeleteEvent = function(eventId){
+			$.post('{{ path("mailgunevent_delete_ajax") | raw }}', { 'eventId' : eventId },
+		        function(response){
+	                if(response.success){
+	                	$('.eventsTable tr#event'+eventId).remove();
+	                } else {
+	                	alert('failed to delete event:'+eventId);
+	                }
+	            },"json");
+		};
+
+		{% block templateJQueryJS %}
+		{# insert jQuery code for sub-templates into this block #}
+		{% endblock %}
+
+	});
+
+}// end document ready
+
+
+//-->
+</script>
+<div id="modalConfirmDialog" style="display: none" title="Should the event be deleted?">
+	<p id="dialogContent">Should the event be deleted?</p>
+</div>
+
+{% endblock %}
     </body>
 </html>

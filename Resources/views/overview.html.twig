@@ -1,5 +1,11 @@
 {% extends 'AzineMailgunWebhooksBundle::layout.html.twig' %}
 
+{% block stylesheets %}
+{{ parent() }}
+	<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.blue.css">
+	<link type="text/css" rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/flick/jquery-ui.min.css" />
+{% endblock %}
+
 {% block body -%}
     <h1>Mailgun Overview</h1>
 
@@ -31,4 +37,70 @@
 	    	Remove successful deliveries older than <input type="text" />. <button type="submit">Execute!</button>
 	    </li>
 	</ul>
+
+	<h1>Most recent/important MailgunEvents</h1>
+	<table class="tablesorter-blue eventsTable">
+		<thead>
+			<tr>
+				<th>Event</th>
+				<th>Subject / Recipient</th>
+				<th>Description / Notification</th>
+				<th>Reason / Errorcode</th>
+				<th>Error</th>
+				<th>Messageid / Messageheaders</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for eventEntry in importantEvents %}
+			<tr id="event{{ eventEntry.id }}" class="{{ cycle(['odd', 'even'], loop.index) }}">
+				<td>
+					<a href="{{ path('mailgunevent_show', { 'id': eventEntry.id }) }}">
+						{{ eventEntry.event }}<br />
+						{{ eventEntry.dateTime | date("Y-m-d H:i:m") }}
+					</a>
+					<br />
+					<a class="deleteLink" href="{{ path('mailgunevent_delete', {'eventId' : eventEntry.id }) }}"
+						eventId="{{ eventEntry.id }}"
+						eventType="{{ eventEntry.event }}"
+						eventTime="{{ eventEntry.dateTime | date("Y-m-d H:i:m") }}"
+						eventRecipient="{{ eventEntry.recipient }}"
+						>delete</a>
+				</td>
+				<td>
+					{{ eventEntry.eventTitle }}<br />
+					{{ eventEntry.recipient }}
+
+				</td>
+				<td>
+					{{ eventEntry.description }}<br />
+					{{ eventEntry.notification }}
+				</td>
+				<td>
+					{{ eventEntry.reason }}<br />
+					{{ eventEntry.errorCode }}
+				</td>
+				<td>
+					{{ eventEntry.error }}
+				</td>
+				<td>
+					MessageId: {{ eventEntry.messageId }}
+					{% if eventEntry.messageHeaders | length > 0 %}
+					<br />
+					MessageHeaders:
+						<ul>
+						{% for key, value in eventEntry.messageHeaders %}
+							<li>{{ key }}: {{ value }}</li>
+						{% endfor %}
+					{% endif %}
+					</ul>
+				</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+
 {% endblock %}
+
+{% block templateJQueryJS %}
+{% endblock %}
+

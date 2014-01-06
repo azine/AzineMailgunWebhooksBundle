@@ -132,4 +132,54 @@ class MailgunEventRepository extends EntityRepository{
 				'url',
 			);
 	}
+
+
+	/**
+	 * Get the most important events in the following priority
+	 * 1. Errors (rejected, failed)
+	 * 2. Warnings (complained, unsubscribed)
+	 * 3. Infos (accepted, delivered, opened, clicked, stored)
+	 *
+	 * @param integer $count max number of events to fetch
+	 */
+	public function getImportantEvents($count){
+		$q = $this->createQueryBuilder("e")
+			->where("e.event = 'rejected' or e.event = 'failed'")
+			->orderBy('e.timestamp ', 'desc')
+			->setMaxResults($count)
+			->getQuery();
+
+		$errors = $q->execute();
+		$results = $errors;
+
+		$getMoreCounter = $count - sizeof($errors);
+
+		if($getMoreCounter > 0){
+			$q = $this->createQueryBuilder("e")
+				->where("e.event = 'complained' or e.event = 'unsubscribed'")
+				->orderBy('e.timestamp ', 'desc')
+				->setMaxResults($getMoreCounter)
+				->getQuery();
+
+			$warnings = $q->execute();
+			$getMoreCounter = $getMoreCounter - sizeof($warnings);
+			$results = array_merge($results, $warnings);
+		}
+
+		if($getMoreCounter > 0){
+			$q = $this->createQueryBuilder("e")
+				->where("e.event = 'accepted' or e.event = 'delivered' or e.event = 'opened' or e.event = 'clicked' or e.event = 'stored'")
+				->orderBy('e.timestamp ', 'desc')
+				->setMaxResults($getMoreCounter)
+				->getQuery();
+
+			$infos = $q->execute();
+			$getMoreCounter = $getMoreCounter - sizeof($infos);
+			$results = array_merge($results, $infos);
+
+		}
+
+		return $results;
+
+	}
 }
