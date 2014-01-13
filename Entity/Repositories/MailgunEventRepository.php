@@ -2,6 +2,8 @@
 
 namespace Azine\MailgunWebhooksBundle\Entity\Repositories;
 
+use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
+
 use Doctrine\ORM\QueryBuilder;
 
 use Doctrine\ORM\EntityRepository;
@@ -143,43 +145,60 @@ class MailgunEventRepository extends EntityRepository{
 	 * @param integer $count max number of events to fetch
 	 */
 	public function getImportantEvents($count){
-		$q = $this->createQueryBuilder("e")
-			->where("e.event = 'rejected' or e.event = 'failed'")
-			->orderBy('e.timestamp ', 'desc')
-			->setMaxResults($count)
-			->getQuery();
 
-		$errors = $q->execute();
+		$errors = $this->getEventsBySeverity(MailgunEvent::SEVERITY_ERROR, $count);
 		$results = $errors;
 
 		$getMoreCounter = $count - sizeof($errors);
 
 		if($getMoreCounter > 0){
-			$q = $this->createQueryBuilder("e")
-				->where("e.event = 'complained' or e.event = 'unsubscribed'")
-				->orderBy('e.timestamp ', 'desc')
-				->setMaxResults($getMoreCounter)
-				->getQuery();
 
-			$warnings = $q->execute();
+			$warnings = $this->getEventsBySeverity(MailgunEvent::SEVERITY_WARN, $count);
 			$getMoreCounter = $getMoreCounter - sizeof($warnings);
 			$results = array_merge($results, $warnings);
 		}
 
 		if($getMoreCounter > 0){
-			$q = $this->createQueryBuilder("e")
-				->where("e.event = 'accepted' or e.event = 'delivered' or e.event = 'opened' or e.event = 'clicked' or e.event = 'stored'")
-				->orderBy('e.timestamp ', 'desc')
-				->setMaxResults($getMoreCounter)
-				->getQuery();
 
-			$infos = $q->execute();
+			$infos = $this->getEventsBySeverity(MailgunEvent::SEVERITY_INFO, $count);
 			$getMoreCounter = $getMoreCounter - sizeof($infos);
 			$results = array_merge($results, $infos);
 
 		}
 
 		return $results;
+	}
 
+	/**
+	 * Get events by severity/type
+	 * @param string $severity [info, warning, error]
+	 * @return Ambigous <multitype:, unknown>
+	 */
+	public function getEventsBySeverity($severity = MailgunEvent::SEVERITY_INFO, $maxResults = 0){
+		if($severity == MailgunEvent::SEVERITY_INFO){
+			$criteria = "e.event = 'accepted' or e.event = 'delivered' or e.event = 'opened' or e.event = 'clicked' or e.event = 'stored'";
+
+		} else if ($severity == MailgunEvent::SEVERITY_WARN) {
+			$criteria = "e.event = 'complained' or e.event = 'unsubscribed'";
+
+		} else if ($severity == MailgunEvent::SEVERITY_ERROR){
+			$criteria = "e.event = 'rejected' or e.event = 'failed'";
+
+		} else {
+			return null;
+		}
+
+		$qb = $this->createQueryBuilder("e")
+			->where($criteria)
+			->orderBy('e.timestamp ', 'desc');
+
+		if($maxResults > 0){
+			$qb->setMaxResults($maxResults);
+		}
+
+		$q = $qb->getQuery();
+		$results = $q->execute();
+
+		return $results;
 	}
 }
