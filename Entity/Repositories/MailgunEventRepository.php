@@ -182,7 +182,7 @@ class MailgunEventRepository extends EntityRepository{
 			$criteria = "e.event = 'complained' or e.event = 'unsubscribed'";
 
 		} else if ($severity == MailgunEvent::SEVERITY_ERROR){
-			$criteria = "e.event = 'rejected' or e.event = 'failed'";
+			$criteria = "e.event = 'rejected' or e.event = 'failed' or e.event = 'dropped' or e.event = 'bounced'";
 
 		} else {
 			return null;
