@@ -9,9 +9,9 @@ Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable:
             generator:
                 strategy: AUTO
                 
-        eventId:         { type: integer, nullable: false, column: event_id        } # MailgunEvent id
-        variableName:    { type: integer, nullable: false, column: variable_name   } # Name of custom variable
-        content:         { type: json_array, nullable: false,                      } # Content of custom variable 
+        eventId:         { type: integer,                 nullable: false, column: event_id        } # MailgunEvent id
+        variableName:    { type: string,     length: 255, nullable: false, column: variable_name   } # Name of custom variable
+        content:         { type: json_array,              nullable: false,                         } # Content of custom variable 
         
     lifecycleCallbacks: {  }
 
