@@ -144,7 +144,7 @@
 					{% if eventEntry.variables | length > 0 %}
 						<ul>
 						{% for item in eventEntry.variables %}
-							<li>{% if item.variableName != 0 %}{{ item.variableName }} : {% endif %}{{ item.content }}</li>
+							<li>{% if item.variableName != "" %}{{ item.variableName }} : {% endif %}{{ item.content }}</li>
 						{% endfor %}
 						</ul>
 					{% endif %}
