@@ -150,7 +150,13 @@ class MailgunEventController extends Controller
 	}
 
 	public function createFromWebhookAction(Request $request){
-	   	$params = $request->request->all();
+		$paramsPre = $request->request->all();
+	   	$params = array_change_key_case($paramsPre, CASE_LOWER);
+
+	   	if(sizeof($params) != sizeof($paramsPre)){
+	   		$params['params_contained_duplicate_keys'] = $paramsPre;
+	   	}
+
 
 		// validate post-data
 		$key = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX."_".AzineMailgunWebhooksExtension::API_KEY);
@@ -162,8 +168,8 @@ class MailgunEventController extends Controller
 		}
 
 		// drop unused variables
-		if(array_key_exists('X-Mailgun-Sid', $params)){
-			unset($params['X-Mailgun-Sid']);
+		if(array_key_exists('x-mailgun-sid', $params)){
+			unset($params['x-mailgun-sid']);
 		}
 		if(array_key_exists('attachment-count', $params)){
 			unset($params['attachment-count']);
@@ -274,9 +280,9 @@ class MailgunEventController extends Controller
 			unset($params['message-headers']);
 		}
 		// messageId
-		if(array_key_exists('Message-Id', $params)){
-			$event->setMessageId($params['Message-Id']);
-			unset($params['Message-Id']);
+		if(array_key_exists('message-id', $params)){
+			$event->setMessageId($params['message-id']);
+			unset($params['message-id']);
 		}
 		// tag
 		if(array_key_exists('tag', $params)){
