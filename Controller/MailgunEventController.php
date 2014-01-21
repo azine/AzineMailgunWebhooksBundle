@@ -25,8 +25,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 
-use Azine\MailgunWebhooksBundle\Form\MailgunEventType;
-
 /**
  * MailgunEvent controller.
  *
