@@ -14,7 +14,7 @@ class EventSubscriberMock implements EventSubscriberInterface {
     }
 
     public function handleCreate(MailgunWebhookEvent $event){
-
+		return $event->getMailgunEvent();
     }
 
 }

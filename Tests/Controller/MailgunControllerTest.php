@@ -32,7 +32,7 @@ class MailgunControllerTest extends WebTestCase {
 		$crawler = $this->loginUserIfRequired($client, $listUrl);
 		$pageSize = 10;
 		$this->assertEquals($pageSize + 1, $crawler->filter(".eventsTable tr")->count(), "$pageSize Mailgun events (+1 header row) expected on this page ($listUrl)!");
-		$this->assertEquals(1, $crawler->filter("li #eventCount:contains('EventList ($events)')")->count(), "'EventList ($events)' expected on page.", $client);
+		$this->assertEquals(1, $crawler->filter("li #eventCount:contains('EventList ($events)')")->count(), "'EventList ($events)' expected on page.");
 		$this->assertEquals(1, $crawler->filter("li li a:contains('bounced ($bounced)')")->count(), "'bounced ($bounced)' expected on page.");
 		$this->assertEquals(1, $crawler->filter("li li a:contains('dropped ($dropped)')")->count(), "'dropped ($dropped)' expected on page.");
 		$this->assertEquals(1, $crawler->filter("li li a:contains('marked as spam by the user ($spam)')")->count(), "'marked as spam by the user ($spam)' expected on page.");

@@ -26,4 +26,5 @@ Azine\MailgunWebhooksBundle\Entity\MailgunAttachment:
             joinColumn:
                 name: event_id
                 referencedColumnName: id
+                onDelete: CASCADE
     

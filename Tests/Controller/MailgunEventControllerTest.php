@@ -49,7 +49,7 @@ class MailgunEventControllerTest extends WebTestCase {
 		// post valid data to the webhook-url and check the response
 		$webhookdata = json_encode($this->getValidPostData());
 		$crawler = $client->request("POST", $url, $this->getValidPostData());
-		$this->assertEquals(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata");
+		$this->assertEquals(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata\n\n\n".$client->getResponse()->getContent());
 		$this->assertContains("Thanx, for the info.", $crawler->text(), "Response expected.");
 		$this->assertEquals($count + 1, sizeof($eventReop->findAll()), "One new db entry for the webhook expected!");
 
@@ -57,58 +57,17 @@ class MailgunEventControllerTest extends WebTestCase {
 
 
 	private function getValidPostData(){
-		$postData = $this->getPostDataWithoutSignature();
+		$postData = TestHelper::getPostDataWithoutSignature();
 		$postData['signature'] = $this->getValidSignature($postData['token'], $postData['timestamp']);
 		return $postData;
 	}
 
 	private function getInvalidPostData(){
-		$postData = $this->getPostDataWithoutSignature();
+		$postData = TestHelper::getPostDataWithoutSignature();
 		$postData['signature'] = "invalid-signature";
 		return $postData;
 	}
 
-	private function getPostDataWithoutSignature(){
-		return array(
-					'event' => 'delivered',
-					'domain' => 'acme',
-					'timestamp' => time(),
-					'token' => 'c47468e81de0818af77f3e14a728602a29',
-					'X-Mailgun-Sid' => 'irrelevant',
-					'attachment-count' => 'irrelevant',
-					'recipient' => 'someone@email.com',
-					'message-headers' => json_encode(array('some_json' => 'data','Subject' => "this mail was sent because it's important.")),
-					'Message-Id' => "<02be51b250915313fa5fc58a497f8d37@acme.com>",
-					'description' => 'some description',
-					'notification' => 'some notification',
-					'reason' => 'don\'t know the reason',
-					'code' => 123,
-					'ip' => '42.42.42.42',
-					'error' => 'some error',
-					'country' => 'CH',
-					'city' => 'Zurich',
-					'region' => '8000',
-					'campaign-id' => '2014-01-01',
-					'campaign-name' => 'newsletter',
-					'client-name' => 'some client',
-					'client-os' => 'some os',
-					'client-type' => 'some type',
-					'device-type' => 'some device',
-					'mailing-list' => 'no list',
-					'tag' => 'hmmm no tag',
-					'user-agent' => 'Firefox 42',
-					'url' => '',
-					'duplicate-key' => "data1",
-					'Duplicate-key' => "data2",
-					'some-custom-var1' => 'some data1',
-					'some-custom-var2' => 'some data2',
-					'some-custom-var3' => 'some data3',
-					'attachment-1' => new UploadedFile(realpath(__DIR__."/../testAttachment.small.png"), "some.real.file.name1.png"),
-					'attachment-2' => new UploadedFile(realpath(__DIR__."/../testAttachment.small.png"), "some.real.file.name2.png"),
-					'attachment-3' => new UploadedFile(realpath(__DIR__."/../testAttachment.small.png"), "some.real.file.name3.png"),
-
-		);
-	}
 
 	public function testSignature(){
 		$this->checkApplication();
@@ -172,6 +131,7 @@ class MailgunEventControllerTest extends WebTestCase {
 		$this->assertEquals(0, $crawler->filter("#event$eventId")->count(), "The deleted event should not be in the list anymore.");
 
 		// delete the event from list-page
+		$crawler = $client->getCrawler();
 		$link = $crawler->filter(".eventsTable tr .deleteLink")->first()->link();
 		$delUri = $link->getUri();
 		$eventId = substr($delUri, strrpos($delUri, "/") + 1);
@@ -182,6 +142,7 @@ class MailgunEventControllerTest extends WebTestCase {
 		$this->assertEquals(0, $crawler->filter("#event$eventId")->count(), "The deleted event should not be in the list anymore.");
 
 		// filter the list for something
+		$crawler = $client->getCrawler();
 		$form = $crawler->selectButton("Filter")->form();
 		$form['filter[eventType]']->select("delivered");
 		$crawler = $client->submit($form);
@@ -210,6 +171,7 @@ class MailgunEventControllerTest extends WebTestCase {
 		$client->request("GET", $beyondListUrl);
 		$this->assertEquals(302, $client->getResponse()->getStatusCode(), "Expected to be redirected from '$beyondListUrl' to page $maxPage ($maxPageListUrl)");
 		$client->followRedirect();
+		$crawler = $client->getCrawler();
 		$this->assertEquals(2, $crawler->filter(".pagination .disabled:contains('Next')")->count(), "Expected to be on the last page => the next button should be disabled.");
 
     }

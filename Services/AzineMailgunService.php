@@ -29,19 +29,20 @@ class AzineMailgunService {
 	 * Deletes all MailgunEvents of the given type that are older than the ageLimit
 	 * @param string $type
 	 * @param \DateTime $ageLimit
+	 * @return
 	 */
 	public function removeEvents($type = null, \DateTime $ageLimit){
 
 		$qb = $this->manager->createQueryBuilder()
-			->delete()
-			->from("Azine\MailgunWebhooksBundle\Entity\MailgunEvent", "e")
+			->delete("Azine\MailgunWebhooksBundle\Entity\MailgunEvent", "e")
 			->andWhere("e.timestamp < :age")
 			->setParameter("age", $ageLimit->getTimestamp());
 
 		if($type != null){
-			$qb->andWhere("e.type = :type")
+			$qb->andWhere("e.event = :type")
 				->setParameter("type", $type);
 		}
-		$qb->getQuery()->execute();
+
+		return $qb->getQuery()->execute();
 	}
 }
