@@ -17,11 +17,31 @@ class AzineMailgunService {
 		$this->manager = $entityManager;
 	}
 
+	/**
+	 * Deletes all MailgunEvents that are older than the ageLimit
+	 * @param \DateTime $ageLimit
+	 */
 	public function removeOldEventEntries(\DateTime $ageLimit){
 		return $this->removeEvents(null, $ageLimit);
 	}
 
-	public function removeEvents($type, \DateTime $ageLimit){
+	/**
+	 * Deletes all MailgunEvents of the given type that are older than the ageLimit
+	 * @param string $type
+	 * @param \DateTime $ageLimit
+	 */
+	public function removeEvents($type = null, \DateTime $ageLimit){
 
+		$qb = $this->manager->createQueryBuilder()
+			->delete()
+			->from("Azine\MailgunWebhooksBundle\Entity\MailgunEvent", "e")
+			->andWhere("e.timestamp < :age")
+			->setParameter("age", $ageLimit->getTimestamp());
+
+		if($type != null){
+			$qb->andWhere("e.type = :type")
+				->setParameter("type", $type);
+		}
+		$qb->getQuery()->execute();
 	}
 }

@@ -1,6 +1,8 @@
 <?php
 namespace Azine\MailgunWebhooksBundle\Controller;
 
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
@@ -118,7 +120,7 @@ class MailgunEventController extends Controller
 		$eventCount = $this->getRepository()->getEventCount($filter);
 		// validate the page/pageSize and with the total number of result entries
 		if($eventCount > 0 && (($page -1 ) *$pageSize >= $eventCount)){
-			$maxPage = max(1,floor($eventCount / $pageSize));
+			$maxPage = max(1,ceil($eventCount / $pageSize));
 			return $this->redirect($this->generateUrl("mailgunevent_list", array('page' => $maxPage, 'pageSize' => $pageSize))."?".$request->getQueryString());
 		}
 
@@ -325,11 +327,14 @@ class MailgunEventController extends Controller
 				$attachment->setEvent($event);
 				$attachment->setCounter(substr($key,11));
 
-				//
-				$attachment->setContent($content);
-				$attachment->setSize($size);
-				$attachment->setType($type);
-				$attachment->setName($name);
+				// get the file
+				if($value instanceof UploadedFile){}
+				$file = $value;
+
+				$attachment->setContent(file_get_contents($file->getPathname()));
+				$attachment->setSize($file->getSize());
+				$attachment->setType($file->getMimeType());
+				$attachment->setName($file->getFilename());
 
 				$manager->persist($attachment);
 
@@ -348,14 +353,16 @@ class MailgunEventController extends Controller
 		// save all entities
 		try {
 			$manager->flush();
+
+			// Dispatch an event about the logging of a Webhook-call
+			$this->get("event_dispatcher")->dispatch(MailgunEvent::CREATE_EVENT, new MailgunWebhookEvent($event));
+
 		} catch (\Exception $e) {
 			$this->container->get('logger')->warn("AzineMailgunWebhooksBundle: creating entities failed: ".$e->getMessage());
 			$this->container->get('logger')->warn($e->getTraceAsString());
 			return new Response(print_r($params, true), 500);
 		}
 
-		// dispatch event
-		$this->dispatchEvent($event);
 
 		// send response
 		return new Response(print_r($params, true)."Thanx, for the info.", 200);
@@ -406,17 +413,6 @@ class MailgunEventController extends Controller
 		$page = 		$session->get('page', 1);
 		$pageSize =		$session->get('pageSize', 25);
 		return $this->redirect($this->generateUrl('mailgunevent_list', array('page' => $page, 'pageSize' => $pageSize)));
-	}
-
-	/**
-	 * Dispatch an event about the logging of a Webhook-call
-	 * @param MailgunEvent $mailgunEvent
-	 * @param string $name
-	 */
-	private function dispatchEvent(MailgunEvent $mailgunEvent, $name = MailgunEvent::CREATE_EVENT){
-		$eventDispatcher = $this->get("event_dispatcher");
-		$event = new MailgunWebhookEvent($mailgunEvent);
-		$eventDispatcher->dispatch($name, $event);
 	}
 
 }

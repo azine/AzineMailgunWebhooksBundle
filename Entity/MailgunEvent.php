@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class MailgunEvent{
 
-	const CREATE_EVENT = "azine.mailgun.webhooks.event";
+	const CREATE_EVENT = "azine.mailgun.webhooks.event.create";
 	const SEVERITY_INFO = 'info';
 	const SEVERITY_WARN = 'warning';
 	const SEVERITY_ERROR= 'error';
@@ -42,10 +42,7 @@ class MailgunEvent{
 	}
 
 	public function getDateTime(){
-		if($this->getTimestamp()){
-			return new \DateTime("@".$this->getTimestamp());
-		}
-		return null;
+		return new \DateTime("@".$this->getTimestamp());
 	}
 
 	/**

@@ -118,7 +118,18 @@
 					{% if entity.variables | length > 0 %}
 						<ul>
 						{% for item in entity.variables %}
-							<li>{% if item.variableName != "" %}{{ item.variableName }} : {% endif %}{{ item.content }}</li>
+							<li>
+								{% if item.variableName != "" %}
+									{{ item.variableName }} :
+								{% endif %}
+								{% if item.content is iterable %}
+									<pre>
+									    {{ dump(item.content) }}
+									</pre>
+								{% else %}
+									{{ item.content }}
+								{% endif %}
+							</li>
 						{% endfor %}
 						</ul>
 					{% endif %}

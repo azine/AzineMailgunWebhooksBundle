@@ -9,6 +9,7 @@ use Symfony\Component\EventDispatcher\Event;
  */
 
 class MailgunWebhookEvent extends Event {
+
 	private $mailgunEvent;
 
 	public function __construct(MailgunEvent $mailgunEvent){
