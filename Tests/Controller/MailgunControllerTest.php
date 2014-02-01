@@ -2,8 +2,6 @@
 
 namespace Azine\MailgunWebhooksBundle\Tests\Controller;
 
-use Azine\PlatformBundle\Tests\AzineBaseTestWithServices;
-
 use Symfony\Component\DomCrawler\Crawler;
 
 use Symfony\Bundle\FrameworkBundle\Client;
@@ -20,7 +18,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class MailgunControllerTest extends AzineBaseTestWithServices {
+class MailgunControllerTest extends WebTestCase {
 
 	public function testShowOverviewAction(){
 		$this->checkApplication();

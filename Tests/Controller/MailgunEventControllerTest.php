@@ -3,15 +3,11 @@ namespace Azine\MailgunWebhooksBundle\Tests\Controller;
 
 use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
 
-use Azine\MailgunWebhooksBundle\Test\AzineEventSubscriberMock;
-
 use Azine\MailgunWebhooksBundle\Tests\TestHelper;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-
-use Azine\PlatformBundle\Tests\AzineBaseTestWithServices;
 
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -31,7 +27,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class MailgunEventControllerTest extends AzineBaseTestWithServices {
+class MailgunEventControllerTest extends WebTestCase {
 
 	public function testWebHookCreateAndEventDispatching(){
 		$this->checkApplication();
@@ -66,9 +62,9 @@ class MailgunEventControllerTest extends AzineBaseTestWithServices {
 		// post valid data to the webhook-url and check the response
 		$webhookdata = json_encode($this->getValidPostData());
 		$crawler = $client->request("POST", $url, $this->getValidPostData());
-		$this->assertEquals(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata", $client);
-		$this->assertContains("Thanx, for the info.", $crawler->text(), "Response expected.", $client);
-		$this->assertEquals($count + 1, sizeof($eventReop->findAll()), "One new db entry for the webhook expected!", $client);
+		$this->assertEquals(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata");
+		$this->assertContains("Thanx, for the info.", $crawler->text(), "Response expected.");
+		$this->assertEquals($count + 1, sizeof($eventReop->findAll()), "One new db entry for the webhook expected!");
 
 	}
 
@@ -165,7 +161,7 @@ class MailgunEventControllerTest extends AzineBaseTestWithServices {
         $pageSize = 25;
 		$listUrl = substr($this->getRouter()->generate("mailgunevent_list", array('_locale' => "en", 'page' => 1, 'pageSize' => $pageSize, 'clear' => true)), 13);
 		$crawler = $this->loginUserIfRequired($client, $listUrl);
-		$this->assertEquals($pageSize+1, $crawler->filter(".eventsTable tr")->count(), "$pageSize Mailgun events (+1 header row) expected on this page ($listUrl)!", $client);
+		$this->assertEquals($pageSize+1, $crawler->filter(".eventsTable tr")->count(), "$pageSize Mailgun events (+1 header row) expected on this page ($listUrl)!");
 
 		// view a single event
 		$link = $crawler->filter(".eventsTable tr a:first-child")->first()->link();
@@ -173,8 +169,8 @@ class MailgunEventControllerTest extends AzineBaseTestWithServices {
 		$posOfIdStart = strrpos($link->getUri(), "/", -6) +1;
 		$eventId = substr($link->getUri(), $posOfIdStart, $posLastSlash-$posOfIdStart);
 		$crawler = $client->click($link);
-		$this->assertEquals(200, $client->getResponse()->getStatusCode(), "Status 200 expected.", $client);
-		$this->assertEquals($eventId, $crawler->filter("td")->first()->text(), "Content of first td should be the eventId ($eventId)", $client);
+		$this->assertEquals(200, $client->getResponse()->getStatusCode(), "Status 200 expected.");
+		$this->assertEquals($eventId, $crawler->filter("td")->first()->text(), "Content of first td should be the eventId ($eventId)");
 
 		// delete the event from show-page
 		$link = $crawler->selectLink("delete")->link();
@@ -182,7 +178,7 @@ class MailgunEventControllerTest extends AzineBaseTestWithServices {
 		$crawler = $client->followRedirect();
 
 		// check that it is gone from the list
-		$this->assertEquals(0, $crawler->filter("#event$eventId")->count(), "The deleted event should not be in the list anymore.", $client);
+		$this->assertEquals(0, $crawler->filter("#event$eventId")->count(), "The deleted event should not be in the list anymore.");
 
 		// delete the event from list-page
 		$link = $crawler->filter(".eventsTable tr .deleteLink")->first()->link();
@@ -192,13 +188,13 @@ class MailgunEventControllerTest extends AzineBaseTestWithServices {
 		$crawler = $client->followRedirect();
 
 		// check that it is gone from the list
-		$this->assertEquals(0, $crawler->filter("#event$eventId")->count(), "The deleted event should not be in the list anymore.", $client);
+		$this->assertEquals(0, $crawler->filter("#event$eventId")->count(), "The deleted event should not be in the list anymore.");
 
 		// filter the list for something
 		$form = $crawler->selectButton("Filter")->form();
 		$form['filter[eventType]']->select("delivered");
 		$crawler = $client->submit($form);
-		$this->assertEquals($crawler->filter(".eventsTable tr")->count() -1, $crawler->filter(".eventsTable a:contains('delivered')")->count(), "There should only be 'delivered' events in the list", $client);
+		$this->assertEquals($crawler->filter(".eventsTable tr")->count() -1, $crawler->filter(".eventsTable a:contains('delivered')")->count(), "There should only be 'delivered' events in the list");
 
 		// delete entry with xmlHttpRequest
 		$eventToDelete = $eventReop->findOneBy(array());
@@ -221,9 +217,9 @@ class MailgunEventControllerTest extends AzineBaseTestWithServices {
 		$beyondListUrl = $this->getRouter()->generate("mailgunevent_list", array('_locale' => "en", 'page' => $maxPage + 1, 'pageSize' => $pageSize, 'clear' => true));
 		$maxPageListUrl = $this->getRouter()->generate("mailgunevent_list", array('_locale' => "en", 'page' => $maxPage, 'pageSize' => $pageSize, 'clear' => true));
 		$client->request("GET", $beyondListUrl);
-		$this->assertEquals(302, $client->getResponse()->getStatusCode(), "Expected to be redirected from '$beyondListUrl' to page $maxPage ($maxPageListUrl)", $client);
+		$this->assertEquals(302, $client->getResponse()->getStatusCode(), "Expected to be redirected from '$beyondListUrl' to page $maxPage ($maxPageListUrl)");
 		$crawler = $client->followRedirect();
-		$this->assertEquals(2, $crawler->filter(".pagination .disabled:contains('Next')")->count(), "Expected to be on the last page => the next button should be disabled.", $client);
+		$this->assertEquals(2, $crawler->filter(".pagination .disabled:contains('Next')")->count(), "Expected to be on the last page => the next button should be disabled.");
 
     }
 
@@ -261,10 +257,10 @@ class MailgunEventControllerTest extends AzineBaseTestWithServices {
     		$crawler = $client->submit($form);
     	}
 
-   		$this->assertEquals(200, $client->getResponse()->getStatusCode(),"Login failed.", $client);
+   		$this->assertEquals(200, $client->getResponse()->getStatusCode(),"Login failed.");
    		$client->followRedirects(false);
 
-		$this->assertStringEndsWith($url, $client->getRequest()->getUri(), "Login failed or not redirected to requested url: $url vs. ".$client->getRequest()->getUri(), $client);
+		$this->assertStringEndsWith($url, $client->getRequest()->getUri(), "Login failed or not redirected to requested url: $url vs. ".$client->getRequest()->getUri());
     	return $crawler;
     }
 
