@@ -2,11 +2,8 @@
 namespace Azine\MailgunWebhooksBundle\Tests;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 use Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable;
-
 use Azine\MailgunWebhooksBundle\Entity\MailgunAttachment;
-
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Doctrine\ORM\EntityManager;
 

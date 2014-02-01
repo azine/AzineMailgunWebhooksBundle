@@ -3,7 +3,6 @@ namespace Azine\MailgunWebhooksBundle\Tests\Controller;
 
 use Azine\MailgunWebhooksBundle\Tests\TestHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -186,7 +185,7 @@ class MailgunEventControllerTest extends WebTestCase {
     private function loginUserIfRequired(Client $client, $url, $username = "admin", $password = "lkjlkjlkjlkj"){
 
     	// try to get the url
-   		$crawler = $client->followRedirects();
+   		$client->followRedirects();
     	$crawler = $client->request("GET", $url);
 
     	$this->assertEquals(200, $client->getResponse()->getStatusCode(), "Status-Code 200 expected.");
