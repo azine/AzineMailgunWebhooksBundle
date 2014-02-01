@@ -3,9 +3,7 @@
 namespace Azine\MailgunWebhooksBundle\Entity\Repositories;
 
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
-
 use Doctrine\ORM\QueryBuilder;
-
 use Doctrine\ORM\EntityRepository;
 
 /**

@@ -1,30 +1,17 @@
 <?php
 namespace Azine\MailgunWebhooksBundle\Tests\Controller;
 
-use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
-
 use Azine\MailgunWebhooksBundle\Tests\TestHelper;
-
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 use Symfony\Component\DomCrawler\Crawler;
-
 use Symfony\Bundle\FrameworkBundle\Client;
-
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
-
 use Symfony\Component\EventDispatcher\EventDispatcher;
-
 use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
-
 use Doctrine\ORM\EntityManager;
-
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class MailgunEventControllerTest extends WebTestCase {
@@ -133,6 +120,10 @@ class MailgunEventControllerTest extends WebTestCase {
 		$this->assertEquals('cc47468e81de0818af77f3e14a728602a2919b7fc09162e18f76ca12a9f8051d', $sig, "Valid signature expected.");
 	}
 
+	/**
+	 * @param string $token
+	 * @param integer $timestamp
+	 */
 	private function getValidSignature($token, $timestamp){
 		$key = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX."_".AzineMailgunWebhooksExtension::API_KEY);
 		$signature = hash_hmac("SHA256", $timestamp.$token, $key);

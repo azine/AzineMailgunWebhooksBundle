@@ -2,8 +2,6 @@
 
 namespace Azine\MailgunWebhooksBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * MailgunAttachment
  */

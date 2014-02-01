@@ -3,19 +3,12 @@
 namespace Azine\MailgunWebhooksBundle\Tests\Controller;
 
 use Symfony\Component\DomCrawler\Crawler;
-
 use Symfony\Bundle\FrameworkBundle\Client;
-
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
-
 use Symfony\Component\EventDispatcher\EventDispatcher;
-
 use Doctrine\ORM\EntityManager;
-
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class MailgunControllerTest extends WebTestCase {
@@ -118,14 +111,6 @@ class MailgunControllerTest extends WebTestCase {
 	private function getEntityManager(){
 		return $this->getContainer()->get('doctrine.orm.entity_manager');
 	}
-
-	/**
-	 * @return EventDispatcher
-	 */
-	private function getEventDispatcher(){
-		return $this->getContainer()->get("event_dispatcher");
-	}
-
 
 	/**
 	 * Check if the current setup is a full application.

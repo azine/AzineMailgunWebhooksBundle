@@ -2,13 +2,8 @@
 namespace Azine\MailgunWebhooksBundle\Tests\DependencyInjection;
 
 use Symfony\Component\Yaml\Parser;
-
 use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
-
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader;
 
 /**
  * This is the class that loads and manages your bundle configuration
@@ -102,7 +97,7 @@ EOF;
 	}
 
 	/**
-	 * @param mixed  $value
+	 * @param string  $value
 	 * @param string $key
 	 */
 	private function assertParameter($value, $key){

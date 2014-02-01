@@ -2,12 +2,14 @@
 namespace Azine\MailgunWebhooksBundle\Tests;
 
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
-
 use Doctrine\ORM\EntityManager;
 
 
 class TestHelper {
 
+    /**
+     * @param integer $count
+     */
     public static function addMailgunEvents(EntityManager $manager, $count, $mailgunApiKey){
     	$eventTypes = array('delivered', 'bounced', 'opened', 'dropped');
     	while ($count > 0){
