@@ -57,7 +57,7 @@ class MailgunControllerTest extends WebTestCase {
     private function loginUserIfRequired(Client $client, $url, $username = "admin", $password = "lkjlkjlkjlkj"){
 
     	// try to get the url
-   		$crawler = $client->followRedirects();
+   		$client->followRedirects();
     	$crawler = $client->request("GET", $url);
 
     	$this->assertEquals(200, $client->getResponse()->getStatusCode(), "Status-Code 200 expected.");
