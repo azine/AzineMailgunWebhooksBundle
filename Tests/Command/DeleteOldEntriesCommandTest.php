@@ -8,11 +8,6 @@ use Symfony\Component\Console\Application;
 
 class DeleteOldEntriesCommandTest extends \PHPUnit_Framework_TestCase {
 
-	protected function setUp(){
-		parent::setUp();
-		date_default_timezone_set("Europe/Berlin");
-	}
-
 	public function testHelpInfo() {
 		$application = new Application();
 		$application->add(new DeleteOldEntriesCommand());
@@ -33,12 +28,7 @@ class DeleteOldEntriesCommandTest extends \PHPUnit_Framework_TestCase {
 		$date = new \DateTime("60 days ago");
 
 		$mailgunServiceMock = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\AzineMailgunService")->disableOriginalConstructor()->getMock();
-		$mailgunServiceMock->expects($this->once())->method("removeEvents")->will($this->returnCallback(function($type2, $date2){
-			$date = new \DateTime("60 days ago");
-			$this->assertEquals($date->getTimestamp(), $date2->getTimestamp());
-			$this->assertEquals(null, $type2);
-			return 19;
-		}));
+		$mailgunServiceMock->expects($this->once())->method("removeEvents")->with($type, $date)->will($this->returnValue($count));
 		$containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->disableOriginalConstructor()->getMock();
 		$containerMock->expects($this->once())->method("get")->with("azine_mailgun.service")->will($this->returnValue($mailgunServiceMock));
 
@@ -94,12 +84,7 @@ class DeleteOldEntriesCommandTest extends \PHPUnit_Framework_TestCase {
 
 
 	    $mailgunServiceMock = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\AzineMailgunService")->disableOriginalConstructor()->getMock();
-	    $mailgunServiceMock->expects($this->once())->method("removeEvents")->will($this->returnCallback(function($type2, $date2){
-			$date = new \DateTime("21 days ago");
-			$this->assertEquals($date->getTimestamp(), $date2->getTimestamp());
-			$this->assertEquals("opened", $type2);
-			return 19;
-		}));
+	    $mailgunServiceMock->expects($this->once())->method("removeEvents")->with($type, $date)->will($this->returnValue($count));
 	    $containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->disableOriginalConstructor()->getMock();
 	    $containerMock->expects($this->once())->method("get")->with("azine_mailgun.service")->will($this->returnValue($mailgunServiceMock));
 
