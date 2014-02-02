@@ -26,6 +26,7 @@ class DeleteOldEntriesCommandTest extends \PHPUnit_Framework_TestCase {
 		$count = 19;
 		$type = null;
 		$date = new \DateTime("60 days ago");
+		$date->setTimezone(new \DateTimeZone("CET"));
 
 		$mailgunServiceMock = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\AzineMailgunService")->disableOriginalConstructor()->getMock();
 		$mailgunServiceMock->expects($this->once())->method("removeEvents")->with($type, $date)->will($this->returnValue($count));
@@ -81,6 +82,7 @@ class DeleteOldEntriesCommandTest extends \PHPUnit_Framework_TestCase {
 	    $type = "opened";
 	    $dateString = "21 days ago";
 	    $date = new \DateTime($dateString);
+	    $date->setTimezone(new \DateTimeZone("CET"));
 
 
 	    $mailgunServiceMock = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\AzineMailgunService")->disableOriginalConstructor()->getMock();
