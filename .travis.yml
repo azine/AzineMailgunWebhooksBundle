@@ -1,6 +1,7 @@
 language: php
 
 php:
+  - 5.3.3
   - 5.3
   - 5.4
   - 5.5
@@ -8,12 +9,13 @@ php:
 env:
   - SYMFONY_VERSION=2.2.*
   - SYMFONY_VERSION=2.3.*
+  - SYMFONY_VERSION=2.4.*
   - SYMFONY_VERSION=dev-master
 
 before_script: 
-  - composer self-update
-  - composer require symfony/framework-bundle:${SYMFONY_VERSION} --no-update --dev
-  - composer install --dev --prefer-source -vv
+    - composer update --dev --prefer-source
+    - composer install
+    - composer require symfony/framework-bundle:${SYMFONY_VERSION} --prefer-source
 
 script: 
   - phpunit --coverage-text --coverage-clover=coverage.clover /home/travis/build/azine/AzineMailgunWebhooksBundle/Tests/
@@ -23,8 +25,5 @@ script:
 notifications:
   email: travis@azine-it.ch
 
-matrix:
-  allow_failures:
-    - env: SYMFONY_VERSION=dev-master
 
 
