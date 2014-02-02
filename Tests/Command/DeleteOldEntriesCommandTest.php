@@ -38,10 +38,7 @@ class DeleteOldEntriesCommandTest extends \PHPUnit_Framework_TestCase {
 		$display = $tester->getDisplay();
 		$this->assertContains("deleting entries of any type.", $display);
 		$this->assertContains("using default age-limit of '60 days ago'.", $display);
-		$this
-				->assertContains(
-						"All MailgunEvents (& their CustomVariables & Attachments) older than " . $date->format("Y-m-d H:i:s")
-								. " of any type have been deleted ($count).", $display);
+		$this->assertContains("All MailgunEvents (& their CustomVariables & Attachments) older than " . $date->format("Y-m-d H:i:s") . " of any type have been deleted ($count).", $display);
 
 	}
 
