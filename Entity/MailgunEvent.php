@@ -26,8 +26,8 @@ class MailgunEvent{
 	/**
 	 * Set messageHeaders
 	 *
-	 * @param array $messageHeaders
-	 * @return MailgunEvent
+	 * @param string $messageHeaders
+	 * @return \Azine\MailgunWebhooksBundle\Entity\MailgunEvent
 	 */
 	public function setMessageHeaders($messageHeaders){
 		$headers = json_decode($messageHeaders);

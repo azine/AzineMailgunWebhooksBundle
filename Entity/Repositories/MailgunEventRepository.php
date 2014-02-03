@@ -159,7 +159,6 @@ class MailgunEventRepository extends EntityRepository{
 		if($getMoreCounter > 0){
 
 			$infos = $this->getEventsBySeverity(MailgunEvent::SEVERITY_INFO, $count);
-			$getMoreCounter = $getMoreCounter - sizeof($infos);
 			$results = array_merge($results, $infos);
 
 		}

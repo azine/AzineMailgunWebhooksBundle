@@ -68,8 +68,8 @@ class MailgunControllerTest extends WebTestCase {
 
     		$crawler = $crawler->selectButton("Login");
     		$form = $crawler->form();
-    		$form['_username'] = $username;
-    		$form['_password'] = $password;
+    		$form->get('_username')->setValue($username);
+    		$form->get('_password')->setValue($password);
     		$crawler = $client->submit($form);
     	}
 

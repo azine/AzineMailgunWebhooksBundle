@@ -23,8 +23,12 @@ class MailgunEventController extends Controller
 	/**
 	 * Lists all MailgunEvent entities.
 	 *
+	 * @param Request $request
+	 * @param integer $page
+	 * @param integer $pageSize
+	 * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
 	 */
-	public function indexAction($page, $pageSize)	{
+	public function indexAction(Request $request, $page, $pageSize)	{
 		$params = array();
 
 		// get general filter options
@@ -36,7 +40,6 @@ class MailgunEventController extends Controller
 		);
 
 		// get filter criteria from session
-		$request = $this->getRequest();
 		$session = $request->getSession();
 		$page = 		$session->get('page', $page);
 		$pageSize =		$session->get('pageSize', $pageSize);
@@ -395,7 +398,7 @@ class MailgunEventController extends Controller
 			return new JsonResponse(array("success" => true));
 		}
 
-		$session = $this->getRequest()->getSession();
+		$session = $request->getSession();
 		$page = 		$session->get('page', 1);
 		$pageSize =		$session->get('pageSize', 25);
 		return $this->redirect($this->generateUrl('mailgunevent_list', array('page' => $page, 'pageSize' => $pageSize)));

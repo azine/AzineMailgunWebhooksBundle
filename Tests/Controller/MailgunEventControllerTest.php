@@ -41,7 +41,7 @@ class MailgunEventControllerTest extends WebTestCase {
 		$webhookdata = json_encode($this->getInvalidPostData());
 		$crawler = $client->request("POST", $url, $this->getInvalidPostData());
 
-		$this->assertEquals(401, $client->getResponse()->getStatusCode(), "Response-Code 401 expected for invalid signature:");
+		$this->assertEquals(401, $client->getResponse()->getStatusCode(), "Response-Code 401 expected for post-data with invalid signature: \n\n$webhookdata\n\n\n");
 		$this->assertContains("Signature verification failed.", $crawler->text(), "Response expected.");
 		$this->assertEquals($count, sizeof($eventReop->findAll()), "No new db entry for the webhook expected!");
 
@@ -150,17 +150,17 @@ class MailgunEventControllerTest extends WebTestCase {
 		// delete entry with xmlHttpRequest
 		$eventToDelete = $eventReop->findOneBy(array());
 		$ajaxUrl = $this->getRouter()->generate("mailgunevent_delete_ajax");
-		$crawler = $client->request("POST", $ajaxUrl, array('eventId' => $eventToDelete->getId()), array(), array('HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'));
+		$client->request("POST", $ajaxUrl, array('eventId' => $eventToDelete->getId()), array(), array('HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'));
 		$this->assertEquals('{"success":true}', $client->getResponse()->getContent(), "JSON response expcted.");
 
 		// show/delete inexistent log entry
 		$inexistentEventId = md5("123invalid");
 		$url = $this->getRouter()->generate("mailgunevent_delete", array("eventId" => $inexistentEventId));
-		$crawler = $client->request("GET", $url);
+		$client->request("GET", $url);
 		$this->assertEquals(404, $client->getResponse()->getStatusCode(), "404 expected for invalid eventId ($inexistentEventId).");
 
 		$url = $this->getRouter()->generate("mailgunevent_show", array("id" => $inexistentEventId));
-		$crawler = $client->request("GET", $url);
+		$client->request("GET", $url);
 		$this->assertEquals(404, $client->getResponse()->getStatusCode(), "404 expected.");
 
 		// show inexistent page
@@ -204,9 +204,9 @@ class MailgunEventControllerTest extends WebTestCase {
 
     		$crawler = $crawler->selectButton("Login");
     		$form = $crawler->form();
-    		$form['_username'] = $username;
-    		$form['_password'] = $password;
-    		$crawler = $client->submit($form);
+    		$form->get('_username')->setValue($username);
+    		$form->get('_password')->setValue($password);
+			$crawler = $client->submit($form);
     	}
 
    		$this->assertEquals(200, $client->getResponse()->getStatusCode(),"Login failed.");
