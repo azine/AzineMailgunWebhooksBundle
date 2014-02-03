@@ -2,7 +2,6 @@
 namespace Azine\MailgunWebhooksBundle\Controller;
 
 use Doctrine\ORM\EntityManager;
-
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;

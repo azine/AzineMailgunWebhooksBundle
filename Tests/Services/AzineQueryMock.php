@@ -8,6 +8,7 @@ use Doctrine\ORM\AbstractQuery;
  */
 class AzineQueryMock extends AbstractQuery {
 
+	// @codeCoverageIgnoreStart
 	private $result;
 
 	public function __construct($result){
@@ -15,11 +16,11 @@ class AzineQueryMock extends AbstractQuery {
 	}
 
 	protected function _doExecute(){
-		return;
+		return $this->result;
 	}
 
 	public function execute($parameters = null, $hydrationMode = null){
-		return $this->result;
+		return $this->_doExecute();
 	}
 
 

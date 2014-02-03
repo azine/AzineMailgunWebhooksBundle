@@ -44,6 +44,7 @@ class DeleteOldEntriesCommandTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @param Application $application
 	 * @return DeleteOldEntriesCommand
 	 */
 	private function getDeleteOldEntriesCommand($application){
