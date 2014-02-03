@@ -1,6 +1,8 @@
 <?php
 namespace Azine\MailgunWebhooksBundle\Controller;
 
+use Doctrine\ORM\EntityManager;
+
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
@@ -164,7 +166,26 @@ class MailgunEventController extends Controller
 			unset($params['attachment-count']);
 		}
 
-		// create event & populate with supplied data
+		try {
+			// create event & populate with supplied data
+			$this->createEvent($params);
+
+		} catch (\Exception $e) {
+			$this->container->get('logger')->warn("AzineMailgunWebhooksBundle: creating entities failed: ".$e->getMessage());
+			$this->container->get('logger')->warn($e->getTraceAsString());
+			return new Response("AzineMailgunWebhooksBundle: creating entities failed: ".$e->getMessage(), 500);
+		}
+
+		// send response
+		return new Response(print_r($params, true)."Thanx, for the info.", 200);
+
+	}
+
+	/**
+	 * Map all params to MailgunEvent-fields and MailgunAttachments and MailgunCustomVariables
+	 * @param EntityManager $params
+	 */
+	private function createEvent(array $params){
 		$event = new MailgunEvent();
 
 		// event
@@ -340,21 +361,10 @@ class MailgunEventController extends Controller
 		}
 
 		// save all entities
-		try {
-			$manager->flush();
+		$manager->flush();
 
-			// Dispatch an event about the logging of a Webhook-call
-			$this->get("event_dispatcher")->dispatch(MailgunEvent::CREATE_EVENT, new MailgunWebhookEvent($event));
-
-		} catch (\Exception $e) {
-			$this->container->get('logger')->warn("AzineMailgunWebhooksBundle: creating entities failed: ".$e->getMessage());
-			$this->container->get('logger')->warn($e->getTraceAsString());
-			return new Response("AzineMailgunWebhooksBundle: creating entities failed: ".$e->getMessage(), 500);
-		}
-
-
-		// send response
-		return new Response(print_r($params, true)."Thanx, for the info.", 200);
+		// Dispatch an event about the logging of a Webhook-call
+		$this->get("event_dispatcher")->dispatch(MailgunEvent::CREATE_EVENT, new MailgunWebhookEvent($event));
 	}
 
 	/**
