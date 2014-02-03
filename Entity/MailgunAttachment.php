@@ -7,6 +7,13 @@ namespace Azine\MailgunWebhooksBundle\Entity;
  */
 class MailgunAttachment{
 
+	/**
+	 * @param MailgunEvent $event
+	 */
+	public function __construct(MailgunEvent $event){
+		$this->setEvent($event);
+	}
+
 	///////////////////////////////////////////////////////////////////
 	// generated stuff only below this line.
 	// @codeCoverageIgnoreStart

@@ -332,8 +332,7 @@ class MailgunEventController extends Controller
 
 			if(strpos($key, "attachment-") === 0 ){
 				// create event attachments
-				$attachment = new MailgunAttachment();
-				$attachment->setEvent($event);
+				$attachment = new MailgunAttachment($event);
 				$attachment->setCounter(substr($key,11));
 
 				// get the file
@@ -349,8 +348,7 @@ class MailgunEventController extends Controller
 
 			} else {
 				// create custom-variables for event
-				$customVar = new MailgunCustomVariable();
-				$customVar->setEvent($event);
+				$customVar = new MailgunCustomVariable($event);
 				$customVar->setVariableName($key);
 				$customVar->setContent($value);
 

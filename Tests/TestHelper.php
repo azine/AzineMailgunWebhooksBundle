@@ -48,8 +48,7 @@ class TestHelper {
 			$manager->persist($e);
 
  			$file =  new UploadedFile(realpath(__DIR__."/testAttachment.small.png"), "some.real.file.name1.png");
-			$attachment = new MailgunAttachment();
-			$attachment->setEvent($e);
+			$attachment = new MailgunAttachment($e);
 			$attachment->setContent(file_get_contents($file->getRealPath()));
 			$attachment->setName(md5(time()+rand(0,100)).".".$file->getClientOriginalExtension());
 			$attachment->setSize($file->getSize());
@@ -57,24 +56,21 @@ class TestHelper {
 			$attachment->setCounter(1);
  			$manager->persist($attachment);
 
-// 			$attachment = new MailgunAttachment();
-// 			$attachment->setEvent($e);
-// 			$attachment->setContent(file_get_contents($file->getRealPath()));
-// 			$attachment->setName(md5(time()+rand(0,100)).".".$file->getClientOriginalExtension());
-// 			$attachment->setSize($file->getSize());
-// 			$attachment->setType($file->getType());
-// 			$attachment->setCounter(2);
-// 			$manager->persist($attachment);
+			$attachment = new MailgunAttachment($e);
+			$attachment->setContent(file_get_contents($file->getRealPath()));
+			$attachment->setName(md5(time()+rand(0,100)).".".$file->getClientOriginalExtension());
+			$attachment->setSize($file->getSize());
+			$attachment->setType($file->getType());
+			$attachment->setCounter(2);
+			$manager->persist($attachment);
 
-			$variable = new MailgunCustomVariable();
-			$variable->setEvent($e);
+			$variable = new MailgunCustomVariable($e);
 			$variable->setEventId($e->getId());
 			$variable->setContent(array('some data1'));
 			$variable->setVariableName('some custom variable for event'.$e->getId());
 			$manager->persist($variable);
 
-			$variable = new MailgunCustomVariable();
-			$variable->setEvent($e);
+			$variable = new MailgunCustomVariable($e);
 			$variable->setEventId($e->getId());
 			$variable->setContent(array('some data2'));
 			$variable->setVariableName('some custom variable for event'.$e->getId());
