@@ -25,12 +25,10 @@ class DeleteOldEntriesCommandTest extends \PHPUnit_Framework_TestCase {
 
 
 		$mailgunServiceMock = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\AzineMailgunService")->disableOriginalConstructor()->getMock();
-		$mailgunServiceMock->expects($this->once())->method("removeEvents")->will($this->returnCallback(function ($type, $date){
-			self::assertEquals(null, $type, "type null expected.");
-			$checkDate = new \DateTime("60 days ago");
-			self::assertEquals($checkDate->format("Y-m-d H:i"), $date->format("Y-m-d H:i"), "wrong date.");
-			return 19;
-		}));
+		self::$days = 60;
+		self::$count = 14;
+		self::$type = null;
+		$mailgunServiceMock->expects($this->once())->method("removeEvents")->will($this->returnCallback(array($this, "removeEventsCallback")));
 
 		$containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->disableOriginalConstructor()->getMock();
 		$containerMock->expects($this->once())->method("get")->with("azine_mailgun.service")->will($this->returnValue($mailgunServiceMock));
@@ -43,8 +41,19 @@ class DeleteOldEntriesCommandTest extends \PHPUnit_Framework_TestCase {
 		$this->assertContains("deleting entries of any type.", $display);
 		$this->assertContains("using default age-limit of '60 days ago'.", $display);
 	    $this->assertContains("All MailgunEvents (& their CustomVariables & Attachments) older than", $display);
-	    $this->assertContains("of any type have been deleted (19).", $display);
+	    $this->assertContains("of any type have been deleted (14).", $display);
 
+	}
+
+	public static $days;
+	public static $count;
+	public static $type;
+
+	public static function removeEventsCallback($type, $date){
+			$checkDate = new \DateTime(self::$days." days ago");
+			self::assertEquals(self::$type, $type, "type null expected.");
+			self::assertEquals($checkDate->format("Y-m-d H:i"), $date->format("Y-m-d H:i"), "wrong date.");
+			return self::$count;
 	}
 
 	/**
@@ -61,12 +70,10 @@ class DeleteOldEntriesCommandTest extends \PHPUnit_Framework_TestCase {
 	    $command = $this->getDeleteOldEntriesCommand($application);
 
 	    $mailgunServiceMock = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\AzineMailgunService")->disableOriginalConstructor()->getMock();
-		$mailgunServiceMock->expects($this->once())->method("removeEvents")->will($this->returnCallback(function ($type, $date){
-			self::assertEquals(null, $type, "type null expected.");
-			$checkDate = new \DateTime("21 days ago");
-			self::assertEquals($checkDate->format("Y-m-d H:i"), $date->format("Y-m-d H:i"), "wrong date.");
-			return 11;
-		}));
+		self::$days = 21;
+		self::$count = 11;
+		self::$type = null;
+		$mailgunServiceMock->expects($this->once())->method("removeEvents")->will($this->returnCallback(array($this, "removeEventsCallback")));
 
 	    $containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->disableOriginalConstructor()->getMock();
 	    $containerMock->expects($this->once())->method("get")->with("azine_mailgun.service")->will($this->returnValue($mailgunServiceMock));
@@ -86,28 +93,22 @@ class DeleteOldEntriesCommandTest extends \PHPUnit_Framework_TestCase {
 	    $application->add(new DeleteOldEntriesCommand());
 	    $command = $this->getDeleteOldEntriesCommand($application);
 
-	    $count = 19;
-	    $type = "opened";
-	    $dateString = "21 days ago";
-
 
 	    $mailgunServiceMock = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\AzineMailgunService")->disableOriginalConstructor()->getMock();
-		$mailgunServiceMock->expects($this->once())->method("removeEvents")->will($this->returnCallback(function ($type, $date){
-			self::assertEquals("opened", $type, "type null expected.");
-			$checkDate = new \DateTime("21 days ago");
-			self::assertEquals($checkDate->format("Y-m-d H:i"), $date->format("Y-m-d H:i"), "wrong date.");
-			return 19;
-		}));
+		self::$days = 33;
+		self::$count = 77;
+		self::$type = "opened";
+		$mailgunServiceMock->expects($this->once())->method("removeEvents")->will($this->returnCallback(array($this, "removeEventsCallback")));
 
 	    $containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->disableOriginalConstructor()->getMock();
 	    $containerMock->expects($this->once())->method("get")->with("azine_mailgun.service")->will($this->returnValue($mailgunServiceMock));
 
 	    $command->setContainer($containerMock);
 	    $tester = new CommandTester($command);
-	    $tester->execute(array("date" => $dateString, "type" => $type));
+	    $tester->execute(array("date" => "33 days ago", "type" => self::$type));
 	    $display = $tester->getDisplay();
 	    $this->assertContains("All MailgunEvents (& their CustomVariables & Attachments) older than", $display);
-	    $this->assertContains("of type '$type' have been deleted (19).", $display);
+	    $this->assertContains("of type '".self::$type."' have been deleted (77).", $display);
 	}
 
 	/**
@@ -119,15 +120,11 @@ class DeleteOldEntriesCommandTest extends \PHPUnit_Framework_TestCase {
 		$application->add(new DeleteOldEntriesCommand());
 		$command = $this->getDeleteOldEntriesCommand($application);
 
-		$count = 19;
-		$type = "invalidType";
-		$dateString = "21 days ago";
-		$date = new \DateTime($dateString);
-
 		$containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->disableOriginalConstructor()->getMock();
+		$containerMock->expects($this->never())->method("get");
 
 		$command->setContainer($containerMock);
 		$tester = new CommandTester($command);
-		$tester->execute(array("date" => $dateString, "type" => $type));
+		$tester->execute(array("date" => "33 days ago", "type" => "invalidType"));
 	}
 }
