@@ -124,7 +124,7 @@
 								{% endif %}
 								{% if item.content is iterable %}
 									<pre>
-									    {{ dump(item.content) }}
+										{{ item.content | printArray }}
 									</pre>
 								{% else %}
 									{{ item.content }}

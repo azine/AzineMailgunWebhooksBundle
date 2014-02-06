@@ -147,7 +147,7 @@
 							<li>{% if item.variableName != "" %} {{ item.variableName }} : {% endif %}
 								{% if item.content is iterable %}
 									<pre>
-									    {{ dump(item.content) }}
+									    {{ item.content | printArray }}
 									</pre>
 								{% else %}
 									{{ item.content }}
