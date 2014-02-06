@@ -26,7 +26,10 @@ class AzineMailgunServiceTest extends \PHPUnit_Framework_TestCase {
 		$em = $this->getMockBuilder("Doctrine\ORM\EntityManager")->disableOriginalConstructor()->getMock();
 		$em->expects($this->once())->method("createQueryBuilder")->will($this->returnValue($qb));
 
-		$amgs = new AzineMailgunService($em);
+		$registry = $this->getMockBuilder("Doctrine\Bundle\DoctrineBundle\Registry")->disableOriginalConstructor()->getMock();
+		$registry->expects($this->once())->method("getManager")->will($this->returnValue($em));
+
+		$amgs = new AzineMailgunService($registry);
 		$amgs->removeOldEventEntries($ageLimit);
 
 	}
@@ -48,8 +51,10 @@ class AzineMailgunServiceTest extends \PHPUnit_Framework_TestCase {
 		$em = $this->getMockBuilder("Doctrine\ORM\EntityManager")->disableOriginalConstructor()->getMock();
 		$em->expects($this->once())->method("createQueryBuilder")->will($this->returnValue($qb));
 
+		$registry = $this->getMockBuilder("Doctrine\Bundle\DoctrineBundle\Registry")->disableOriginalConstructor()->getMock();
+		$registry->expects($this->once())->method("getManager")->will($this->returnValue($em));
 
-		$amgs = new AzineMailgunService($em);
+		$amgs = new AzineMailgunService($registry);
 		$amgs->removeEvents($type, $ageLimit);
 
 	}

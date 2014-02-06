@@ -1,7 +1,7 @@
 <?php
 namespace Azine\MailgunWebhooksBundle\Services;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
  * @author Dominik Businger
@@ -9,12 +9,12 @@ use Doctrine\ORM\EntityManager;
 class AzineMailgunService {
 
 	/**
-	 * @var EntityManager
+	 * @var ManagerRegistry
 	 */
-	private $manager;
+	private $managerRegistry;
 
-	public function __construct(EntityManager $entityManager){
-		$this->manager = $entityManager;
+	public function __construct(ManagerRegistry $managerRegistry) {
+		$this->managerRegistry = $managerRegistry;
 	}
 
 	/**
@@ -33,7 +33,7 @@ class AzineMailgunService {
 	 */
 	public function removeEvents($type = null, \DateTime $ageLimit){
 
-		$qb = $this->manager->createQueryBuilder()
+		$qb = $this->managerRegistry->getManager()->createQueryBuilder()
 			->delete("Azine\MailgunWebhooksBundle\Entity\MailgunEvent", "e")
 			->andWhere("e.timestamp < :age")
 			->setParameter("age", $ageLimit->getTimestamp());

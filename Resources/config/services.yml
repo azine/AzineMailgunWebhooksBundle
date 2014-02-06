@@ -4,4 +4,4 @@ services:
     azine_mailgun.service:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunService
         arguments: 
-          entityManager:      "@doctrine.orm.entity_manager"
+          managerRegistry:      "@doctrine"
