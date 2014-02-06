@@ -5,3 +5,11 @@ services:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunService
         arguments: 
           managerRegistry:      "@doctrine"
+
+    azine.email.text.wrap.filter:
+        class: Azine\MailgunWebhooksBundle\Services\AzineMailgunlTwigExtension 
+        public: false
+        tags:
+            - { name: twig.extension }
+        
+          
