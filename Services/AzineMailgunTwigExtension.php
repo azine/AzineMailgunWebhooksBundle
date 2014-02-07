@@ -1,7 +1,7 @@
 <?php
 namespace Azine\MailgunWebhooksBundle\Services;
 
-class AzineMailgunlTwigExtension extends \Twig_Extension
+class AzineMailgunTwigExtension extends \Twig_Extension
 {
 	public function __construct()
 	{

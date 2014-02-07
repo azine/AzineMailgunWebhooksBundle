@@ -6,8 +6,8 @@ services:
         arguments: 
           managerRegistry:      "@doctrine"
 
-    azine.email.text.wrap.filter:
-        class: Azine\MailgunWebhooksBundle\Services\AzineMailgunlTwigExtension 
+    azine.mailgun.webhooks.bundle.twig.filters:
+        class: Azine\MailgunWebhooksBundle\Services\AzineMailgunTwigExtension 
         public: false
         tags:
             - { name: twig.extension }
