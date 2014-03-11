@@ -11,28 +11,28 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class AzineMailgunWebhooksExtension extends Extension{
+class AzineMailgunWebhooksExtension extends Extension
+{
+    const PREFIX = "azine_mailgun_webhooks";
+    const API_KEY = "api_key";
+    const PUBLIC_API_KEY = "public_api_key";
 
-	const PREFIX = "azine_mailgun_webhooks";
-	const API_KEY = "api_key";
-	const PUBLIC_API_KEY = "public_api_key";
+    /**
+     * {@inheritDoc}
+     */
+    public function load(array $configs, ContainerBuilder $container)
+    {
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function load(array $configs, ContainerBuilder $container)
-	{
-		$configuration = new Configuration();
-		$config = $this->processConfiguration($configuration, $configs);
+        if(array_key_exists(self::API_KEY, $config))
+            $container->setParameter(self::PREFIX."_".self::API_KEY, $config[self::API_KEY]);
 
-		if(array_key_exists(self::API_KEY, $config))
-			$container->setParameter(self::PREFIX."_".self::API_KEY, $config[self::API_KEY]);
+        if(array_key_exists(self::PUBLIC_API_KEY, $config))
+            $container->setParameter(self::PREFIX."_".self::PUBLIC_API_KEY, $config[self::PUBLIC_API_KEY]);
 
-		if(array_key_exists(self::PUBLIC_API_KEY, $config))
-			$container->setParameter(self::PREFIX."_".self::PUBLIC_API_KEY, $config[self::PUBLIC_API_KEY]);
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.yml');
 
-		$loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-		$loader->load('services.yml');
-
-	}
+    }
 }

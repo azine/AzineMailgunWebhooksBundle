@@ -21,11 +21,10 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root(AzineMailgunWebhooksExtension::PREFIX);
 
         $rootNode
-        	->children()
-	        	->scalarNode(AzineMailgunWebhooksExtension::API_KEY)->isRequired()->cannotBeEmpty()->info("Your api-key for mailgun => see https://mailgun.com/cp")->end()
-	        	->scalarNode(AzineMailgunWebhooksExtension::PUBLIC_API_KEY)->defaultValue("")->info("Your public-api-key for mailgun => see https://mailgun.com/cp")->end()
-	        ->end();
-
+            ->children()
+                ->scalarNode(AzineMailgunWebhooksExtension::API_KEY)->isRequired()->cannotBeEmpty()->info("Your api-key for mailgun => see https://mailgun.com/cp")->end()
+                ->scalarNode(AzineMailgunWebhooksExtension::PUBLIC_API_KEY)->defaultValue("")->info("Your public-api-key for mailgun => see https://mailgun.com/cp")->end()
+            ->end();
 
         return $treeBuilder;
     }

@@ -3,12 +3,12 @@ Azine\MailgunWebhooksBundle\Entity\MailgunEvent:
     table: mailgun_event
     repositoryClass: Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository
     fields:
-        id:            
+        id:
             type: integer
             id: true
             generator:
                 strategy: AUTO
-                
+
         event:           {type: string,     length:  63, nullable: false                                } # Mailgun Field-Description: Event name (“opened”).
         domain:          {type: string,     length: 255, nullable: false                                } # Mailgun Field-Description: Domain that sent the message.
         description:     {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: Detailed explanation of why the messages was dropped
@@ -19,18 +19,18 @@ Azine\MailgunWebhooksBundle\Entity\MailgunEvent:
         ip:              {type: string,     length:  15, nullable: true                                 } # Mailgun Field-Description: IP address the event originated from.
         error:           {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: SMTP bounce error string.
         country:         {type: string,     length:   2, nullable: true                                 } # Mailgun Field-Description: Two-letter country code (as specified by ISO3166) the event came from or ‘unknown’ if it couldn’t be determined.
-        city:            {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: Name of the city the event came from or ‘unknown’ if it couldn’t be determined. 
+        city:            {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: Name of the city the event came from or ‘unknown’ if it couldn’t be determined.
         region:          {type: string,     length:   2, nullable: true                                 } # Mailgun Field-Description: Two-letter or two-digit region code or ‘unknown’ if it couldn’t be determined.
-        campaignId:      {type: string,     length: 255, nullable: true,    column: campaign_id         } # Mailgun Field-Description: The id of campaign triggering the event. 
+        campaignId:      {type: string,     length: 255, nullable: true,    column: campaign_id         } # Mailgun Field-Description: The id of campaign triggering the event.
         campaignName:    {type: string,     length: 255, nullable: true,    column: campaign_name       } # Mailgun Field-Description: The name of campaign triggering the event.
-        clientName:      {type: string,     length: 255, nullable: true,    column: client_name         } # Mailgun Field-Description: Name of the client sofware, e.g. ‘Thunderbird’, ‘Chrome’, ‘Firefox’. 
-        clientOs:        {type: string,     length: 255, nullable: true,    column: client_os           } # Mailgun Field-Description: OS family running the client sofware, e.g. ‘Linux’, ‘Windows’, ‘OSX’. 
-        clientType:      {type: string,     length:  31, nullable: true,    column: client_type         } # Mailgun Field-Description: Type of software the unsubscribe link was clicked in, e.g. ‘browser’, ‘mobile browser’, ‘email client’. 
+        clientName:      {type: string,     length: 255, nullable: true,    column: client_name         } # Mailgun Field-Description: Name of the client sofware, e.g. ‘Thunderbird’, ‘Chrome’, ‘Firefox’.
+        clientOs:        {type: string,     length: 255, nullable: true,    column: client_os           } # Mailgun Field-Description: OS family running the client sofware, e.g. ‘Linux’, ‘Windows’, ‘OSX’.
+        clientType:      {type: string,     length:  31, nullable: true,    column: client_type         } # Mailgun Field-Description: Type of software the unsubscribe link was clicked in, e.g. ‘browser’, ‘mobile browser’, ‘email client’.
         deviceType:      {type: string,     length: 255, nullable: true,    column: device_type         } # Mailgun Field-Description: Device type the email was opened on. Can be ‘desktop’, ‘mobile’, ‘tablet’, ‘other’ or ‘unknown’.
         mailingList:     {type: string,     length: 255, nullable: true,    column: mailing_list        } # Mailgun Field-Description: The address of mailing list the original message was sent to.
         messageHeaders:  {type: json_array,              nullable: true,    column: message_headers     } # Mailgun Field-Description: String list of all MIME headers dumped to a JSON string (order of headers preserved).
         messageId:       {type: string,     length: 255, nullable: true,    column: message_id          } # Mailgun Field-Description: String id of the original message delivered to the recipient.
-        tag:             {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: Message tag, if it was tagged. See Tagging. 
+        tag:             {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: Message tag, if it was tagged. See Tagging.
         userAgent:       {type: string,     length: 255, nullable: true,    column: user_agent          } # Mailgun Field-Description: User agent string of the client triggered the event.
         url:             {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: The URL that was clicked.
         token:           {type: string,     length:  50, nullable: false                                } # Mailgun Field-Description: Randomly generated string with length 50 (see securing webhooks).
@@ -38,17 +38,14 @@ Azine\MailgunWebhooksBundle\Entity\MailgunEvent:
         signature:       {type: string,     length: 255, nullable: false                                } # Mailgun Field-Description: String with hexadecimal digits generate by HMAC algorithm (see securing webhooks).
     lifecycleCallbacks: {  }
 
-    
+
 # one-event-has-many-attachments
     oneToMany:
         variables:
             targetEntity: MailgunCustomVariable
             mappedBy: event
-            
+
 # one-event-has-many-custom-variables
         attachments:
             targetEntity: MailgunAttachment
             mappedBy: event
-            
-
-          

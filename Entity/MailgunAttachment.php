@@ -5,19 +5,20 @@ namespace Azine\MailgunWebhooksBundle\Entity;
 /**
  * MailgunAttachment
  */
-class MailgunAttachment{
+class MailgunAttachment
+{
+    /**
+     * @param MailgunEvent $event
+     */
+    public function __construct(MailgunEvent $event)
+    {
+        $this->setEvent($event);
+    }
 
-	/**
-	 * @param MailgunEvent $event
-	 */
-	public function __construct(MailgunEvent $event){
-		$this->setEvent($event);
-	}
-
-	///////////////////////////////////////////////////////////////////
-	// generated stuff only below this line.
-	// @codeCoverageIgnoreStart
-	///////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////
+    // generated stuff only below this line.
+    // @codeCoverageIgnoreStart
+    ///////////////////////////////////////////////////////////////////
 
     /**
      * @var integer
@@ -59,7 +60,6 @@ class MailgunAttachment{
      */
     private $event;
 
-
     /**
      * Get id
      *
@@ -73,7 +73,7 @@ class MailgunAttachment{
     /**
      * Set eventId
      *
-     * @param integer $eventId
+     * @param  integer           $eventId
      * @return MailgunAttachment
      */
     public function setEventId($eventId)
@@ -96,7 +96,7 @@ class MailgunAttachment{
     /**
      * Set counter
      *
-     * @param integer $counter
+     * @param  integer           $counter
      * @return MailgunAttachment
      */
     public function setCounter($counter)
@@ -119,7 +119,7 @@ class MailgunAttachment{
     /**
      * Set content
      *
-     * @param string $content
+     * @param  string            $content
      * @return MailgunAttachment
      */
     public function setContent($content)
@@ -142,7 +142,7 @@ class MailgunAttachment{
     /**
      * Set name
      *
-     * @param string $name
+     * @param  string            $name
      * @return MailgunAttachment
      */
     public function setName($name)
@@ -165,7 +165,7 @@ class MailgunAttachment{
     /**
      * Set type
      *
-     * @param string $type
+     * @param  string            $type
      * @return MailgunAttachment
      */
     public function setType($type)
@@ -188,7 +188,7 @@ class MailgunAttachment{
     /**
      * Set size
      *
-     * @param integer $size
+     * @param  integer           $size
      * @return MailgunAttachment
      */
     public function setSize($size)
@@ -211,7 +211,7 @@ class MailgunAttachment{
     /**
      * Set event
      *
-     * @param \Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event
+     * @param  \Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event
      * @return MailgunAttachment
      */
     public function setEvent(\Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event = null)

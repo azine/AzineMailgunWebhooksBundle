@@ -5,16 +5,18 @@ use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class EventSubscriberMock implements EventSubscriberInterface {
-
-    public static function getSubscribedEvents() {
+class EventSubscriberMock implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
         return array(
             MailgunEvent::CREATE_EVENT => 'handleCreate',
         );
     }
 
-    public function handleCreate(MailgunWebhookEvent $event){
-		return $event->getMailgunEvent();
+    public function handleCreate(MailgunWebhookEvent $event)
+    {
+        return $event->getMailgunEvent();
     }
 
 }

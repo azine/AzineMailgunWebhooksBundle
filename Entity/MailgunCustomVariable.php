@@ -4,136 +4,145 @@ namespace Azine\MailgunWebhooksBundle\Entity;
 /**
  * MailgunCustomVariable
  */
-class MailgunCustomVariable {
+class MailgunCustomVariable
+{
+    /**
+     * @param MailgunEvent $event
+     */
+    public function __construct(MailgunEvent $event)
+    {
+        $this->setEvent($event);
+    }
 
-	/**
-	 * @param MailgunEvent $event
-	 */
-	public function __construct(MailgunEvent $event){
-	    $this->setEvent($event);
-	}
+    ///////////////////////////////////////////////////////////////////
+    // generated stuff only below this line.
+    // @codeCoverageIgnoreStart
+    ///////////////////////////////////////////////////////////////////
 
+    /**
+     * @var integer
+     */
+    private $id;
 
-	///////////////////////////////////////////////////////////////////
-	// generated stuff only below this line.
-	// @codeCoverageIgnoreStart
-	///////////////////////////////////////////////////////////////////
+    /**
+     * @var integer
+     */
+    private $eventId;
 
-	/**
-	 * @var integer
-	 */
-	private $id;
+    /**
+     * @var integer
+     */
+    private $variableName;
 
-	/**
-	 * @var integer
-	 */
-	private $eventId;
+    /**
+     * @var array
+     */
+    private $content;
 
-	/**
-	 * @var integer
-	 */
-	private $variableName;
+    /**
+     * @var \Azine\MailgunWebhooksBundle\Entity\MailgunEvent
+     */
+    private $event;
 
-	/**
-	 * @var array
-	 */
-	private $content;
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	/**
-	 * @var \Azine\MailgunWebhooksBundle\Entity\MailgunEvent
-	 */
-	private $event;
+    /**
+     * Set eventId
+     *
+     * @param  integer               $eventId
+     * @return MailgunCustomVariable
+     */
+    public function setEventId($eventId)
+    {
+        $this->eventId = $eventId;
 
-	/**
-	 * Get id
-	 *
-	 * @return integer
-	 */
-	public function getId() {
-		return $this->id;
-	}
+        return $this;
+    }
 
-	/**
-	 * Set eventId
-	 *
-	 * @param integer $eventId
-	 * @return MailgunCustomVariable
-	 */
-	public function setEventId($eventId) {
-		$this->eventId = $eventId;
+    /**
+     * Get eventId
+     *
+     * @return integer
+     */
+    public function getEventId()
+    {
+        return $this->eventId;
+    }
 
-		return $this;
-	}
+    /**
+     * Set variableName
+     *
+     * @param  integer               $variableName
+     * @return MailgunCustomVariable
+     */
+    public function setVariableName($variableName)
+    {
+        $this->variableName = $variableName;
 
-	/**
-	 * Get eventId
-	 *
-	 * @return integer
-	 */
-	public function getEventId() {
-		return $this->eventId;
-	}
+        return $this;
+    }
 
-	/**
-	 * Set variableName
-	 *
-	 * @param integer $variableName
-	 * @return MailgunCustomVariable
-	 */
-	public function setVariableName($variableName) {
-		$this->variableName = $variableName;
+    /**
+     * Get variableName
+     *
+     * @return integer
+     */
+    public function getVariableName()
+    {
+        return $this->variableName;
+    }
 
-		return $this;
-	}
+    /**
+     * Set content
+     *
+     * @param  array                 $content
+     * @return MailgunCustomVariable
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
 
-	/**
-	 * Get variableName
-	 *
-	 * @return integer
-	 */
-	public function getVariableName() {
-		return $this->variableName;
-	}
+        return $this;
+    }
 
-	/**
-	 * Set content
-	 *
-	 * @param array $content
-	 * @return MailgunCustomVariable
-	 */
-	public function setContent($content) {
-		$this->content = $content;
+    /**
+     * Get content
+     *
+     * @return array
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
 
-		return $this;
-	}
+    /**
+     * Set event
+     *
+     * @param  \Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event
+     * @return MailgunCustomVariable
+     */
+    public function setEvent(\Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event = null)
+    {
+        $this->event = $event;
 
-	/**
-	 * Get content
-	 *
-	 * @return array
-	 */
-	public function getContent() {
-		return $this->content;
-	}
+        return $this;
+    }
 
-	/**
-	 * Set event
-	 *
-	 * @param \Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event
-	 * @return MailgunCustomVariable
-	 */
-	public function setEvent(\Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event = null) {
-		$this->event = $event;
-
-		return $this;
-	}
-
-	/**
-	 * Get event
-	 *
-	 * @return \Azine\MailgunWebhooksBundle\Entity\MailgunEvent
-	 */
-	public function getEvent() {
-		return $this->event;
-	}
+    /**
+     * Get event
+     *
+     * @return \Azine\MailgunWebhooksBundle\Entity\MailgunEvent
+     */
+    public function getEvent()
+    {
+        return $this->event;
+    }
 }

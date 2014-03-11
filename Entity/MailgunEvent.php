@@ -5,59 +5,61 @@ namespace Azine\MailgunWebhooksBundle\Entity;
 /**
  * MailgunEvent
  */
-class MailgunEvent{
+class MailgunEvent
+{
+    const CREATE_EVENT = "azine.mailgun.webhooks.event.create";
+    const SEVERITY_INFO = 'info';
+    const SEVERITY_WARN = 'warning';
+    const SEVERITY_ERROR= 'error';
 
-	const CREATE_EVENT = "azine.mailgun.webhooks.event.create";
-	const SEVERITY_INFO = 'info';
-	const SEVERITY_WARN = 'warning';
-	const SEVERITY_ERROR= 'error';
+    public function getEventTitle()
+    {
+        $title = "";
+        $headers = $this->getMessageHeaders();
+        if (array_key_exists("Subject", $headers)) {
+            $title = $headers["Subject"];
+        }
 
+        return $title;
+    }
 
-	public function getEventTitle(){
-		$title = "";
-		$headers = $this->getMessageHeaders();
-		if(array_key_exists("Subject", $headers)){
-			$title = $headers["Subject"];
-		}
+    /**
+     * Set messageHeaders
+     *
+     * @param  string                                           $messageHeaders
+     * @return \Azine\MailgunWebhooksBundle\Entity\MailgunEvent
+     */
+    public function setMessageHeaders($messageHeaders)
+    {
+        $headers = json_decode($messageHeaders);
+        $this->messageHeaders = array();
+        foreach ($headers as $next) {
+            $this->messageHeaders[$next[0]] = $next[1];
+        }
 
-		return $title;
-	}
+        return $this;
+    }
 
-	/**
-	 * Set messageHeaders
-	 *
-	 * @param string $messageHeaders
-	 * @return \Azine\MailgunWebhooksBundle\Entity\MailgunEvent
-	 */
-	public function setMessageHeaders($messageHeaders){
-		$headers = json_decode($messageHeaders);
-		$this->messageHeaders = array();
-		foreach ($headers as $next){
-			$this->messageHeaders[$next[0]] = $next[1];
-		}
+    public function getDateTime()
+    {
+        return new \DateTime("@".$this->getTimestamp());
+    }
 
-		return $this;
-	}
+    /**
+     * Get messageHeaders
+     *
+     * @return array
+     */
+    public function getMessageHeaders()
+    {
+        if (!is_array($this->messageHeaders)) {
+            $this->setMessageHeaders($this->messageHeaders);
+        }
 
-	public function getDateTime(){
-		return new \DateTime("@".$this->getTimestamp());
-	}
+        return $this->messageHeaders;
+    }
 
-	/**
-	 * Get messageHeaders
-	 *
-	 * @return array
-	 */
-	public function getMessageHeaders()
-	{
-		if(!is_array($this->messageHeaders)){
-			$this->setMessageHeaders($this->messageHeaders);
-		}
-		return $this->messageHeaders;
-	}
-
-
-	///////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////
     // generated stuff only below this line.
     // @codeCoverageIgnoreStart
     ///////////////////////////////////////////////////////////////////
@@ -233,7 +235,7 @@ class MailgunEvent{
     /**
      * Set event
      *
-     * @param string $event
+     * @param  string       $event
      * @return MailgunEvent
      */
     public function setEvent($event)
@@ -256,7 +258,7 @@ class MailgunEvent{
     /**
      * Set domain
      *
-     * @param string $domain
+     * @param  string       $domain
      * @return MailgunEvent
      */
     public function setDomain($domain)
@@ -279,7 +281,7 @@ class MailgunEvent{
     /**
      * Set description
      *
-     * @param string $description
+     * @param  string       $description
      * @return MailgunEvent
      */
     public function setDescription($description)
@@ -302,7 +304,7 @@ class MailgunEvent{
     /**
      * Set notification
      *
-     * @param string $notification
+     * @param  string       $notification
      * @return MailgunEvent
      */
     public function setNotification($notification)
@@ -325,7 +327,7 @@ class MailgunEvent{
     /**
      * Set reason
      *
-     * @param string $reason
+     * @param  string       $reason
      * @return MailgunEvent
      */
     public function setReason($reason)
@@ -348,7 +350,7 @@ class MailgunEvent{
     /**
      * Set recipient
      *
-     * @param string $recipient
+     * @param  string       $recipient
      * @return MailgunEvent
      */
     public function setRecipient($recipient)
@@ -371,7 +373,7 @@ class MailgunEvent{
     /**
      * Set errorCode
      *
-     * @param string $errorCode
+     * @param  string       $errorCode
      * @return MailgunEvent
      */
     public function setErrorCode($errorCode)
@@ -394,7 +396,7 @@ class MailgunEvent{
     /**
      * Set ip
      *
-     * @param string $ip
+     * @param  string       $ip
      * @return MailgunEvent
      */
     public function setIp($ip)
@@ -417,7 +419,7 @@ class MailgunEvent{
     /**
      * Set error
      *
-     * @param string $error
+     * @param  string       $error
      * @return MailgunEvent
      */
     public function setError($error)
@@ -440,7 +442,7 @@ class MailgunEvent{
     /**
      * Set country
      *
-     * @param string $country
+     * @param  string       $country
      * @return MailgunEvent
      */
     public function setCountry($country)
@@ -463,7 +465,7 @@ class MailgunEvent{
     /**
      * Set city
      *
-     * @param string $city
+     * @param  string       $city
      * @return MailgunEvent
      */
     public function setCity($city)
@@ -486,7 +488,7 @@ class MailgunEvent{
     /**
      * Set region
      *
-     * @param string $region
+     * @param  string       $region
      * @return MailgunEvent
      */
     public function setRegion($region)
@@ -509,7 +511,7 @@ class MailgunEvent{
     /**
      * Set campaignId
      *
-     * @param string $campaignId
+     * @param  string       $campaignId
      * @return MailgunEvent
      */
     public function setCampaignId($campaignId)
@@ -532,7 +534,7 @@ class MailgunEvent{
     /**
      * Set campaignName
      *
-     * @param string $campaignName
+     * @param  string       $campaignName
      * @return MailgunEvent
      */
     public function setCampaignName($campaignName)
@@ -555,7 +557,7 @@ class MailgunEvent{
     /**
      * Set clientName
      *
-     * @param string $clientName
+     * @param  string       $clientName
      * @return MailgunEvent
      */
     public function setClientName($clientName)
@@ -578,7 +580,7 @@ class MailgunEvent{
     /**
      * Set clientOs
      *
-     * @param string $clientOs
+     * @param  string       $clientOs
      * @return MailgunEvent
      */
     public function setClientOs($clientOs)
@@ -601,7 +603,7 @@ class MailgunEvent{
     /**
      * Set clientType
      *
-     * @param string $clientType
+     * @param  string       $clientType
      * @return MailgunEvent
      */
     public function setClientType($clientType)
@@ -624,7 +626,7 @@ class MailgunEvent{
     /**
      * Set deviceType
      *
-     * @param string $deviceType
+     * @param  string       $deviceType
      * @return MailgunEvent
      */
     public function setDeviceType($deviceType)
@@ -647,7 +649,7 @@ class MailgunEvent{
     /**
      * Set mailingList
      *
-     * @param string $mailingList
+     * @param  string       $mailingList
      * @return MailgunEvent
      */
     public function setMailingList($mailingList)
@@ -670,7 +672,7 @@ class MailgunEvent{
     /**
      * Set messageId
      *
-     * @param string $messageId
+     * @param  string       $messageId
      * @return MailgunEvent
      */
     public function setMessageId($messageId)
@@ -693,7 +695,7 @@ class MailgunEvent{
     /**
      * Set tag
      *
-     * @param string $tag
+     * @param  string       $tag
      * @return MailgunEvent
      */
     public function setTag($tag)
@@ -716,7 +718,7 @@ class MailgunEvent{
     /**
      * Set userAgent
      *
-     * @param string $userAgent
+     * @param  string       $userAgent
      * @return MailgunEvent
      */
     public function setUserAgent($userAgent)
@@ -739,7 +741,7 @@ class MailgunEvent{
     /**
      * Set url
      *
-     * @param string $url
+     * @param  string       $url
      * @return MailgunEvent
      */
     public function setUrl($url)
@@ -762,7 +764,7 @@ class MailgunEvent{
     /**
      * Set token
      *
-     * @param string $token
+     * @param  string       $token
      * @return MailgunEvent
      */
     public function setToken($token)
@@ -785,7 +787,7 @@ class MailgunEvent{
     /**
      * Set timestamp
      *
-     * @param integer $timestamp
+     * @param  integer      $timestamp
      * @return MailgunEvent
      */
     public function setTimestamp($timestamp)
@@ -808,7 +810,7 @@ class MailgunEvent{
     /**
      * Set signature
      *
-     * @param string $signature
+     * @param  string       $signature
      * @return MailgunEvent
      */
     public function setSignature($signature)
@@ -831,7 +833,7 @@ class MailgunEvent{
     /**
      * Add variables
      *
-     * @param \Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $variables
+     * @param  \Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $variables
      * @return MailgunEvent
      */
     public function addVariable(\Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $variables)
@@ -864,7 +866,7 @@ class MailgunEvent{
     /**
      * Add attachments
      *
-     * @param \Azine\MailgunWebhooksBundle\Entity\MailgunAttachment $attachments
+     * @param  \Azine\MailgunWebhooksBundle\Entity\MailgunAttachment $attachments
      * @return MailgunEvent
      */
     public function addAttachment(\Azine\MailgunWebhooksBundle\Entity\MailgunAttachment $attachments)

@@ -8,7 +8,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 
-
 /**
  * Delete old MailgunEvent entries from the database
  *
@@ -17,20 +16,21 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 class DeleteOldEntriesCommand extends ContainerAwareCommand
 {
-	protected function configure() {
-		$this->setName('mailgun:delete-events')
-			->setDescription('Delete old mailgun events from the database')
-			->setDefinition(array(
-									new InputArgument(	'date',
-														InputArgument::OPTIONAL,
-														'Delete Mailgun Events that are older than "date" (Default: 60 days ago). The date must be something that strtotime() is able to parse:  => e.g. "since yesterday", "until 2 days ago", "> now - 2 hours", ">= 2005-10-15" '
-													),
-									new InputArgument(	'type',
-														InputArgument::OPTIONAL,
-														'Delete Mailgun Events of the given type. It no type is supplied, events of all types are deleted.'
-													),
-							))
-			->setHelp(<<<EOF
+    protected function configure()
+    {
+        $this->setName('mailgun:delete-events')
+            ->setDescription('Delete old mailgun events from the database')
+            ->setDefinition(array(
+                                    new InputArgument(	'date',
+                                                        InputArgument::OPTIONAL,
+                                                        'Delete Mailgun Events that are older than "date" (Default: 60 days ago). The date must be something that strtotime() is able to parse:  => e.g. "since yesterday", "until 2 days ago", "> now - 2 hours", ">= 2005-10-15" '
+                                                    ),
+                                    new InputArgument(	'type',
+                                                        InputArgument::OPTIONAL,
+                                                        'Delete Mailgun Events of the given type. It no type is supplied, events of all types are deleted.'
+                                                    ),
+                            ))
+            ->setHelp(<<<EOF
 The <info>mailgun:delete-events</info> command deletes old mailgun_event entries from the database.
 
 Possible types are:
@@ -47,39 +47,41 @@ unsubscribed 	The email recipient clicked on the unsubscribe link. Unsubscribe t
 complained 		The email recipient clicked on the spam complaint button within their email client. Feedback loops enable the notification to be received by Mailgun.
 stored 			Mailgun has stored an incoming message
 EOF
-			)
-			;
-	}
+            )
+            ;
+    }
 
-	protected function execute(InputInterface $input, OutputInterface $output){
-		$type = $input->getArgument("type");
-		$ageLimit = $input->getArgument("date");
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $type = $input->getArgument("type");
+        $ageLimit = $input->getArgument("date");
 
-		if($type == null || $type == ""){
-			$output->write("deleting entries of any type.", true);
-			$typeDesc = "any type";
-		} else if(array_search($type, array("accepted", "rejected", "delivered", "failed", "opened", "clicked", "unsubscribed", "complained", "stored"))){
-			$typeDesc = "type '$type'";
-		} else {
-			throw new InvalidArgumentException("Unknown type: $type");
-		}
+        if ($type == null || $type == "") {
+            $output->write("deleting entries of any type.", true);
+            $typeDesc = "any type";
+        } elseif (array_search($type, array("accepted", "rejected", "delivered", "failed", "opened", "clicked", "unsubscribed", "complained", "stored"))) {
+            $typeDesc = "type '$type'";
+        } else {
+            throw new InvalidArgumentException("Unknown type: $type");
+        }
 
-		if($ageLimit == null || $ageLimit == ""){
-			$output->write("using default age-limit of '60 days ago'.", true);
-			$ageLimit = "60 days ago";
-		}
+        if ($ageLimit == null || $ageLimit == "") {
+            $output->write("using default age-limit of '60 days ago'.", true);
+            $ageLimit = "60 days ago";
+        }
 
-		$date = new \DateTime($ageLimit);
+        $date = new \DateTime($ageLimit);
 
-		$result = $this->getMailgunService()->removeEvents($type, $date);
+        $result = $this->getMailgunService()->removeEvents($type, $date);
 
-		$output->write("All MailgunEvents (& their CustomVariables & Attachments) older than ".$date->format("Y-m-d H:i:s")." of $typeDesc have been deleted ($result).", true);
-	}
+        $output->write("All MailgunEvents (& their CustomVariables & Attachments) older than ".$date->format("Y-m-d H:i:s")." of $typeDesc have been deleted ($result).", true);
+    }
 
-	/**
-	 * @return AzineMailgunService
-	 */
-	private function getMailgunService(){
-		return $this->getContainer()->get('azine_mailgun.service');
-	}
+    /**
+     * @return AzineMailgunService
+     */
+    private function getMailgunService()
+    {
+        return $this->getContainer()->get('azine_mailgun.service');
+    }
 }
