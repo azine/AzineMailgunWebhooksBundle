@@ -24,9 +24,12 @@
     	   		</li>
     	   		<li>
     	   			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=complained">marked as spam by the user ({{ complained }})</a>
-	    			    	   		</li>
+	    		</li>
     	   		<li>
     	   			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=unsubscribed">unsubscribe requests by users ({{ unsubscribed }})</a>
+    	   		</li>
+    	   		<li>
+    	   			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=unopened">un-opened emails({{ unopened }})</a>
     	   		</li>
 	    	</ul>
 	    </li>

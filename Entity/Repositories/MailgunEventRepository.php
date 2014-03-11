@@ -15,10 +15,12 @@ use Doctrine\ORM\EntityRepository;
 class MailgunEventRepository extends EntityRepository{
 
 	public function getEventCount($criteria){
-		return sizeof($this->getEventsQuery($criteria)->getQuery()->execute());
+		$result = $this->getEventsQuery($criteria)->getQuery()->execute();
+		return sizeof($result);
 	}
 
 	public function getEvents($criteria, $orderBy, $limit, $offset){
+
 		$qb = $this->getEventsQuery($criteria);
 		$orderField = key($orderBy);
 		$orderDirection = $orderBy[$orderField];
@@ -27,7 +29,9 @@ class MailgunEventRepository extends EntityRepository{
 			$qb->setMaxResults($limit);
 			$qb->setFirstResult($offset);
 		}
-		return $qb->getQuery()->execute();
+
+		$result = $qb->getQuery()->execute();
+		return $result;
 	}
 
 	/**
@@ -35,10 +39,16 @@ class MailgunEventRepository extends EntityRepository{
 	 * @return QueryBuilder
 	 */
 	private function getEventsQuery($criteria){
-		$qb = $this->createQueryBuilder("e")
-			->andWhere("e.domain = :domain")
-			->setParameter("domain", $criteria['domain'])
-			;
+		$lookForUnopened = array_key_exists("eventType", $criteria) && $criteria["eventType"] == "unopened";
+		if($lookForUnopened){
+			unset($criteria["eventType"]);
+		}
+
+		$qb = $this->createQueryBuilder("e");
+		if(array_key_exists('domain', $criteria) && $criteria['domain'] != ""){
+			$qb->andWhere("e.domain = :domain")
+				->setParameter("domain", $criteria['domain']);
+		}
 
 		if(array_key_exists('recipient', $criteria) && $criteria['recipient'] != ""){
 			$qb->andWhere("e.recipient like :recipient")
@@ -54,6 +64,11 @@ class MailgunEventRepository extends EntityRepository{
 			$qb->andWhere("(e.description like :search OR e.description like :search OR e.notification like :search OR e.reason like :search OR e.errorCode like :search OR e.ip like :search OR e.error like :search OR e.country like :search OR e.city like :search OR e.campaignId like :search OR e.campaignName like :search OR e.clientName like :search OR e.clientOs like :search OR e.clientType like :search OR e.deviceType like :search OR e.mailingList like :search OR e.messageId like :search OR e.tag like :search OR e.userAgent like :search OR e.url like :search)")
 				->setParameter("search", "%".$criteria['search']."%");
 		}
+
+		if($lookForUnopened){
+			$qb->andWhere("NOT EXISTS (SELECT o.id FROM AzineMailgunWebhooksBundle:MailgunEvent o WHERE o.messageId like e.messageId AND o.event in ('opened', 'clicked', 'unsubscribed', 'complained'))");
+		}
+
 		return $qb;
 	}
 

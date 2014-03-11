@@ -35,7 +35,7 @@ class MailgunEventController extends Controller
 		// get general filter options
 		$params['filterOptions'] = array(
 				'orderBy' => $this->getRepository()->getFieldsToOrderBy(),
-				'eventTypes' => array_merge(array("all"), $this->getRepository()->getEventTypes()),
+				'eventTypes' => array_merge(array("all", "unopened"), $this->getRepository()->getEventTypes()),
 				'domains' => $this->getRepository()->getDomains(),
 				'recipients' => $this->getRepository()->getRecipients(),
 		);
@@ -290,7 +290,8 @@ class MailgunEventController extends Controller
 		}
 		// messageId
 		if(array_key_exists('message-id', $params)){
-			$event->setMessageId($params['message-id']);
+			$trimmedMessageId = trim(trim($params['message-id']),"<>");
+			$event->setMessageId($trimmedMessageId);
 			unset($params['message-id']);
 		}
 		// tag
