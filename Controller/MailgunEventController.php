@@ -69,8 +69,10 @@ class MailgunEventController extends Controller
         if (is_array($filter)) {
             $domain =		$filter['domain'];
             $eventType =	$filter['eventType'];
-            $search =		$filter['search'];
-            $recipient =	$filter['recipient'];
+            $search =		trim($filter['search']);
+            $filter['search'] = $search;
+            $recipient =	trim($filter['recipient']);
+            $filter['recipient'] = $recipient;
             $orderBy =		$filter['orderBy'];
             $orderDirection =		$filter['orderDirection'];
 
