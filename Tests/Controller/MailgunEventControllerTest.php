@@ -79,7 +79,7 @@ class MailgunEventControllerTest extends WebTestCase
         static::createClient();
 
         $sig = $this->getValidSignature("some-token", 1387529061);
-        $this->assertEquals('cc47468e81de0818af77f3e14a728602a2919b7fc09162e18f76ca12a9f8051d', $sig, "Valid signature expected.");
+        $this->assertEquals('462b0f353896de76bc026e251cad1da53f8416b8398563a33e71d61ade4a066a', $sig, "Valid signature expected.");
     }
 
     /**
