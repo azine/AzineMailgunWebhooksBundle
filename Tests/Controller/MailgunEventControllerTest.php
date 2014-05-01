@@ -188,7 +188,7 @@ class MailgunEventControllerTest extends WebTestCase
      * @param  Client  $client
      * @return Crawler $crawler of the page of the url or the page after the login
      */
-    private function loginUserIfRequired(Client $client, $url, $username = "admin", $password = "lkjlkjlkjlkj")
+    private function loginUserIfRequired(Client $client, $url, $username = "dominik", $password = "lkjlkjlkjlkj")
     {
         // try to get the url
         $client->followRedirects();
