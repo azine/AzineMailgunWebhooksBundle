@@ -65,7 +65,7 @@ class MailgunEventRepository extends EntityRepository
         }
 
         if (array_key_exists('search', $criteria) && $criteria['search'] != "") {
-            $qb->andWhere("(e.description like :search OR e.description like :search OR e.notification like :search OR e.reason like :search OR e.errorCode like :search OR e.ip like :search OR e.error like :search OR e.country like :search OR e.city like :search OR e.campaignId like :search OR e.campaignName like :search OR e.clientName like :search OR e.clientOs like :search OR e.clientType like :search OR e.deviceType like :search OR e.mailingList like :search OR e.messageId like :search OR e.tag like :search OR e.userAgent like :search OR e.url like :search)")
+            $qb->andWhere("(e.messageHeaders like :search OR e.description like :search OR e.description like :search OR e.notification like :search OR e.reason like :search OR e.errorCode like :search OR e.ip like :search OR e.error like :search OR e.country like :search OR e.city like :search OR e.campaignId like :search OR e.campaignName like :search OR e.clientName like :search OR e.clientOs like :search OR e.clientType like :search OR e.deviceType like :search OR e.mailingList like :search OR e.messageId like :search OR e.tag like :search OR e.userAgent like :search OR e.url like :search)")
                 ->setParameter("search", "%".$criteria['search']."%");
         }
 
