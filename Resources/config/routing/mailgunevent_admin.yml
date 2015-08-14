@@ -1,19 +1,19 @@
 mailgunevent_list:
-    pattern:  /mailgun/events/{page}/{pageSize}
+    path:  /mailgun/events/{page}/{pageSize}
     defaults: { _controller: "AzineMailgunWebhooksBundle:MailgunEvent:index" }
 
 mailgunevent_show:
-    pattern:  /mailgun/event/{id}/show
+    path:  /mailgun/event/{id}/show
     defaults: { _controller: "AzineMailgunWebhooksBundle:MailgunEvent:show" }
 
 mailgunevent_delete:
-    pattern:  /mailgun/event/delete/{eventId}
+    path:  /mailgun/event/delete/{eventId}
     defaults: { _controller: "AzineMailgunWebhooksBundle:MailgunEvent:delete" }
 
 mailgunevent_delete_ajax:
-    pattern:  /mailgun/event/delete
+    path:  /mailgun/event/delete
     defaults: { _controller: "AzineMailgunWebhooksBundle:MailgunEvent:delete" }
 
 mailgun_overview:
-    pattern:  /mailgun/
+    path:  /mailgun/
     defaults: { _controller: "AzineMailgunWebhooksBundle:Mailgun:overview" }
