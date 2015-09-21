@@ -1,4 +1,4 @@
 mailgunevent_webhook:
     path:  /mailgun/event/webhook/create
     defaults: { _controller: "AzineMailgunWebhooksBundle:MailgunEvent:createFromWebhook" }
-    requirements: { _method: post }
+    methods: [POST]
