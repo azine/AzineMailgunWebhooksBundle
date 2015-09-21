@@ -13,7 +13,7 @@ class AzineMailgunTwigExtension extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            'printArray' => new  \Twig_Filter_Method($this, 'printArray', array('is_safe' => array('html'))),
+            'printArray' => new  \Twig_SimpleFilter('printArray', array($this, 'printArray'), array('is_safe' => array('html'))),
         );
     }
 
