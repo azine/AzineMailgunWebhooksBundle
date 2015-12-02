@@ -100,6 +100,7 @@ class MailgunEventControllerTest extends WebTestCase
 
         // Create a new client to browse the application
         $client = static::createClient();
+        $client->followRedirects();
 
         $manager = $this->getEntityManager();
         $eventReop = $manager->getRepository("Azine\MailgunWebhooksBundle\Entity\MailgunEvent");
@@ -130,24 +131,22 @@ class MailgunEventControllerTest extends WebTestCase
         // delete the event from show-page
         $link = $crawler->selectLink("delete")->link();
         $crawler = $client->click($link);
-        $client->followRedirect();
 
         // check that it is gone from the list
         $this->assertEquals(0, $crawler->filter("#event$eventId")->count(), "The deleted event should not be in the list anymore.");
 
         // delete the event from list-page
-        $crawler = $client->getCrawler();
+        $crawler = $client->followRedirect();
         $link = $crawler->filter(".eventsTable tr .deleteLink")->first()->link();
         $delUri = $link->getUri();
         $eventId = substr($delUri, strrpos($delUri, "/") + 1);
         $crawler = $client->click($link);
-        $client->followRedirect();
 
         // check that it is gone from the list
         $this->assertEquals(0, $crawler->filter("#event$eventId")->count(), "The deleted event should not be in the list anymore.");
 
         // filter the list for something
-        $crawler = $client->getCrawler();
+        $crawler = $client->followRedirect();
         $form = $crawler->selectButton("Filter")->form();
         $form['filter[eventType]']->select("delivered");
         $crawler = $client->submit($form);
@@ -172,11 +171,8 @@ class MailgunEventControllerTest extends WebTestCase
         // show inexistent page
         $maxPage = floor($count/$pageSize);
         $beyondListUrl = $this->getRouter()->generate("mailgunevent_list", array('_locale' => "en", 'page' => $maxPage + 1, 'pageSize' => $pageSize, 'clear' => true));
-        $maxPageListUrl = $this->getRouter()->generate("mailgunevent_list", array('_locale' => "en", 'page' => $maxPage, 'pageSize' => $pageSize, 'clear' => true));
         $client->request("GET", $beyondListUrl);
-        $this->assertEquals(302, $client->getResponse()->getStatusCode(), "Expected to be redirected from '$beyondListUrl' to page $maxPage ($maxPageListUrl)");
-        $client->followRedirect();
-        $crawler = $client->getCrawler();
+        $crawler = $client->followRedirect();
         $this->assertEquals(2, $crawler->filter(".pagination .disabled:contains('Next')")->count(), "Expected to be on the last page => the next button should be disabled.");
 
     }
