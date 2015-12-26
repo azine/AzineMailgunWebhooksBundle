@@ -170,4 +170,4 @@ Here's a list of open TODOs
 [![Latest Stable Version](https://poser.pugx.org/azine/mailgunwebhooks-bundle/v/stable.png)](https://packagist.org/packages/azine/mailgunwebhooks-bundle)
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/azine/geoblocking-bundle/badges/quality-score.png?s=c6d9068893471309c3de0cadd2cf9f8f51804c91)](https://scrutinizer-ci.com/g/azine/geoblocking-bundle/)
 [![Code Coverage](https://scrutinizer-ci.com/g/azine/geoblocking-bundle/badges/coverage.png?s=bb74d9f20c0797f3a49b57aad0ae3258666513cb)](https://scrutinizer-ci.com/g/azine/geoblocking-bundle/)
-
+[![Dependency Status](https://www.versioneye.com/user/projects/567eaea7eb4f47003c000015/badge.svg?style=flat)](https://www.versioneye.com/user/projects/567eaea7eb4f47003c000015)
