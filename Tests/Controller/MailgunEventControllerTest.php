@@ -204,7 +204,7 @@ class MailgunEventControllerTest extends WebTestCase
             $userManager = $this->getContainer()->get('fos_user.user_manager');
             $userManager->updateUser($user);
 
-            $crawler = $crawler->filter('input.button[type="submit"]');
+            $crawler = $crawler->filter("input[type='submit']");
             $form = $crawler->form();
             $form->get('_username')->setValue($username);
             $form->get('_password')->setValue($password);
