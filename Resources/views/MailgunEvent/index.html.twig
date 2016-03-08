@@ -132,7 +132,11 @@
 					MessageHeaders:
 						<ul>
 						{% for key, value in eventEntry.messageHeaders %}
-							<li>{{ key }}: {{ value }}</li>
+							{% if value is iterable %}
+								<li>{{ key }}: <pre>{{ value | printArray }}</pre></li>
+							{% else %}
+								<li>{{ key }}: {{ value }}</li>
+							{% endif %}
 						{% endfor %}
 					{% endif %}
 					</ul>
