@@ -71,17 +71,6 @@ class MailgunEventControllerTest extends WebTestCase
         return $postData;
     }
 
-    public function testSignature()
-    {
-        $this->checkApplication();
-
-        // boot the kernel
-        static::createClient();
-
-        $sig = $this->getValidSignature("some-token", 1387529061);
-        $this->assertEquals('462b0f353896de76bc026e251cad1da53f8416b8398563a33e71d61ade4a066a', $sig, "Valid signature expected.");
-    }
-
     /**
      * @param string  $token
      * @param integer $timestamp
