@@ -117,10 +117,6 @@ class TestHelper
                 'some-custom-var1' => 'some data1',
                 'some-custom-var2' => 'some data2',
                 'some-custom-var3' => 'some data3',
-                'attachment-1' => new UploadedFile(realpath(__DIR__."/testAttachment.small.png"), "some.real.file.name1.png"),
-                'attachment-2' => new UploadedFile(realpath(__DIR__."/testAttachment.small.png"), "some.real.file.name2.png"),
-                'attachment-3' => new UploadedFile(realpath(__DIR__."/testAttachment.small.png"), "some.real.file.name3.png"),
-
         );
     }
 

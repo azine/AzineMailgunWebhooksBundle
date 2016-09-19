@@ -10,11 +10,13 @@ use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class MailgunEventControllerTest extends WebTestCase
 {
+
     public function testWebHookCreateAndEventDispatching()
     {
         $this->checkApplication();
@@ -32,23 +34,36 @@ class MailgunEventControllerTest extends WebTestCase
 //		$subscriberMock->expects($this->once())->method("handleCreate");
 
         // get webhook url
-        $url = $this->getRouter()->generate("mailgunevent_webhook", array(), UrlGeneratorInterface::ABSOLUTE_URL);
+        $url = substr($this->getRouter()->generate("mailgunevent_webhook", array()),13);
 
         $manager = $this->getEntityManager();
         $eventReop = $manager->getRepository("Azine\MailgunWebhooksBundle\Entity\MailgunEvent");
         $count = sizeof($eventReop->findAll());
 
         // post invalid data to the webhook-url and check the response & database
-        $webhookdata = json_encode($this->getInvalidPostData());
-        $crawler = $client->request("POST", $url, $this->getInvalidPostData());
+        $invalidPostData = $this->getInvalidPostData();
+        $webhookdata = json_encode($invalidPostData);
+        $attachments = array(
+            'attachment-1' => new UploadedFile(realpath(__DIR__."/../testAttachment.small.png"), "some.real.file.name1.png"),
+            'attachment-2' => new UploadedFile(realpath(__DIR__."/../testAttachment.small.png"), "some.real.file.name2.png"),
+            'attachment-3' => new UploadedFile(realpath(__DIR__."/../testAttachment.small.png"), "some.real.file.name3.png")
+        );
+        $crawler = $client->request("POST", $url, $invalidPostData, $attachments);
 
         $this->assertEquals(401, $client->getResponse()->getStatusCode(), "Response-Code 401 expected for post-data with invalid signature: \n\n$webhookdata\n\n\n");
         $this->assertContains("Signature verification failed.", $crawler->text(), "Response expected.");
         $this->assertEquals($count, sizeof($eventReop->findAll()), "No new db entry for the webhook expected!");
 
         // post valid data to the webhook-url and check the response
-        $webhookdata = json_encode($this->getValidPostData());
-        $crawler = $client->request("POST", $url, $this->getValidPostData());
+        $validPostData = $this->getValidPostData();
+        $webhookdata = json_encode($validPostData);
+        $attachments = array(
+            'attachment-1' => new UploadedFile(realpath(__DIR__."/../testAttachment.small.png"), "some.real.file.name1.png"),
+            'attachment-2' => new UploadedFile(realpath(__DIR__."/../testAttachment.small.png"), "some.real.file.name2.png"),
+            'attachment-3' => new UploadedFile(realpath(__DIR__."/../testAttachment.small.png"), "some.real.file.name3.png")
+        );
+
+        $crawler = $client->request("POST", $url, $validPostData);
         $this->assertEquals(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata\n\n\n".$client->getResponse()->getContent());
         $this->assertContains("Thanx, for the info.", $crawler->text(), "Response expected.");
         $this->assertEquals($count + 1, sizeof($eventReop->findAll()), "One new db entry for the webhook expected!");
@@ -143,23 +158,23 @@ class MailgunEventControllerTest extends WebTestCase
 
         // delete entry with xmlHttpRequest
         $eventToDelete = $eventReop->findOneBy(array());
-        $ajaxUrl = $this->getRouter()->generate("mailgunevent_delete_ajax");
+        $ajaxUrl = substr($this->getRouter()->generate("mailgunevent_delete_ajax", array("_locale" => "en")),13);
         $client->request("POST", $ajaxUrl, array('eventId' => $eventToDelete->getId()), array(), array('HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'));
-        $this->assertEquals('{"success":true}', $client->getResponse()->getContent(), "JSON response expcted.");
+        $this->assertEquals('{"success":true}', $client->getResponse()->getContent(), "JSON response expcted from $ajaxUrl. for event with id:".$eventToDelete->getId());
 
         // show/delete inexistent log entry
         $inexistentEventId = md5("123invalid");
-        $url = $this->getRouter()->generate("mailgunevent_delete", array("eventId" => $inexistentEventId));
+        $url = substr($this->getRouter()->generate("mailgunevent_delete", array("_locale" => "en", "eventId" => $inexistentEventId)),13);
         $client->request("GET", $url);
         $this->assertEquals(404, $client->getResponse()->getStatusCode(), "404 expected for invalid eventId ($inexistentEventId).");
 
-        $url = $this->getRouter()->generate("mailgunevent_show", array("id" => $inexistentEventId));
+        $url = substr($this->getRouter()->generate("mailgunevent_show", array("_locale" => "en", "id" => $inexistentEventId)),13);
         $client->request("GET", $url);
         $this->assertEquals(404, $client->getResponse()->getStatusCode(), "404 expected.");
 
         // show inexistent page
         $maxPage = floor($count/$pageSize);
-        $beyondListUrl = $this->getRouter()->generate("mailgunevent_list", array('_locale' => "en", 'page' => $maxPage + 1, 'pageSize' => $pageSize, 'clear' => true));
+        $beyondListUrl = substr($this->getRouter()->generate("mailgunevent_list", array('_locale' => "en", 'page' => $maxPage + 1, 'pageSize' => $pageSize, 'clear' => true)),13);
         $client->request("GET", $beyondListUrl);
         $crawler = $client->followRedirect();
         $this->assertEquals(2, $crawler->filter(".pagination .disabled:contains('Next')")->count(), "Expected to be on the last page => the next button should be disabled.");
