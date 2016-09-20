@@ -57,13 +57,7 @@ class MailgunEventControllerTest extends WebTestCase
         // post valid data to the webhook-url and check the response
         $validPostData = $this->getValidPostData();
         $webhookdata = json_encode($validPostData);
-        $attachments = array(
-            'attachment-1' => new UploadedFile(realpath(__DIR__."/../testAttachment.small.png"), "some.real.file.name1.png"),
-            'attachment-2' => new UploadedFile(realpath(__DIR__."/../testAttachment.small.png"), "some.real.file.name2.png"),
-            'attachment-3' => new UploadedFile(realpath(__DIR__."/../testAttachment.small.png"), "some.real.file.name3.png")
-        );
-
-        $crawler = $client->request("POST", $url, $validPostData);
+        $crawler = $client->request("POST", $url, $validPostData, $attachments);
         $this->assertEquals(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata\n\n\n".$client->getResponse()->getContent());
         $this->assertContains("Thanx, for the info.", $crawler->text(), "Response expected.");
         $this->assertEquals($count + 1, sizeof($eventReop->findAll()), "One new db entry for the webhook expected!");
