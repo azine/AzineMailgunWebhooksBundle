@@ -34,7 +34,7 @@ class MailgunEventControllerTest extends WebTestCase
 //		$subscriberMock->expects($this->once())->method("handleCreate");
 
         // get webhook url
-        $url = substr($this->getRouter()->generate("mailgunevent_webhook", array()),13);
+        $url = $this->getRouter()->generate("mailgunevent_webhook", array("_locale", "en"), UrlGeneratorInterface::ABSOLUTE_URL);
 
         $manager = $this->getEntityManager();
         $eventReop = $manager->getRepository("Azine\MailgunWebhooksBundle\Entity\MailgunEvent");
@@ -152,7 +152,7 @@ class MailgunEventControllerTest extends WebTestCase
 
         // delete entry with xmlHttpRequest
         $eventToDelete = $eventReop->findOneBy(array());
-        $ajaxUrl = substr($this->getRouter()->generate("mailgunevent_delete_ajax", array("_locale" => "en")),13);
+        $ajaxUrl = $this->getRouter()->generate("mailgunevent_delete_ajax", array("_locale" => "en"));
         $client->request("POST", $ajaxUrl, array('eventId' => $eventToDelete->getId()), array(), array('HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'));
         $this->assertEquals('{"success":true}', $client->getResponse()->getContent(), "JSON response expcted from $ajaxUrl. for event with id:".$eventToDelete->getId());
 
@@ -168,7 +168,7 @@ class MailgunEventControllerTest extends WebTestCase
 
         // show inexistent page
         $maxPage = floor($count/$pageSize);
-        $beyondListUrl = substr($this->getRouter()->generate("mailgunevent_list", array('_locale' => "en", 'page' => $maxPage + 1, 'pageSize' => $pageSize, 'clear' => true)),13);
+        $beyondListUrl = $this->getRouter()->generate("mailgunevent_list", array('_locale' => "en", 'page' => $maxPage + 1, 'pageSize' => $pageSize, 'clear' => true));
         $client->request("GET", $beyondListUrl);
         $crawler = $client->followRedirect();
         $this->assertEquals(2, $crawler->filter(".pagination .disabled:contains('Next')")->count(), "Expected to be on the last page => the next button should be disabled.");
