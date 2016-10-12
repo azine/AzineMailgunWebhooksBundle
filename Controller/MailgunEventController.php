@@ -172,8 +172,8 @@ class MailgunEventController extends Controller
             $this->createEvent($params);
 
         } catch (\Exception $e) {
-            $this->container->get('logger')->warn("AzineMailgunWebhooksBundle: creating entities failed: ".$e->getMessage());
-            $this->container->get('logger')->warn($e->getTraceAsString());
+            $this->container->get('logger')->warning("AzineMailgunWebhooksBundle: creating entities failed: ".$e->getMessage());
+            $this->container->get('logger')->warning($e->getTraceAsString());
 
             return new Response("AzineMailgunWebhooksBundle: creating entities failed: ".$e->getMessage(), 500);
         }
