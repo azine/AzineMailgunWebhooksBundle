@@ -123,7 +123,9 @@ get the full url of the "mailgunevent_webhook"-route
 
 ```
 # on a bash console execute this to get the absolute webhook path
-php app/console router:debug -e prod | grep mailgunevent_webhook
+php bin/console debug:router -e prod | grep mailgunevent_webhook 
+// note for Symfony 2.x it is 'php app/console debug:router -e prod | grep mailgunevent_webhook'
+
 ```
 
 and copy it to all the input fields for the webhooks on:
@@ -140,7 +142,8 @@ you database or the event-list.
 
 ```
 # on a bash console execute this to get the absolute overview-page path
-php app/console router:debug -e prod | grep mailgun_overview
+php bin/console router:debug -e prod | grep mailgun_overview
+// note for Symfony 2.x it is 'php app/console debug:router -e prod | grep mailgun_overview'
 ```
 
 ## Events
