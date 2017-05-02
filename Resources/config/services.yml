@@ -3,8 +3,7 @@ parameters:
 services:
     azine_mailgun.service:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunService
-        arguments:
-          managerRegistry:      "@doctrine"
+        arguments: ["@doctrine"]
 
     azine.mailgun.webhooks.bundle.twig.filters:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunTwigExtension
