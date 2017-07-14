@@ -126,6 +126,10 @@ class MailgunEventRepository extends EntityRepository
         return $result;
     }
 
+    /**
+     * Get last known sender IP based on stored events list
+     * @return string|null
+     */
     public function getLastKnownSenderIp()
     {
         $q = $this->getEntityManager()->createQueryBuilder()
@@ -135,7 +139,11 @@ class MailgunEventRepository extends EntityRepository
             ->setMaxResults(1)
             ->getQuery();
         
-        return $q->getResult();
+        if (count($q->getResult())) {
+            return $q->getResult()[0]['ip'];
+        } else {
+            return null;    
+        }
     }
 
     public function getFieldsToOrderBy()

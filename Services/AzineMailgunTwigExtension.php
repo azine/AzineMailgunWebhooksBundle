@@ -41,10 +41,10 @@ class AzineMailgunTwigExtension extends \Twig_Extension
         }
         /** @var MailgunEventRepository $repository */
         $repository = $this->container->get('doctrine')->getManager()->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
-        if (!count($repository->getLastKnownSenderIp())) {
+        if (is_null($repository->getLastKnownSenderIp())) {
             $lastKnownIp = '';
         } else {
-            $lastKnownIp = $repository->getLastKnownSenderIp()[0]['ip'];
+            $lastKnownIp = $repository->getLastKnownSenderIp();
         }
         return array(
             'emailDomain' => $emailDomain,
