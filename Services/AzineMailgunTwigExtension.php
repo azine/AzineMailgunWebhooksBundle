@@ -12,11 +12,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class AzineMailgunTwigExtension extends \Twig_Extension
 {
-    private $container;
+    private $repository;
+    private $emailDomain;
     
-    public function __construct(ContainerInterface $container)
+    public function __construct(MailgunEventRepository $repository, $emailDomain)
     {
-        $this->container = $container;
+        $this->repository = $repository;
+        $this->emailDomain = is_null($emailDomain) ? '' : $emailDomain;
     }
 
     /**
@@ -34,20 +36,9 @@ class AzineMailgunTwigExtension extends \Twig_Extension
      */
     public function getGlobals()
     {
-        if ($this->container->hasParameter(AzineMailgunWebhooksExtension::PREFIX . '_' . AzineMailgunWebhooksExtension::EMAIL_DOMAIN)) {
-            $emailDomain = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX . '_' . AzineMailgunWebhooksExtension::EMAIL_DOMAIN);
-        } else {
-            $emailDomain = '';
-        }
-        /** @var MailgunEventRepository $repository */
-        $repository = $this->container->get('doctrine')->getManager()->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
-        if (is_null($repository->getLastKnownSenderIp())) {
-            $lastKnownIp = '';
-        } else {
-            $lastKnownIp = $repository->getLastKnownSenderIp();
-        }
+        $lastKnownIp = is_null($this->repository->getLastKnownSenderIp()) ? '' : $this->repository->getLastKnownSenderIp();
         return array(
-            'emailDomain' => $emailDomain,
+            'emailDomain' => $this->emailDomain,
             'lastKnownIp' => $lastKnownIp
         );
     }

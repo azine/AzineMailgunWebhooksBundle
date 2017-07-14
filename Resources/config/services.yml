@@ -8,6 +8,14 @@ services:
     azine.mailgun.webhooks.bundle.twig.extension:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunTwigExtension
         public: false
-        arguments: ['@service_container']
+        arguments: 
+            - '@azine.mailgun.repository.mailgun_event_repository'
+            - '%azine_mailgun_webhooks_email_domain%'
         tags:
             - { name: twig.extension }
+            
+    azine.mailgun.repository.mailgun_event_repository:
+        class: Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments: [ Azine\MailgunWebhooksBundle\Entity\MailgunEvent]
+        
