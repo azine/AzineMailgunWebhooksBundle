@@ -6,8 +6,34 @@
 
         </head>
     <body>
-		<a href="https://mailgun.com/app/dashboard" target="_blank" style="float:right;"><h1>Mailgun Dashboard</h1></a>
-    	{% block body %}{% endblock %}
+	<table style="width: 450px; float: right; border-spacing: 0;">
+		<tr>
+			<td><a href="https://mailgun.com/app/dashboard" target="_blank" style="float:right;">Mailgun Dashboard&nbsp;</a></td>
+			<td><a href="https://mailgun.com/app/support/new" target="_blank" style="float:right;">Mailgun Support&nbsp;</a></td>
+			<td><a href="https://mailgun.com/app/domains/{{ emailDomain }}" target="_blank" style="float:right;">Domain Configuration&nbsp;</a></td>
+		</tr>
+		<tr>
+			<td><a href="http://www.mail-tester.com/" target="_blank" style="float:right;">Mail Tester&nbsp;</a></td>
+			<td><a href="https://senderscore.org/lookup.php?lookup={{ lastKnownIp }}&validLookup=true" target="_blank" style="float:right;">SenderScore
+					for IP&nbsp;</a></td>
+			<td><a href="https://senderscore.org/lookup.php?lookup={{ emailDomain }}&validLookup=true" target="_blank" style="float:right;">SenderScore
+					for domain&nbsp;</a></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+			<td><a href="https://mxtoolbox.com/SuperTool.aspx?action=mx%3a{{ emailDomain }}&run=toolpage" target="_blank" style="float:right;">MxToolbox&nbsp;</a>
+			</td>
+		</tr>
+	</table>
+	{% if emailDomain == '' %}
+		<h3 style="margin:0;float: right; clear: right;">Email domain is not configured</h3>
+	{% endif %}
+	{% if lastKnownIp == '' %}
+		<h3 style="margin:0;float: right; clear: right;">There are no events yet - unable to get last sender IP</h3>		
+	{% endif %}
+	
+	{% block body %}{% endblock %}
 
 {% block javascripts %}
 <script type="text/javascript">

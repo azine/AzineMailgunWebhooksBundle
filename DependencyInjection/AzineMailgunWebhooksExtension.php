@@ -16,6 +16,7 @@ class AzineMailgunWebhooksExtension extends Extension
     const PREFIX = "azine_mailgun_webhooks";
     const API_KEY = "api_key";
     const PUBLIC_API_KEY = "public_api_key";
+    const EMAIL_DOMAIN = "email_domain";
 
     /**
      * {@inheritDoc}
@@ -29,7 +30,11 @@ class AzineMailgunWebhooksExtension extends Extension
             $container->setParameter(self::PREFIX."_".self::API_KEY, $config[self::API_KEY]);
 
         if(array_key_exists(self::PUBLIC_API_KEY, $config))
-            $container->setParameter(self::PREFIX."_".self::PUBLIC_API_KEY, $config[self::PUBLIC_API_KEY]);
+           $container->setParameter(self::PREFIX."_".self::PUBLIC_API_KEY, $config[self::PUBLIC_API_KEY]);
+        
+        if(array_key_exists(self::EMAIL_DOMAIN, $config))
+            $container->setParameter(self::PREFIX."_".self::EMAIL_DOMAIN, $config[self::EMAIL_DOMAIN]);
+
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

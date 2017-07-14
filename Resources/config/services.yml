@@ -5,8 +5,9 @@ services:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunService
         arguments: ["@doctrine"]
 
-    azine.mailgun.webhooks.bundle.twig.filters:
+    azine.mailgun.webhooks.bundle.twig.extension:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunTwigExtension
         public: false
+        arguments: ['@service_container']
         tags:
             - { name: twig.extension }

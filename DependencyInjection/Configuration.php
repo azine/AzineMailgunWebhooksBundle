@@ -24,6 +24,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode(AzineMailgunWebhooksExtension::API_KEY)->isRequired()->cannotBeEmpty()->info("Your api-key for mailgun => see https://mailgun.com/cp")->end()
                 ->scalarNode(AzineMailgunWebhooksExtension::PUBLIC_API_KEY)->defaultValue("")->info("Your public-api-key for mailgun => see https://mailgun.com/cp")->end()
+                ->scalarNode(AzineMailgunWebhooksExtension::EMAIL_DOMAIN)->defaultValue("")->info("Your email domain configured on Mailgun")->end()
             ->end();
 
         return $treeBuilder;
