@@ -139,11 +139,7 @@ class MailgunEventRepository extends EntityRepository
             ->setMaxResults(1)
             ->getQuery();
         
-        if (count($q->getResult())) {
-            return $q->getResult()[0]['ip'];
-        } else {
-            return null;    
-        }
+        return count($q->getResult()) ? $q->getResult()[0]['ip'] : null;
     }
 
     public function getFieldsToOrderBy()
