@@ -14,11 +14,13 @@ class AzineMailgunTwigExtension extends \Twig_Extension
 {
     private $repository;
     private $emailDomain;
+    private $cachedLastKnownIp;
     
     public function __construct(MailgunEventRepository $repository, $emailDomain)
     {
         $this->repository = $repository;
         $this->emailDomain = is_null($emailDomain) ? '' : $emailDomain;
+        $this->cachedLastKnownIp = null;
     }
 
     /**
@@ -31,15 +33,19 @@ class AzineMailgunTwigExtension extends \Twig_Extension
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getGlobals()
+    public function getFunctions()
     {
-        $lastKnownIp = is_null($this->repository->getLastKnownSenderIp()) ? '' : $this->repository->getLastKnownSenderIp();
         return array(
-            'emailDomain' => $this->emailDomain,
-            'lastKnownIp' => $lastKnownIp
+            'getEmailDomain' => new \Twig_SimpleFunction('getEmailDomain', function() { return $this->emailDomain;}),
+            'getLastKnownIp' => new \Twig_SimpleFunction('getLastKnownIp', function() {
+                if (is_null($this->cachedLastKnownIp)) {                    
+                    $lastKnownIp = $this->repository->getLastKnownSenderIp();
+                    $this->cachedLastKnownIp = $lastKnownIp;
+                } else {
+                    $lastKnownIp = $this->cachedLastKnownIp;
+                }
+                return is_null($lastKnownIp) ? '' : $lastKnownIp;
+            })
         );
     }
 
