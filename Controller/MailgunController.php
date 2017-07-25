@@ -25,6 +25,8 @@ class MailgunController extends Controller
         $params['complained'] = sizeof($this->getRepository()->findBy(array('event' => 'complained')));
         $params['unsubscribed'] = sizeof($this->getRepository()->findBy(array('event' => 'unsubscribed')));
         $params['unopened'] = $this->getRepository()->getEventCount(array('eventType' => 'unopened'));
+        
+        $params['cockpit'] = $this->get('azine_mailgun.cockpit_service')->getRenderedCockpitTemplate();
 
         return $this->render('AzineMailgunWebhooksBundle::overview.html.twig', $params);
     }

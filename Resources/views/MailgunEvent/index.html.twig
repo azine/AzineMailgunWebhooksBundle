@@ -6,6 +6,10 @@
 {% endblock %}
 
 {% block body %}
+	{% if cockpit is defined %}
+		{{ cockpit | raw }}
+	{% endif %}
+	
 	<h1>MailgunEvents</h1>
 	<a class="backToOverview" href="{{ path('mailgun_overview') }}" >Back to overview</a>
 	<hr/>

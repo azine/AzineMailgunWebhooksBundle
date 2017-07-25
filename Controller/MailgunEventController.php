@@ -128,6 +128,8 @@ class MailgunEventController extends Controller
                     'lastPage' => ceil($eventCount/$pageSize),
                     'showAlwaysFirstAndLast' => true,
                 );
+        
+        $params['cockpit'] = $this->get('azine_mailgun.cockpit_service')->getRenderedCockpitTemplate();
 
         return $this->render('AzineMailgunWebhooksBundle:MailgunEvent:index.html.twig', $params);
     }

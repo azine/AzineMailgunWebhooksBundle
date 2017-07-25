@@ -7,6 +7,10 @@
 {% endblock %}
 
 {% block body -%}
+	{% if cockpit is defined %}
+		{{ cockpit | raw }}
+	{% endif %}
+	
     <h1>Mailgun Overview</h1>
 
 	<ul>

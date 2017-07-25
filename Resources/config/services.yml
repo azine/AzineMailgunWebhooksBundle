@@ -4,13 +4,17 @@ services:
     azine_mailgun.service:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunService
         arguments: ["@doctrine"]
-
-    azine.mailgun.webhooks.bundle.twig.extension:
-        class: Azine\MailgunWebhooksBundle\Services\AzineMailgunTwigExtension
-        public: false
+        
+    azine_mailgun.cockpit_service:
+        class: Azine\MailgunWebhooksBundle\Services\AzineMailgunCockpitService
         arguments: 
             - '@azine.mailgun.repository.mailgun_event_repository'
+            - '@twig'
             - '%azine_mailgun_webhooks_email_domain%'
+
+    azine.mailgun.webhooks.bundle.twig.filters:
+        class: Azine\MailgunWebhooksBundle\Services\AzineMailgunTwigExtension
+        public: false
         tags:
             - { name: twig.extension }
             
