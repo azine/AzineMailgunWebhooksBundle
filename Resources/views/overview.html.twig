@@ -6,10 +6,8 @@
 	<link type="text/css" rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/flick/jquery-ui.min.css" />
 {% endblock %}
 
-{% block body -%}
-	{% if cockpit is defined %}
-		{{ cockpit | raw }}
-	{% endif %}
+{% block body %}	
+	{{ render(controller('AzineMailgunWebhooksBundle:Mailgun:cockpit')) }}
 	
     <h1>Mailgun Overview</h1>
 

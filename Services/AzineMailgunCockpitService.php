@@ -36,12 +36,12 @@ class AzineMailgunCockpitService
         return $this->getValueOrEmptyString($this->emailDomain);
     }
 
-    public function getRenderedCockpitTemplate()
+    public function getCockpitDataAsArray()
     {
-        return $this->twig->render('@AzineMailgunWebhooks/cockpit.html.twig', array(
-            'emailDomain' => $this->getEmailDomain(),
-            'lastKnownIp' => $this->getLastKnownSenderIp()
-        ));
+        return array(
+            'lastKnownIp' => $this->getLastKnownSenderIp(),
+            'emailDomain' => $this->getEmailDomain()
+        );
     }
 
     private function getValueOrEmptyString($value)
