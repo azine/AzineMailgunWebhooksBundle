@@ -25,3 +25,19 @@ services:
             - '@azine_mailgun.service'
         tags:
             - { name: console.command, command: mailgun:delete-events }
+
+    azine.mailgun.webhooks.event_listener.created:
+        class: Azine\MailgunWebhooksBundle\EventListener\EventCreatedListener
+        tags: 
+            - { name: kernel.event_listener, event: azine.mailgun.webhooks.event.create, method: onEventCreated}
+        arguments:
+            - '@azine.mailgun.mailer'
+            
+    azine.mailgun.mailer: 
+        class: Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService
+        arguments:
+            - '@mailer'
+            - '%azine_mailgun_webhooks_ticket_id%'
+            - '%azine_mailgun_webhooks_ticket_subject%'
+            - '%azine_mailgun_webhooks_ticket_message%'
+            - '%azine_mailgun_webhooks_admin_user_email%'
