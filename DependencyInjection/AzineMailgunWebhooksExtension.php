@@ -16,6 +16,10 @@ class AzineMailgunWebhooksExtension extends Extension
     const PREFIX = "azine_mailgun_webhooks";
     const API_KEY = "api_key";
     const PUBLIC_API_KEY = "public_api_key";
+    const TICKET_ID = "ticket_id";
+    const TICKET_SUBJECT = "ticket_subject";
+    const TICKET_MESSAGE = "ticket_message";
+    const ADMIN_USER_EMAIL = "admin_user_email";
 
     /**
      * {@inheritDoc}
@@ -30,6 +34,18 @@ class AzineMailgunWebhooksExtension extends Extension
 
         if(array_key_exists(self::PUBLIC_API_KEY, $config))
             $container->setParameter(self::PREFIX."_".self::PUBLIC_API_KEY, $config[self::PUBLIC_API_KEY]);
+        
+        if(array_key_exists(self::TICKET_ID, $config))
+            $container->setParameter(self::PREFIX."_".self::TICKET_ID, $config[self::TICKET_ID]);
+        
+        if(array_key_exists(self::TICKET_SUBJECT, $config))
+            $container->setParameter(self::PREFIX."_".self::TICKET_SUBJECT, $config[self::TICKET_SUBJECT]);
+        
+        if(array_key_exists(self::TICKET_MESSAGE, $config))
+            $container->setParameter(self::PREFIX."_".self::TICKET_MESSAGE, $config[self::TICKET_MESSAGE]);
+        
+        if(array_key_exists(self::ADMIN_USER_EMAIL, $config))
+            $container->setParameter(self::PREFIX."_".self::ADMIN_USER_EMAIL, $config[self::ADMIN_USER_EMAIL]);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
