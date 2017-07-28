@@ -18,7 +18,7 @@ class EventCreatedListener
     {
         $eventType = $event->getMailgunEvent()->getEvent();
         if ($eventType === 'complained') {
-            $this->mailer->sendNewEmailRequest();
+            $this->mailer->sendSpamComplaintNotification($event->getMailgunEvent()->getId());
         }
     }
 }
