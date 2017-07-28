@@ -37,6 +37,10 @@ services:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService
         arguments:
             - '@mailer'
+            - '@validator'
+            - '@logger'
+            - '@twig'
+            - '%mailer_user%'
             - '%azine_mailgun_webhooks_ticket_id%'
             - '%azine_mailgun_webhooks_ticket_subject%'
             - '%azine_mailgun_webhooks_ticket_message%'

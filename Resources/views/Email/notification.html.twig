@@ -1,0 +1,10 @@
+<h3>Spam complaint received</h3>
+
+Mailgun event with spam complaint received: <a href="{{ url('mailgunevent_show', {'id': eventId}) }}">{{ url('mailgunevent_show', {'id': eventId}) }}</a>. <br/>
+
+Please, contact Mailgun support and ask for new IP address for your configured domain:
+{% if ticketId is defined and ticketId != '' %}
+<a href="https://app.mailgun.com/app/support/{{ ticketId }}">https://app.mailgun.com/app/support/{{ ticketId }}</a>
+{% else %}
+<a href="https://app.mailgun.com/app/support/new">https://app.mailgun.com/app/support/new</a>
+{% endif %}
