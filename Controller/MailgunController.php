@@ -1,8 +1,6 @@
 <?php
 namespace Azine\MailgunWebhooksBundle\Controller;
 
-use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
-use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 /**
