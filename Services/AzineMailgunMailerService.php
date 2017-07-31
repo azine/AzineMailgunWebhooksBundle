@@ -4,6 +4,8 @@
 namespace Azine\MailgunWebhooksBundle\Services;
 
 use Monolog\Logger;
+use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AzineMailgunMailerService
@@ -12,6 +14,7 @@ class AzineMailgunMailerService
     private $validator;
     private $logger;
     private $twig;
+    private $translator;
     private $mailerUser;
     private $ticketId;
     private $ticketSubject;
@@ -23,6 +26,7 @@ class AzineMailgunMailerService
         ValidatorInterface $validator,
         Logger $logger,
         \Twig_Environment $twig,
+        TranslatorInterface $translator,
         $mailerUser,
         $ticketId,
         $ticketSubject,
@@ -33,6 +37,7 @@ class AzineMailgunMailerService
         $this->validator = $validator;
         $this->logger = $logger;
         $this->twig = $twig;
+        $this->translator = $translator;
         $this->mailerUser = $mailerUser;
         $this->ticketId = $ticketId;
         $this->ticketSubject = $ticketSubject;
@@ -42,12 +47,13 @@ class AzineMailgunMailerService
 
     public function  sendSpamComplaintNotification($eventId)
     {
-        if (is_null($this->validateEmail($this->adminUserEmail))) {            
+        $emailValidityErrors = $this->validateEmail($this->adminUserEmail);
+        if (is_null($emailValidityErrors)) {            
             /** @var \Swift_Message $message */
             $message = $this->mailer->createMessage();
             $message->setTo($this->adminUserEmail)
                     ->setFrom($this->mailerUser)
-                    ->setSubject('Spam complaint received')
+                    ->setSubject($this->translator->trans('notification.spam_complaint_received'))
                     ->setBody(
                         $this->twig->render('@AzineMailgunWebhooks/Email/notification.html.twig', array('eventId' => $eventId, 'ticketId' => $this->ticketId)),
                         'text/html'
@@ -55,8 +61,7 @@ class AzineMailgunMailerService
             
             $this->mailer->send($message);
         } else {
-            $errors = $this->validateEmail($this->adminUserEmail);
-            $this->logger->warning('Tried to send notification about spam complaint but adminUserEmail is invalid: ' . json_encode($errors));
+            $this->logger->warning('Tried to send notification about spam complaint but adminUserEmail is invalid: ' . json_encode($emailValidityErrors));
         }
     }
 

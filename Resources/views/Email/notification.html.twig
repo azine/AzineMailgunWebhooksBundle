@@ -1,8 +1,8 @@
-<h3>Spam complaint received</h3>
+<h3>{{ 'notification.spam_complaint_received' | trans }}</h3>
 
-Mailgun event with spam complaint received: <a href="{{ url('mailgunevent_show', {'id': eventId}) }}">{{ url('mailgunevent_show', {'id': eventId}) }}</a>. <br/>
+{{ 'notification.mailgun_spam_received' | trans }}: <a href="{{ url('mailgunevent_show', {'id': eventId}) }}">{{ url('mailgunevent_show', {'id': eventId}) }}</a>. <br/>
 
-Please, contact Mailgun support and ask for new IP address for your configured domain:
+{{ 'notification.spam_complaint_received' | trans }}:
 {% if ticketId is defined and ticketId != '' %}
 <a href="https://app.mailgun.com/app/support/{{ ticketId }}">https://app.mailgun.com/app/support/{{ ticketId }}</a>
 {% else %}

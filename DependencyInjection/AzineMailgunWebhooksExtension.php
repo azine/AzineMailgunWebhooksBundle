@@ -36,20 +36,11 @@ class AzineMailgunWebhooksExtension extends Extension
         if(array_key_exists(self::PUBLIC_API_KEY, $config))
            $container->setParameter(self::PREFIX."_".self::PUBLIC_API_KEY, $config[self::PUBLIC_API_KEY]);
         
-        if(array_key_exists(self::EMAIL_DOMAIN, $config))
-            $container->setParameter(self::PREFIX."_".self::EMAIL_DOMAIN, $config[self::EMAIL_DOMAIN]);
-
-        if(array_key_exists(self::TICKET_ID, $config))
-            $container->setParameter(self::PREFIX."_".self::TICKET_ID, $config[self::TICKET_ID]);
-        
-        if(array_key_exists(self::TICKET_SUBJECT, $config))
-            $container->setParameter(self::PREFIX."_".self::TICKET_SUBJECT, $config[self::TICKET_SUBJECT]);
-        
-        if(array_key_exists(self::TICKET_MESSAGE, $config))
-            $container->setParameter(self::PREFIX."_".self::TICKET_MESSAGE, $config[self::TICKET_MESSAGE]);
-        
-        if(array_key_exists(self::ADMIN_USER_EMAIL, $config))
-            $container->setParameter(self::PREFIX."_".self::ADMIN_USER_EMAIL, $config[self::ADMIN_USER_EMAIL]);
+        $container->setParameter(self::PREFIX."_".self::EMAIL_DOMAIN, $config[self::EMAIL_DOMAIN]);
+        $container->setParameter(self::PREFIX."_".self::TICKET_ID, $config[self::TICKET_ID]);
+        $container->setParameter(self::PREFIX."_".self::TICKET_SUBJECT, $config[self::TICKET_SUBJECT]);
+        $container->setParameter(self::PREFIX."_".self::TICKET_MESSAGE, $config[self::TICKET_MESSAGE]);
+        $container->setParameter(self::PREFIX."_".self::ADMIN_USER_EMAIL, $config[self::ADMIN_USER_EMAIL]);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
