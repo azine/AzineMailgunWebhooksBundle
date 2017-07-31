@@ -133,13 +133,21 @@ class MailgunEventRepository extends EntityRepository
     public function getLastKnownSenderIp()
     {
         $q = $this->getEntityManager()->createQueryBuilder()
-            ->select('e.ip as ip')
+            ->select('e.messageHeaders as mh')
             ->from($this->getEntityName(), 'e')
             ->orderBy('e.timestamp', 'desc')
-            ->setMaxResults(1)
+            ->where('e.event IN (:events)')
+            ->setParameter('events', array('opened', 'delivered', 'bounced', 'dropped', 'complained'))
+            ->setMaxResults(50)
             ->getQuery();
         
-        return count($q->getResult()) ? $q->getResult()[0]['ip'] : null;
+        foreach($q->execute() as $next) {
+            if ($next['mh'] && isset($next['mh']['X-Mailgun-Sending-Ip'])) {
+                return $next['mh']['X-Mailgun-Sending-Ip'];
+            }
+        }
+        
+        return null;
     }
 
     public function getFieldsToOrderBy()
