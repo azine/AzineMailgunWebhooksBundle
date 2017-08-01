@@ -10,3 +10,25 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+
+    azine.mailgun.webhooks.event_listener.created:
+        class: Azine\MailgunWebhooksBundle\EventListener\EventCreatedListener
+        tags: 
+            - { name: kernel.event_listener, event: azine.mailgun.webhooks.event.create, method: onEventCreated}
+        arguments:
+            - '@azine.mailgun.mailer'
+            - '%azine_mailgun_webhooks_send_notifications%'
+            
+    azine.mailgun.mailer: 
+        class: Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService
+        arguments:
+            - '@mailer'
+            - '@validator'
+            - '@logger'
+            - '@twig'
+            - '@translator'
+            - '%mailer_user%'
+            - '%azine_mailgun_webhooks_ticket_id%'
+            - '%azine_mailgun_webhooks_ticket_subject%'
+            - '%azine_mailgun_webhooks_ticket_message%'
+            - '%azine_mailgun_webhooks_admin_user_email%'

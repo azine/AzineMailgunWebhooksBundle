@@ -83,6 +83,15 @@ azine_mailgun_webhooks:
 
     # Your public-api-key for mailgun => see https://mailgun.com/cp
     public_api_key:       ''
+    
+    # Whether to send notifications about spam complaints
+    send_notifications:   false
+    
+    # Mailgun helpdesk ticket ID to request new IP address in case of spam complains
+    ticket_id:            ''
+    
+    # Admin E-Mail to send notification about spam complaints
+    admin_user_email:     ''
 ```
 
 # Sidenote on "monolog" emails and web scanners
