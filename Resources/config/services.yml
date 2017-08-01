@@ -17,6 +17,7 @@ services:
             - { name: kernel.event_listener, event: azine.mailgun.webhooks.event.create, method: onEventCreated}
         arguments:
             - '@azine.mailgun.mailer'
+            - '%azine_mailgun_webhooks_send_notifications%'
             
     azine.mailgun.mailer: 
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService

@@ -16,6 +16,7 @@ class AzineMailgunWebhooksExtension extends Extension
     const PREFIX = "azine_mailgun_webhooks";
     const API_KEY = "api_key";
     const PUBLIC_API_KEY = "public_api_key";
+    const SEND_NOTIFICATIONS = "send_notifications";
     const TICKET_ID = "ticket_id";
     const TICKET_SUBJECT = "ticket_subject";
     const TICKET_MESSAGE = "ticket_message";
@@ -36,6 +37,7 @@ class AzineMailgunWebhooksExtension extends Extension
             $container->setParameter(self::PREFIX."_".self::PUBLIC_API_KEY, $config[self::PUBLIC_API_KEY]);
         
         $container->setParameter(self::PREFIX."_".self::TICKET_ID, $config[self::TICKET_ID]);
+        $container->setParameter(self::PREFIX."_".self::SEND_NOTIFICATIONS, $config[self::SEND_NOTIFICATIONS]);
         $container->setParameter(self::PREFIX."_".self::TICKET_SUBJECT, $config[self::TICKET_SUBJECT]);        
         $container->setParameter(self::PREFIX."_".self::TICKET_MESSAGE, $config[self::TICKET_MESSAGE]);        
         $container->setParameter(self::PREFIX."_".self::ADMIN_USER_EMAIL, $config[self::ADMIN_USER_EMAIL]);
