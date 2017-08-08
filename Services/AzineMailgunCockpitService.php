@@ -3,27 +3,34 @@
 
 namespace Azine\MailgunWebhooksBundle\Services;
 
+use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
+use Symfony\Bridge\Doctrine\ManagerRegistry;
 
 class AzineMailgunCockpitService
 {
     private $emailDomain;
-    private $eventRepository;
+    /** @var ManagerRegistry  */
+    private $managerRegistry;
+    /** @var \Twig_Environment  */
     private $twig;
     
     private $cachedLastKnownIp;
     
-    public function __construct(MailgunEventRepository $eventRepository, \Twig_Environment $twig, $emailDomain)
+    public function __construct(ManagerRegistry $managerRegistry, \Twig_Environment $twig, $emailDomain)
     {
         $this->emailDomain = $emailDomain;
-        $this->eventRepository = $eventRepository;
+        $this->managerRegistry = $managerRegistry;
         $this->twig = $twig;
     }
 
     public function getLastKnownSenderIp()
     {
-        if (is_null($this->cachedLastKnownIp)) {                    
-            $lastKnownIp = $this->eventRepository->getLastKnownSenderIp();
+        if (is_null($this->cachedLastKnownIp)) {
+            /** @var MailgunEventRepository $eventRepository */
+            $eventRepository = $this->managerRegistry->getRepository(MailgunEvent::class);
+            $lastKnownIp = $eventRepository->getLastKnownSenderIp();
+
             $this->cachedLastKnownIp = $lastKnownIp;
         } else {
             $lastKnownIp = $this->cachedLastKnownIp;

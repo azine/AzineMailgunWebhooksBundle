@@ -8,7 +8,7 @@ services:
     azine_mailgun.cockpit_service:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunCockpitService
         arguments: 
-            - '@azine.mailgun.repository.mailgun_event_repository'
+            - '@doctrine'
             - '@twig'
             - '%azine_mailgun_webhooks_email_domain%'
 
@@ -18,8 +18,3 @@ services:
         tags:
             - { name: twig.extension }
             
-    azine.mailgun.repository.mailgun_event_repository:
-        class: Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository
-        factory: ["@doctrine.orm.entity_manager", getRepository]
-        arguments: [ Azine\MailgunWebhooksBundle\Entity\MailgunEvent]
-        
