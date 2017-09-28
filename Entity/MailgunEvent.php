@@ -440,14 +440,16 @@ class MailgunEvent
     }
 
     /**
-     * Set country
+     * Set country, if not Unknown
      *
      * @param  string       $country
      * @return MailgunEvent
      */
     public function setCountry($country)
     {
-        $this->country = $country;
+        if ($country !== 'Unknown') {
+            $this->country = $country;
+        }
 
         return $this;
     }
@@ -486,14 +488,16 @@ class MailgunEvent
     }
 
     /**
-     * Set region
+     * Set region, if not Unknown
      *
      * @param  string       $region
      * @return MailgunEvent
      */
     public function setRegion($region)
     {
-        $this->region = $region;
+        if ($region !== 'Unknown') {
+            $this->region = $region;
+        }
 
         return $this;
     }
