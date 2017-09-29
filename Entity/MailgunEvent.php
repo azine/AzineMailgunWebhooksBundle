@@ -26,15 +26,17 @@ class MailgunEvent
     /**
      * Set messageHeaders
      *
+     * In the loop, the values can also be an array.
+     *
      * @param  string                                           $messageHeaders
      * @return \Azine\MailgunWebhooksBundle\Entity\MailgunEvent
      */
     public function setMessageHeaders($messageHeaders)
     {
-        $headers = json_decode($messageHeaders);
+        $headers = json_decode($messageHeaders, true);
         $this->messageHeaders = array();
-        foreach ($headers as $next) {
-            $this->messageHeaders[$next[0]] = $next[1];
+        foreach ($headers as $key => $value) {
+            $this->messageHeaders[$key] = $value;
         }
 
         return $this;
