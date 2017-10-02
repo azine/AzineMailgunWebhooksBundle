@@ -128,14 +128,7 @@ php bin/console debug:router -e prod | grep mailgunevent_webhook
 
 ```
 
-and copy it to all the input fields for the webhooks on:
-
-- https://mailgun.com/cp/log#drop-callback
-- https://mailgun.com/cp/stats#open-webhook-url
-- https://mailgun.com/cp/bounces#bounce-callback
-- https://mailgun.com/cp/unsubscribes#unsubscribe-callback
-- https://mailgun.com/cp/spamreports#spam-callback
-- https://mailgun.com/cp/routes
+and copy it to all the input fields for the webhooks on https://mailgun.com/app/webhooks
 
 Then test if everything is setup ok by clicking the "Test" or "Send" button and check
 you database or the event-list.
