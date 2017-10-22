@@ -21,4 +21,5 @@ services:
         
     azine.command.delete_old_entries:
         class: Azine\MailgunWebhooksBundle\Command\DeleteOldEntriesCommand
-        tags: ['console.command']
+        tags:
+            - { name: console.command }
