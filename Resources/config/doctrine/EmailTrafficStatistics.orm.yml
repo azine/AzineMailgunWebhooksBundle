@@ -1,0 +1,20 @@
+Azine\MailgunWebhooksBundle\Entity\EmailTrafficStatistics:
+    type: entity
+    table: email_traffic_statistics
+    repositoryClass: Azine\MailgunWebhooksBundle\Entity\Repositories\EmailTrafficStatisticsRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+
+        action:          {type: string,     length: 255, nullable: false}
+        created:
+          type: datetime
+          gedmo:
+            timestampable:
+              on: create
+    lifecycleCallbacks: {  }
+
+

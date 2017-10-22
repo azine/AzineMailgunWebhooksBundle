@@ -85,7 +85,10 @@ azine_mailgun_webhooks:
     public_api_key:       ''
     
     # Whether to send notifications about spam complaints
-    send_notifications:   false
+    send_spam_alerts:   false
+    
+    #Interval in minutes between sending of email notifications after receiving spam complaints
+    send_spam_alerts_interval:  ''
     
     # Mailgun helpdesk ticket ID to request new IP address in case of spam complains
     ticket_id:            ''
