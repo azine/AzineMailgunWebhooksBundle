@@ -15,7 +15,7 @@ env:
 matrix:
   allow_failures:
     - env: SYMFONY_VERSION=dev-master
-- php: nightly
+    - php: nightly
 
 sudo: false
 
