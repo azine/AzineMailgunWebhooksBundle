@@ -16,4 +16,17 @@
             <directory>./Tests</directory>
         </testsuite>
     </testsuites>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true"
+                   addUncoveredFilesFromWhitelist="false">
+            <directory suffix=".php">./Command</directory>
+            <directory suffix=".php">./Controller</directory>
+            <directory suffix=".php">./DependencyInjection</directory>
+            <directory suffix=".php">./Entity</directory>
+            <directory suffix=".php">./Services</directory>
+            <!-- <exclude>
+            </exclude> -->
+        </whitelist>
+    </filter>
 </phpunit>

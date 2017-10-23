@@ -39,6 +39,3 @@ script:
 
 notifications:
   email: travis@azine-it.ch
-
-
-

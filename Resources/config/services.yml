@@ -4,6 +4,7 @@ services:
     azine_mailgun.service:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunService
         arguments: ["@doctrine"]
+        public: true
         
     azine_mailgun.cockpit_service:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunCockpitService
@@ -17,4 +18,8 @@ services:
         public: false
         tags:
             - { name: twig.extension }
-            
+        
+    azine.command.delete_old_entries:
+        class: Azine\MailgunWebhooksBundle\Command\DeleteOldEntriesCommand
+        tags:
+            - { name: console.command }
