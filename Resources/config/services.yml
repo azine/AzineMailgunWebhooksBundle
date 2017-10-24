@@ -18,8 +18,10 @@ services:
         public: false
         tags:
             - { name: twig.extension }
-        
+
     azine.command.delete_old_entries:
         class: Azine\MailgunWebhooksBundle\Command\DeleteOldEntriesCommand
+        arguments:
+            - '@azine_mailgun.service'
         tags:
-            - { name: console.command }
+            - { name: console.command, command: mailgun:delete-events }

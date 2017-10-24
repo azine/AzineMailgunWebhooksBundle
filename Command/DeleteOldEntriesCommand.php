@@ -16,9 +16,23 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 class DeleteOldEntriesCommand extends ContainerAwareCommand
 {
+    /**
+     * @var string|null The default command name
+     */
+    protected static $defaultName = 'mailgun:delete-events';
+
+    /** @var AzineMailgunService */
+    private $mailgunService;
+
+    public function __construct(AzineMailgunService $mailgunService)
+    {
+        $this->mailgunService = $mailgunService;
+        parent::__construct();
+    }
+
     protected function configure()
     {
-        $this->setName('mailgun:delete-events')
+        $this->setName(static::$defaultName)
             ->setDescription('Delete old mailgun events from the database')
             ->setDefinition(array(
                                     new InputArgument(	'date',
@@ -72,16 +86,8 @@ EOF
 
         $date = new \DateTime($ageLimit);
 
-        $result = $this->getMailgunService()->removeEvents($type, $date);
+        $result = $this->mailgunService->removeEvents($type, $date);
 
         $output->write("All MailgunEvents (& their CustomVariables & Attachments) older than ".$date->format("Y-m-d H:i:s")." of $typeDesc have been deleted ($result).", true);
-    }
-
-    /**
-     * @return AzineMailgunService
-     */
-    private function getMailgunService()
-    {
-        return $this->getContainer()->get('azine_mailgun.service');
     }
 }
