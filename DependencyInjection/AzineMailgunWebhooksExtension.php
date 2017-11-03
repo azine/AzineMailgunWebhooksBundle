@@ -16,12 +16,13 @@ class AzineMailgunWebhooksExtension extends Extension
     const PREFIX = "azine_mailgun_webhooks";
     const API_KEY = "api_key";
     const PUBLIC_API_KEY = "public_api_key";
-    const SEND_SPAM_ALERTS = "send_spam_alerts";
-    const SEND_SPAM_ALERTS_INTERVAL = "send_spam_alerts_interval";
+    const SPAM_ALERTS_PREFIX = "spam_alerts";
+    const SEND_ENABLED = "enabled";
+    const SEND_INTERVAL = "interval";
     const TICKET_ID = "ticket_id";
     const TICKET_SUBJECT = "ticket_subject";
     const TICKET_MESSAGE = "ticket_message";
-    const ADMIN_USER_EMAIL = "admin_user_email";
+    const ALERTS_RECIPIENT_EMAIL = "alerts_recipient_email";
 
     /**
      * {@inheritDoc}
@@ -36,14 +37,14 @@ class AzineMailgunWebhooksExtension extends Extension
 
         if(array_key_exists(self::PUBLIC_API_KEY, $config))
             $container->setParameter(self::PREFIX."_".self::PUBLIC_API_KEY, $config[self::PUBLIC_API_KEY]);
-        
-        $container->setParameter(self::PREFIX."_".self::TICKET_ID, $config[self::TICKET_ID]);
-        $container->setParameter(self::PREFIX."_".self::SEND_SPAM_ALERTS, $config[self::SEND_SPAM_ALERTS]);
-        $container->setParameter(self::PREFIX."_".self::SEND_SPAM_ALERTS_INTERVAL, $config[self::SEND_SPAM_ALERTS_INTERVAL]);
-        $container->setParameter(self::PREFIX."_".self::TICKET_SUBJECT, $config[self::TICKET_SUBJECT]);        
-        $container->setParameter(self::PREFIX."_".self::TICKET_MESSAGE, $config[self::TICKET_MESSAGE]);        
-        $container->setParameter(self::PREFIX."_".self::ADMIN_USER_EMAIL, $config[self::ADMIN_USER_EMAIL]);
-            
+
+        $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::SEND_ENABLED, $config[self::SPAM_ALERTS_PREFIX][self::SEND_ENABLED]);
+        $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::SEND_INTERVAL, $config[self::SPAM_ALERTS_PREFIX][self::SEND_INTERVAL]);
+        $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::TICKET_ID, $config[self::SPAM_ALERTS_PREFIX][self::TICKET_ID]);
+        $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::TICKET_SUBJECT, $config[self::SPAM_ALERTS_PREFIX][self::TICKET_SUBJECT]);
+        $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::TICKET_MESSAGE, $config[self::SPAM_ALERTS_PREFIX][self::TICKET_MESSAGE]);
+        $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::ALERTS_RECIPIENT_EMAIL, $config[self::SPAM_ALERTS_PREFIX][self::ALERTS_RECIPIENT_EMAIL]);
+
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 

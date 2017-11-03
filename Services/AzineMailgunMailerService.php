@@ -3,120 +3,152 @@
 
 namespace Azine\MailgunWebhooksBundle\Services;
 
-use Monolog\Logger;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\TranslatorInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Azine\MailgunWebhooksBundle\Entity\EmailTrafficStatistics;
+use Doctrine\ORM\EntityManager;
 
 class AzineMailgunMailerService
 {
+    /**
+     * @var \Swift_Mailer
+     */
     private $mailer;
-    private $validator;
-    private $logger;
+
+    /**
+     * @var \Twig_Environment
+     */
     private $twig;
+
+    /**
+     * @var TranslatorInterface
+     */
     private $translator;
-    private $mailerUser;
+
+    /**
+     * @var string
+     */
+    private $fromEmail;
+
+    /**
+     * @var string
+     */
     private $ticketId;
+
+    /**
+     * @var string
+     */
     private $ticketSubject;
+
+    /**
+     * @var string
+     */
     private $ticketMessage;
-    private $adminUserEmail;
+
+    /**
+     * @var string
+     */
+    private $spamAlertsRecipientEmail;
+
+    /**
+     * @var EntityManager
+     */
     private $entityManager;
+
+    /**
+     * @var int
+     */
     private $sendNotificationsInterval;
 
+    /**
+     * AzineMailgunMailerService constructor.
+     *
+     * @param \Swift_Mailer $mailer
+     * @param \Twig_Environment $twig
+     * @param TranslatorInterface $translator
+     * @param string $fromEmail
+     * @param string $ticketId
+     * @param string $ticketSubject
+     * @param string $ticketMessage
+     * @param string $spamAlertsRecipientEmail
+     * @param EntityManager $entityManager
+     * @param int $sendNotificationsInterval
+     */
     public function __construct(
         \Swift_Mailer $mailer,
-        ValidatorInterface $validator,
-        Logger $logger,
         \Twig_Environment $twig,
         TranslatorInterface $translator,
-        $mailerUser,
+        $fromEmail,
         $ticketId,
         $ticketSubject,
         $ticketMessage,
-        $adminUserEmail,
-        $entityManager,
+        $spamAlertsRecipientEmail,
+        EntityManager $entityManager,
         $sendNotificationsInterval
     ) {
         $this->mailer = $mailer;
-        $this->validator = $validator;
-        $this->logger = $logger;
         $this->twig = $twig;
         $this->translator = $translator;
-        $this->mailerUser = $mailerUser;
+        $this->fromEmail = $fromEmail;
         $this->ticketId = $ticketId;
         $this->ticketSubject = $ticketSubject;
         $this->ticketMessage = $ticketMessage;
-        $this->adminUserEmail = $adminUserEmail;
+        $this->spamAlertsRecipientEmail = $spamAlertsRecipientEmail;
         $this->entityManager = $entityManager;
         $this->sendNotificationsInterval = $sendNotificationsInterval;
     }
 
+    /**
+     * @param string $eventId
+     * @throws \Exception
+     * @return int $messagesSent
+     */
     public function  sendSpamComplaintNotification($eventId)
     {
         $messagesSent = 0;
-        $emailValidityErrors = $this->validateEmail($this->adminUserEmail);
+        $failedRecipients =0;
 
-        if (is_null($emailValidityErrors)) {
-            /** @var \Swift_Message $message */
-            $message = $this->mailer->createMessage();
-            $message->setTo($this->adminUserEmail)
-                ->setFrom($this->mailerUser)
-                ->setSubject($this->translator->trans('notification.spam_complaint_received'))
-                ->setBody(
-                    $this->twig->render('@AzineMailgunWebhooks/Email/notification.html.twig', array('eventId' => $eventId, 'ticketId' => $this->ticketId)),
-                    'text/html'
-                );
+        /** @var \Swift_Message $message */
+        $message = $this->mailer->createMessage();
+        $message->setTo($this->spamAlertsRecipientEmail)
+            ->setFrom($this->fromEmail)
+            ->setSubject($this->translator->trans('notification.spam_complaint_received'))
+            ->setBody(
+                $this->twig->render('@AzineMailgunWebhooks/Email/notification.html.twig', array('eventId' => $eventId, 'ticketId' => $this->ticketId)),
+                'text/html'
+            );
 
-            $lastSpamReport = $this->entityManager->getRepository(EmailTrafficStatistics::class)
-                ->findOneBy(['action' => EmailTrafficStatistics::SPAM_ALERT_SENT],
-                    ['created' => 'DESC']);
+        $lastSpamReport = $this->entityManager->getRepository(EmailTrafficStatistics::class)
+            ->getLastByAction(EmailTrafficStatistics::SPAM_ALERT_SENT);
 
+        if($lastSpamReport instanceof EmailTrafficStatistics) {
 
-            if($lastSpamReport instanceof EmailTrafficStatistics) {
+            $time = new \DateTime();
+            $timeDiff = $time->diff($lastSpamReport->getCreated());
 
-                $time = new \DateTime();
-                $timeDiff = $time->diff($lastSpamReport->getCreated());
-
-                if($timeDiff->i > $this->sendNotificationsInterval) {
-
-                    $messagesSent = $this->mailer->send($message);
-                }
-
-            }else{
+            if($timeDiff->i > $this->sendNotificationsInterval) {
 
                 $messagesSent = $this->mailer->send($message);
             }
 
-            if($messagesSent > 0) {
+        }else{
 
-                $spamAlert = new EmailTrafficStatistics();
-                $spamAlert->setAction(EmailTrafficStatistics::SPAM_ALERT_SENT);
-                $this->entityManager->persist($spamAlert);
-                $this->entityManager->flush($spamAlert);
-                $this->entityManager->clear();
-            }
-        } else {
-            $this->logger->warning('Tried to send notification about spam complaint but adminUserEmail is invalid: ' . json_encode($emailValidityErrors));
+            $messagesSent = $this->mailer->send($message);
         }
 
+        if($messagesSent > 0) {
+
+            $spamAlert = new EmailTrafficStatistics();
+            $spamAlert->setAction(EmailTrafficStatistics::SPAM_ALERT_SENT);
+            $this->entityManager->persist($spamAlert);
+            $this->entityManager->flush($spamAlert);
+            $this->entityManager->clear();
+        }
+
+        if($messagesSent == 0 && $failedRecipients > 0){
+
+            throw new \Exception('Tried to send notification about spam complaint but no messages were sent');
+        }
         return $messagesSent;
-    }
-
-    private function validateEmail($email)
-    {
-        $errors = $this->validator->validate(
-            $email,
-            array(
-                new \Symfony\Component\Validator\Constraints\Email(),
-                new \Symfony\Component\Validator\Constraints\NotBlank()
-            )
-        );
-
-        if (count($errors) > 0) {
-            return $errors;
-        } else {
-            return null;
-        }
     }
 }
