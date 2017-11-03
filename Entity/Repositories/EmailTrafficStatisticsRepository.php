@@ -14,4 +14,28 @@ use Doctrine\ORM\EntityRepository;
  */
 class EmailTrafficStatisticsRepository extends EntityRepository
 {
+    /**
+     * Get last EmailTrafficStatistics by action
+     * @param $action
+     *
+     * @return EmailTrafficStatistics
+     */
+    public function getLastByAction($action)
+    {
+        $q = $this->getEntityManager()->createQueryBuilder()
+            ->select('e')
+            ->from($this->getEntityName(), "e")
+            ->where('e.action = :action')
+            ->orderBy('e.created ', 'desc')
+            ->setParameters(['action' => $action]);
+
+        try {
+
+            return $q->getQuery()->getSingleResult();
+        }
+        catch(\Doctrine\ORM\NoResultException $e) {
+
+            return null;
+        }
+    }
 }
