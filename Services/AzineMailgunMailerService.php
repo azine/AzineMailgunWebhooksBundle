@@ -106,7 +106,7 @@ class AzineMailgunMailerService
     public function  sendSpamComplaintNotification($eventId)
     {
         $messagesSent = 0;
-        $failedRecipients =0;
+        $failedRecipients = [];
 
         /** @var \Swift_Message $message */
         $message = $this->mailer->createMessage();
@@ -128,12 +128,12 @@ class AzineMailgunMailerService
 
             if($timeDiff->i > $this->sendNotificationsInterval) {
 
-                $messagesSent = $this->mailer->send($message);
+                $messagesSent = $this->mailer->send($message, $failedRecipients);
             }
 
         }else{
 
-            $messagesSent = $this->mailer->send($message);
+            $messagesSent = $this->mailer->send($message, $failedRecipients);
         }
 
         if($messagesSent > 0) {
@@ -145,7 +145,7 @@ class AzineMailgunMailerService
             $this->entityManager->clear();
         }
 
-        if($messagesSent == 0 && $failedRecipients > 0){
+        if($messagesSent == 0 && !empty($failedRecipients)){
 
             throw new \Exception('Tried to send notification about spam complaint but no messages were sent');
         }
