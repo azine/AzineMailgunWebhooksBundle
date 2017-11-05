@@ -1,4 +1,15 @@
-<table style="width: 450px; float: right; border-spacing: 0;">
+<style type="text/css">
+
+	@-moz-document url-prefix() {
+
+		.cockpit a{
+
+			font-size: 13px;
+		}
+	}
+</style>
+
+<table class="cockpit" style="width: 450px; float: right; border-spacing: 0;">
 	<tr>
 		<td><a href="https://mailgun.com/app/dashboard" target="_blank" style="float:right;">Mailgun Dashboard&nbsp;</a></td>
 		<td><a href="https://mailgun.com/app/support/new" target="_blank" style="float:right;">Mailgun Support&nbsp;</a></td>
@@ -22,5 +33,5 @@
 	<h3 style="margin:0;float: right; clear: right;">Email domain is not configured</h3>
 {% endif %}
 {% if lastKnownIp == '' %}
-	<h3 style="margin:0;float: right; clear: right;">There are no events yet - unable to get last sender IP</h3>		
+	<h3 style="margin:0;float: right; clear: right;">There are no events yet - unable to get last sender IP</h3>
 {% endif %}
