@@ -142,11 +142,14 @@ class MailgunEventRepository extends EntityRepository
             ->getQuery();
         
         foreach($q->execute() as $next) {
-            if ($next['mh'] && isset($next['mh']['X-Mailgun-Sending-Ip'])) {
-                return $next['mh']['X-Mailgun-Sending-Ip'];
+            if ($next['mh']){
+                foreach ($next['mh'] as $nextHeader) {
+                    if ($nextHeader[0] == 'X-Mailgun-Sending-Ip') {
+                        return $nextHeader[1];
+                    }
+                }
             }
         }
-        
         return null;
     }
 
