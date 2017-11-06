@@ -5,6 +5,10 @@ namespace Azine\MailgunWebhooksBundle\EventListener;
 use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
 use Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService;
 
+/**
+ * Class EventCreatedListener
+ * @package Azine\MailgunWebhooksBundle\EventListener
+ */
 class EventCreatedListener
 {
     /**
