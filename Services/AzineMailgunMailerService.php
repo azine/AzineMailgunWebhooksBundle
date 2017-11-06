@@ -70,7 +70,7 @@ class AzineMailgunMailerService
      * @param string $ticketSubject
      * @param string $ticketMessage
      * @param string $spamAlertsRecipientEmail
-     * @param ManagerRegistry $managerRegistry,
+     * @param ManagerRegistry $managerRegistry
      * @param int $sendNotificationsInterval
      */
     public function __construct(
