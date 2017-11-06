@@ -3,10 +3,9 @@
 
 namespace Azine\MailgunWebhooksBundle\Services;
 
-use Symfony\Component\Translation\Translator;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Translation\TranslatorInterface;
 use Azine\MailgunWebhooksBundle\Entity\EmailTrafficStatistics;
-use Doctrine\ORM\EntityManager;
 
 class AzineMailgunMailerService
 {
@@ -51,9 +50,9 @@ class AzineMailgunMailerService
     private $spamAlertsRecipientEmail;
 
     /**
-     * @var EntityManager
+     * @var ManagerRegistry
      */
-    private $entityManager;
+    private $managerRegistry;
 
     /**
      * @var int
@@ -71,7 +70,7 @@ class AzineMailgunMailerService
      * @param string $ticketSubject
      * @param string $ticketMessage
      * @param string $spamAlertsRecipientEmail
-     * @param EntityManager $entityManager
+     * @param ManagerRegistry $managerRegistry,
      * @param int $sendNotificationsInterval
      */
     public function __construct(
@@ -83,7 +82,7 @@ class AzineMailgunMailerService
         $ticketSubject,
         $ticketMessage,
         $spamAlertsRecipientEmail,
-        EntityManager $entityManager,
+        ManagerRegistry $managerRegistry,
         $sendNotificationsInterval
     ) {
         $this->mailer = $mailer;
@@ -94,7 +93,7 @@ class AzineMailgunMailerService
         $this->ticketSubject = $ticketSubject;
         $this->ticketMessage = $ticketMessage;
         $this->spamAlertsRecipientEmail = $spamAlertsRecipientEmail;
-        $this->entityManager = $entityManager;
+        $this->managerRegistry = $managerRegistry;
         $this->sendNotificationsInterval = $sendNotificationsInterval;
     }
 
@@ -118,7 +117,7 @@ class AzineMailgunMailerService
                 'text/html'
             );
 
-        $lastSpamReport = $this->entityManager->getRepository(EmailTrafficStatistics::class)
+        $lastSpamReport = $this->managerRegistry->getManager()->getRepository(EmailTrafficStatistics::class)
             ->getLastByAction(EmailTrafficStatistics::SPAM_ALERT_SENT);
 
         if($lastSpamReport instanceof EmailTrafficStatistics) {
@@ -140,9 +139,10 @@ class AzineMailgunMailerService
 
             $spamAlert = new EmailTrafficStatistics();
             $spamAlert->setAction(EmailTrafficStatistics::SPAM_ALERT_SENT);
-            $this->entityManager->persist($spamAlert);
-            $this->entityManager->flush($spamAlert);
-            $this->entityManager->clear();
+            $manager = $this->managerRegistry->getManager();
+            $manager->persist($spamAlert);
+            $manager->flush($spamAlert);
+            $manager->clear();
         }
 
         if($messagesSent == 0 && !empty($failedRecipients)){

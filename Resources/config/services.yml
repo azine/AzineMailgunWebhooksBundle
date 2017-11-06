@@ -45,5 +45,5 @@ services:
             - '%azine_mailgun_webhooks_spam_alerts_ticket_subject%'
             - '%azine_mailgun_webhooks_spam_alerts_ticket_message%'
             - '%azine_mailgun_webhooks_spam_alerts_alerts_recipient_email%'
-            - '@doctrine.orm.entity_manager'
+            - '@doctrine'
             - '%azine_mailgun_webhooks_spam_alerts_interval%'
