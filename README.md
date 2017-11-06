@@ -83,6 +83,26 @@ azine_mailgun_webhooks:
 
     # Your public-api-key for mailgun => see https://mailgun.com/cp
     public_api_key:       ''
+    
+    spam_alerts:
+    
+        # Whether to send notifications about spam complaints
+        enabled:   false
+        
+        #Interval in minutes between sending of email notifications after receiving spam complaints
+        interval:  '60'
+        
+        # Mailgun helpdesk ticket ID to request new IP address in case of spam complains
+        ticket_id:      ''
+        
+        #Mailgun HelpDesk ticket subject
+        ticket_subject: 'IP on spam-list, please fix.'
+        
+        #Mailgun HelpDesk ticket subject
+        ticket_message: 'It looks like my ip is on a spam-list. Please, assign a clean IP to my domain."
+        
+        # Admin E-Mail to send notification about spam complaints
+        alerts_recipient_email:     ''
 ```
 
 # Sidenote on "monolog" emails and web scanners
