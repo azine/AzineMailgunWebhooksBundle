@@ -1,21 +1,35 @@
-<table style="width: 450px; float: right; border-spacing: 0;">
+<table class="emailCockpitLinks" cellspacing="0">
 	<tr>
-		<td><a href="https://mailgun.com/app/dashboard" target="_blank" style="float:right;">Mailgun Dashboard&nbsp;</a></td>
-		<td><a href="https://mailgun.com/app/support/new" target="_blank" style="float:right;">Mailgun Support&nbsp;</a></td>
-		<td><a href="https://mailgun.com/app/domains/{{ emailDomain }}" target="_blank" style="float:right;">Domain Configuration&nbsp;</a></td>
+		<th>Mailgun</th>
 	</tr>
 	<tr>
-		<td><a href="http://www.mail-tester.com/" target="_blank" style="float:right;">Mail Tester&nbsp;</a></td>
-		<td><a href="https://senderscore.org/lookup.php?lookup={{ lastKnownIp }}&validLookup=true" target="_blank" style="float:right;">SenderScore
-				for IP&nbsp;</a></td>
-		<td><a href="https://senderscore.org/lookup.php?lookup={{ emailDomain }}&validLookup=true" target="_blank" style="float:right;">SenderScore
-				for domain&nbsp;</a></td>
+		<td><a href="https://mailgun.com/app/dashboard" target="mailgun_dashboard">
+				Dashboard</a>
+			|
+			<a href="https://mailgun.com/app/support/new" target="mailgun_support">
+				Support</a>
+			|
+			<a href="https://mailgun.com/app/domains/{{ emailDomain }}" target="mailgun_domain_config">
+				Domain Configuration</a>
 	</tr>
 	<tr>
-		<td></td>
-		<td></td>
-		<td><a href="https://mxtoolbox.com/SuperTool.aspx?action=mx%3a{{ emailDomain }}&run=toolpage" target="_blank" style="float:right;">MxToolbox&nbsp;</a>
-		</td>
+		<td >&nbsp;</td>
+	</tr>
+	<tr>
+		<th >Other Tools</th>
+	</tr>
+	<tr>
+		<td><a href="http://www.mail-tester.com/" target="mailtester.com">
+				Mail Tester</a>
+			|
+			<a href="https://senderscore.org/lookup.php?lookup={{ lastKnownIp }}&validLookup=true" target="senderscore_ip">
+				SenderScore IP Lookup</a>
+			<br/>
+			<a href="https://senderscore.org/lookup.php?lookup={{ emailDomain }}&validLookup=true" target="senderscore_domain">
+				SenderScore Domain Lookup</a>
+			|
+			<a href="https://mxtoolbox.com/SuperTool.aspx?action=mx%3a{{ emailDomain }}&run=toolpage" target="mxtoolbox">
+				MxToolbox</a></td>
 	</tr>
 </table>
 {% if emailDomain == '' %}
