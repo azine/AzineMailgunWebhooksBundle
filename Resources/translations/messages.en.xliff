@@ -11,16 +11,16 @@
         <target>dummy</target>
       </trans-unit>
       <trans-unit id="0b5e2fc2fbb589463a61d536b0d97fa25028bbfd" resname="notification.spam_complaint_received">
-        <source state="new">notification.spam_complaint_received</source>
-        <target>Spam complaint received</target>
+        <source>notification.spam_complaint_received</source>
+        <target state="new">Spam complaint received</target>
       </trans-unit>
       <trans-unit id="9d0f42a79b841df40fb425630d48dc014442e051" resname="notification.mailgun_spam_received">
-        <source state="new">notification.mailgun_spam_received</source>
-        <target>Mailgun event with spam complaint received</target>
+        <source>notification.mailgun_spam_received</source>
+        <target state="new">Mailgun event with spam complaint received</target>
       </trans-unit>
       <trans-unit id="71e2ec3650bfc02bf1c9d73887d9b88109b89ff5" resname="notification.please_contact_mailgun">
-        <source state="new">notification.spam_complaint_received</source>
-        <target>Please, contact Mailgun support and ask for new IP address for your configured domain</target>
+        <source>notification.spam_complaint_received</source>
+        <target state="new">Please, contact Mailgun support and ask for new IP address for your configured domain</target>
       </trans-unit>
     </body>
   </file>
