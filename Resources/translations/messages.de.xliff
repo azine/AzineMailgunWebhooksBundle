@@ -11,16 +11,16 @@
         <target>dummy</target>
       </trans-unit>
       <trans-unit id="0b5e2fc2fbb589463a61d536b0d97fa25028bbfd" resname="notification.spam_complaint_received">
-        <source state="new">notification.spam_complaint_received</source>
-        <target>Spambeschwerde erhalten</target>
+        <source>notification.spam_complaint_received</source>
+        <target state="new">Spambeschwerde erhalten</target>
       </trans-unit>
       <trans-unit id="9d0f42a79b841df40fb425630d48dc014442e051" resname="notification.mailgun_spam_received">
-        <source state="new">notification.mailgun_spam_received</source>
-        <target>Veranstaltung von Mailgun mit der erhaltenen Spambeschwerde</target>
+        <source>notification.mailgun_spam_received</source>
+        <target state="new">Veranstaltung von Mailgun mit der erhaltenen Spambeschwerde</target>
       </trans-unit>
       <trans-unit id="71e2ec3650bfc02bf1c9d73887d9b88109b89ff5" resname="notification.please_contact_mailgun">
-        <source state="new">notification.spam_complaint_received</source>
-        <target>Kontaktieren Sie bitte Unterst?tzung von Mailgun und bitten Sie um neue IP-Adresse um Ihr konfiguriertes Gebiet</target>
+        <source>notification.spam_complaint_received</source>
+        <target state="new">Kontaktieren Sie bitte Unterst?tzung von Mailgun und bitten Sie um neue IP-Adresse um Ihr konfiguriertes Gebiet</target>
       </trans-unit>
     </body>
   </file>
