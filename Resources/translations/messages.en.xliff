@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:jms="urn:jms:translation" version="1.2">
-  <file source-language="en" target-language="de" datatype="plaintext" original="not.available">
+  <file date="2017-11-07T20:46:32Z" source-language="en" target-language="en" datatype="plaintext" original="not.available">
     <header>
       <tool tool-id="JMSTranslationBundle" tool-name="JMSTranslationBundle" tool-version="1.1.0-DEV"/>
       <note>The source node in most cases contains the sample message as written by the developer. If it looks like a dot-delimitted string such as "form.label.firstname", then the developer has not provided a default message.</note>
     </header>
     <body>
-      <trans-unit id="dummy" resname="dummy">
-        <source>dummy</source>
-        <target>dummy</target>
-      </trans-unit>
-      <trans-unit id="0b5e2fc2fbb589463a61d536b0d97fa25028bbfd" resname="notification.spam_complaint_received">
-        <source state="new">notification.spam_complaint_received</source>
-        <target>Spam complaint received</target>
-      </trans-unit>
-      <trans-unit id="9d0f42a79b841df40fb425630d48dc014442e051" resname="notification.mailgun_spam_received">
-        <source state="new">notification.mailgun_spam_received</source>
+      <trans-unit id="6a93e42ba0b9161e4ee59016ed74034fa4d2bbe5" resname="notification.mailgun_spam_received">
+        <source>notification.mailgun_spam_received</source>
         <target>Mailgun event with spam complaint received</target>
       </trans-unit>
-      <trans-unit id="71e2ec3650bfc02bf1c9d73887d9b88109b89ff5" resname="notification.please_contact_mailgun">
-        <source state="new">notification.spam_complaint_received</source>
-        <target>Please, contact Mailgun support and ask for new IP address for your configured domain</target>
+      <trans-unit id="f3f9837012521f039db9c692c5cd2ee7489631e6" resname="notification.please_contact_mailgun">
+        <source>notification.spam_complaint_received</source>
+        <target>Please, contact Mailgun support and ask for new IP address for your configured domain.</target>
+      </trans-unit>
+      <trans-unit id="36045305ff1185f2849db72fb99337ff9e537e18" resname="notification.spam_complaint_received">
+        <source>notification.spam_complaint_received</source>
+        <target>Spam complaint received</target>
       </trans-unit>
     </body>
   </file>
