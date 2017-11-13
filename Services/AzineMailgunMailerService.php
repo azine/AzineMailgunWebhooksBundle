@@ -3,6 +3,7 @@
 
 namespace Azine\MailgunWebhooksBundle\Services;
 
+use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Translation\TranslatorInterface;
 use Azine\MailgunWebhooksBundle\Entity\EmailTrafficStatistics;
@@ -148,6 +149,35 @@ class AzineMailgunMailerService
         if($messagesSent == 0 && !empty($failedRecipients)){
 
             throw new \Exception('Tried to send notification about spam complaint but no messages were sent');
+        }
+        return $messagesSent;
+    }
+
+    /**
+     * @param HetrixtoolsServiceResponse $response
+     * @throws \Exception
+     * @return int $messagesSent
+     */
+    public function sendBlacklistNotification(HetrixtoolsServiceResponse $response)
+    {
+        $messagesSent = 0;
+        $failedRecipients = [];
+
+        /** @var \Swift_Message $message */
+        $message = $this->mailer->createMessage();
+        $message->setTo($this->spamAlertsRecipientEmail)
+            ->setFrom($this->fromEmail)
+            ->setSubject($this->translator->trans('notification.blacklist_received'))
+            ->setBody(
+                $this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.html.twig', array('response' => $response)),
+                'text/html'
+            );
+
+        $messagesSent = $this->mailer->send($message, $failedRecipients);
+
+        if($messagesSent == 0 && !empty($failedRecipients)){
+
+            throw new \Exception('Tried to send notification about ip is blacklisted but no messages were sent');
         }
         return $messagesSent;
     }
