@@ -250,4 +250,27 @@ class MailgunEventRepository extends EntityRepository
 
         return $results;
     }
+
+    /**
+     * Get last MailgunEvent
+     *
+     * @return MailgunEvent
+     */
+    public function getLastEvent()
+    {
+        $q = $this->getEntityManager()->createQueryBuilder()
+            ->setMaxResults( 1 )
+            ->select('e')
+            ->from($this->getEntityName(), "e")
+            ->orderBy('e.timestamp ', 'desc');
+
+        try {
+
+            return $q->getQuery()->getSingleResult();
+        }
+        catch(\Doctrine\ORM\NoResultException $e) {
+
+            return null;
+        }
+    }
 }

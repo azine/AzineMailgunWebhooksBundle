@@ -103,6 +103,15 @@ azine_mailgun_webhooks:
         
         # Admin E-Mail to send notification about spam complaints
         alerts_recipient_email:     ''
+        
+    hetrixtools_service:
+    
+        #Your public-api-key for hetrixtools => see https://hetrixtools.com/
+        api_key:        ''
+        
+        #Url for checking if ip is in blacklist => see https://docs.hetrixtools.com/blacklist-check-api/
+        blacklist_check_ip_url:
+            
 ```
 
 # Sidenote on "monolog" emails and web scanners

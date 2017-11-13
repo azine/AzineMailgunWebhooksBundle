@@ -23,6 +23,7 @@ class EmailTrafficStatisticsRepository extends EntityRepository
     public function getLastByAction($action)
     {
         $q = $this->getEntityManager()->createQueryBuilder()
+            ->setMaxResults( 1 )
             ->select('e')
             ->from($this->getEntityName(), "e")
             ->where('e.action = :action')
