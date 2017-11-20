@@ -9,9 +9,10 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
-use Doctrine\ORM\EntityManager;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService;
 use Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService;
+use Symfony\Component\Translation\TranslatorInterface;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Checks if the last ip address from MailgunEvent entity is in blacklist
@@ -19,25 +20,59 @@ use Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService;
  */
 class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
 {
+    const NO_RESPONSE_FROM_HETRIX = 'No response from Hetrixtools service, try later.';
+    const BLACKLIST_REPORT_WAS_SENT = 'Blacklist report was sent.';
+    const IP_IS_NOT_BLACKLISTED = 'Ip is not blacklisted.';
+
+    /**
+     * @var string|null The default command name
+     */
+    protected static $defaultName = 'mailgun:check-ip-in-blacklist';
+
+    /**
+     * @var EntityManager
+     */
+    private $entityManager;
+
+    /**
+     * @var AzineMailgunHetrixtoolsService
+     */
+    private $hetrixtoolsService;
+
+    /**
+     * @var AzineMailgunMailerService
+     */
+    private $azineMailgunService;
+
+
+    public function __construct(EntityManager $entityManager, AzineMailgunHetrixtoolsService $hetrixtoolsService, AzineMailgunMailerService $azineMailgunService)
+    {
+        $this->entityManager = $entityManager;
+        $this->hetrixtoolsService = $hetrixtoolsService;
+        $this->azineMailgunService = $azineMailgunService;
+
+        parent::__construct();
+
+    }
+
     protected function configure()
     {
         $this
-            ->setName('mailgun:check-ip-in-blacklist')
+            ->setName(static::$defaultName)
             ->setDescription('Checks if the last ip address from MailgunEvent entity is in blacklist');
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $eventRepository = $this->getEntityManager()->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
-        $translator = $this->getContainer()->get('translator');
-        $ipAddress = $eventRepository->getLastEvent()->getIp();
+        $eventRepository = $this->entityManager->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
+        $ipAddress = $eventRepository->getLastKnownSenderIp();
 
-        $response = $this->getHetrixtoolsService()->checkIpAddressInBlacklist($ipAddress);
+        $response = $this->hetrixtoolsService->checkIpAddressInBlacklist($ipAddress);
 
         if(!$response instanceof HetrixtoolsServiceResponse){
 
-            $output->write($translator->trans("No response from Hetrixtools service, try later."), true);
+            $output->write(self::NO_RESPONSE_FROM_HETRIX);
             return false;
         }
 
@@ -47,11 +82,11 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
 
                 try{
 
-                    $messagesSent = $this->getAzineMailgunServiceService()->sendBlacklistNotification($response);
+                    $messagesSent = $this->azineMailgunService->sendBlacklistNotification($response);
 
                     if($messagesSent > 0){
 
-                        $output->write($translator->trans("Blacklist report was sent."), true);
+                        $output->write(self::BLACKLIST_REPORT_WAS_SENT);
                     }
                 }
                 catch (\Exception $e){
@@ -59,33 +94,10 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
                     $output->write($e->getMessage(), true);
                 }
             }
+            else{
+
+                $output->write(self::IP_IS_NOT_BLACKLISTED);
+            }
         }
-    }
-
-    /**
-     * Get EntityManager
-     * @return EntityManager
-     */
-    private function getEntityManager()
-    {
-        return $this->getContainer()->get('doctrine')->getManager();
-    }
-
-    /**
-     * Get AzineMailgunHetrixtoolsService
-     * @return AzineMailgunHetrixtoolsService
-     */
-    private function getHetrixtoolsService()
-    {
-        return $this->getContainer()->get('azine.mailgun.hetrixtools.service');
-    }
-
-    /**
-     * Get AzineMailgunMailerService
-     * @return AzineMailgunMailerService
-     */
-    private function getAzineMailgunServiceService()
-    {
-        return $this->getContainer()->get('azine.mailgun.mailer');
     }
 }

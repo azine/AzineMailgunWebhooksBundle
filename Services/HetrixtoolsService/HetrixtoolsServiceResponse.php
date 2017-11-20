@@ -53,7 +53,7 @@ class HetrixtoolsServiceResponse
     {
         $response = json_decode($response, true);
 
-        if($response instanceof \stdClass) {
+        if(!is_array($response)) {
             throw new \InvalidArgumentException('Invalid JSON provided');
         }
 
