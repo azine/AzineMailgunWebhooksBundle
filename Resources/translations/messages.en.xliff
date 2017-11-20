@@ -15,20 +15,12 @@
         <target>Spam complaint received</target>
       </trans-unit>
       <trans-unit id="egx5j005ff11858e5v62i72fb99337ff9e7925f5" resname="notification.blacklist_received">
-        <source state="new">notification.blacklist_received</source>
-        <target>Blacklist notification received</target>
+        <source>notification.blacklist_received</source>
+        <target state="new">Blacklist notification received</target>
       </trans-unit>
       <trans-unit id="82pg4xbjf1f4n8ke8o7fcd2fb953z7fqwb5ap4sa" resname="notification.blacklist_report_links">
-        <source state="new">notification.blacklist_report_links</source>
-        <target>Blacklist report links</target>
-      </trans-unit>
-      <trans-unit id="da39a3ee5e6b4b0d3255bfef95601890afd80709" resname="message.no_response_from_hetrixtools">
-        <source state="new">message.no_response_from_hetrixtools</source>
-        <target>No response from Hetrixtools service, try later.</target>
-      </trans-unit>
-      <trans-unit id="d837b0de848e5679f53e9132a3c924bb20ca56e0" resname="message.blacklist_report_sent">
-        <source state="new">message.blacklist_report_sent</source>
-        <target>Blacklist report was sent.</target>
+        <source>notification.blacklist_report_links</source>
+        <target state="new">Blacklist report links</target>
       </trans-unit>
     </body>
   </file>

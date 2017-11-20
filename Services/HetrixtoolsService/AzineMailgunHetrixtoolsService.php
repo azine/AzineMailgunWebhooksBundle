@@ -62,14 +62,19 @@ class AzineMailgunHetrixtoolsService
 
     /**
      * @param string $ip
-     * @throws \Exception
+     * @throws \InvalidArgumentException
      * @return string $url
      */
     private function prepareBlacklistIpCheckUrl($ip)
     {
+        if ($ip == null || !filter_var($ip, FILTER_VALIDATE_IP)) {
+
+            throw new \InvalidArgumentException('Given Ip address is invalid');
+        }
+
         if($this->apiKey == null){
 
-            throw new \Exception('Api key for Hetrixtools blacklist check service is not set');
+            throw new \InvalidArgumentException('Api key for Hetrixtools blacklist check service is not set');
         }
 
         $url = str_replace('<API_TOKEN>', $this->apiKey, $this->blacklistIpCheckUrl);
