@@ -24,6 +24,9 @@ class AzineMailgunWebhooksExtension extends Extension
     const TICKET_SUBJECT = "ticket_subject";
     const TICKET_MESSAGE = "ticket_message";
     const ALERTS_RECIPIENT_EMAIL = "alerts_recipient_email";
+    const HETRIXTOOLS_PREFIX = 'hetrixtools_service';
+    const BLACKLIST_CHECK_API_KEY = 'api_key';
+    const BLACKLIST_CHECK_IP_URL = 'blacklist_check_ip_url';
 
     /**
      * {@inheritDoc}
@@ -47,6 +50,9 @@ class AzineMailgunWebhooksExtension extends Extension
         $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::TICKET_SUBJECT, $config[self::SPAM_ALERTS_PREFIX][self::TICKET_SUBJECT]);
         $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::TICKET_MESSAGE, $config[self::SPAM_ALERTS_PREFIX][self::TICKET_MESSAGE]);
         $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::ALERTS_RECIPIENT_EMAIL, $config[self::SPAM_ALERTS_PREFIX][self::ALERTS_RECIPIENT_EMAIL]);
+
+        $container->setParameter(self::PREFIX."_".self::HETRIXTOOLS_PREFIX."_".self::BLACKLIST_CHECK_API_KEY, $config[self::HETRIXTOOLS_PREFIX][self::BLACKLIST_CHECK_API_KEY]);
+        $container->setParameter(self::PREFIX."_".self::HETRIXTOOLS_PREFIX."_".self::BLACKLIST_CHECK_IP_URL, $config[self::HETRIXTOOLS_PREFIX][self::BLACKLIST_CHECK_IP_URL]);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

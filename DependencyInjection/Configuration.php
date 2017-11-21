@@ -29,6 +29,7 @@ class Configuration implements ConfigurationInterface
             ->end();
 
         $this->addSpamAlertsSection($rootNode);
+        $this->addBlacklistCheckSection($rootNode);
 
         return $treeBuilder;
     }
@@ -40,7 +41,7 @@ class Configuration implements ConfigurationInterface
     {
         $node
             ->children()
-                ->arrayNode('spam_alerts')
+                ->arrayNode(AzineMailgunWebhooksExtension::SPAM_ALERTS_PREFIX)
                     ->addDefaultsIfNotSet()
                     ->canBeUnset()
                     ->children()
@@ -50,6 +51,22 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode(AzineMailgunWebhooksExtension::TICKET_SUBJECT)->defaultValue("IP on spam-list, please fix.")->info("Mailgun HelpDesk ticket subject")->end()
                         ->scalarNode(AzineMailgunWebhooksExtension::TICKET_MESSAGE)->defaultValue("It looks like my ip is on a spam-list. Please, assign a clean IP to my domain.")->info("Mailgun HelpDesk ticket subject")->end()
                         ->scalarNode(AzineMailgunWebhooksExtension::ALERTS_RECIPIENT_EMAIL)->defaultValue("")->info("Admin E-Mail to send notification about spam complaints")->end()
+        ->end();
+    }
+
+    /**
+     * @param ArrayNodeDefinition $node
+     */
+    private function addBlacklistCheckSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode(AzineMailgunWebhooksExtension::HETRIXTOOLS_PREFIX)
+                    ->addDefaultsIfNotSet()
+                    ->canBeUnset()
+                    ->children()
+                        ->scalarNode(AzineMailgunWebhooksExtension::BLACKLIST_CHECK_API_KEY)->defaultValue("")->info("Your public-api-key for hetrixtools => see https://hetrixtools.com/")->end()
+                        ->scalarNode(AzineMailgunWebhooksExtension::BLACKLIST_CHECK_IP_URL)->defaultValue("https://api.hetrixtools.com/v2/<API_TOKEN>/blacklist-check/ipv4/<IP_ADDRESS>/")->info("Url for checking if ip is in blacklist => see https://docs.hetrixtools.com/blacklist-check-api/")->end()
         ->end();
     }
 }

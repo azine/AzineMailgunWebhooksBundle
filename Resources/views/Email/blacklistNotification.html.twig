@@ -1,0 +1,18 @@
+<h3>{{ 'notification.blacklist_received' | trans }}</h3>
+
+
+{% for blacklist in response.blacklisted_on %}
+    <div>
+        {% for val in blacklist%}
+            <p>{{ val }}</p>
+        {% endfor %}
+    </div>
+    <hr>
+{% endfor %}
+
+<h3>{{ 'notification.blacklist_report_links' | trans }}</h3>
+{% for key,value in response.links %}
+
+    <p>{{ key }} : {{ value }}</p>
+
+{% endfor %}

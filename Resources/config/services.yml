@@ -47,3 +47,20 @@ services:
             - '%azine_mailgun_webhooks_spam_alerts_alerts_recipient_email%'
             - '@doctrine'
             - '%azine_mailgun_webhooks_spam_alerts_interval%'
+
+    azine.mailgun.hetrixtools.service:
+        class: Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService
+        arguments:
+            - '%azine_mailgun_webhooks_hetrixtools_service_api_key%'
+            - '%azine_mailgun_webhooks_hetrixtools_service_blacklist_check_ip_url%'
+
+    azine.mailgun.check_ip_address_is_blacklised.command:
+        class: Azine\MailgunWebhooksBundle\Command\CheckIpAddressIsBlacklistedCommand
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@azine.mailgun.hetrixtools.service'
+            - '@azine.mailgun.mailer'
+        tags:
+            - { name: console.command }
+
+
