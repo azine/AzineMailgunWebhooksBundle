@@ -1,14 +1,11 @@
 <?php
 namespace Azine\MailgunWebhooksBundle\Tests\Services;
 
+use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Azine\MailgunWebhooksBundle\Entity\EmailTrafficStatistics;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Azine\MailgunWebhooksBundle\Tests\TestHelper;
-use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
 use Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService;
+use Symfony\Component\Translation\Translator;
 
 class AzineMailgunMailerServiceTest extends WebTestCase
 {
@@ -21,19 +18,23 @@ class AzineMailgunMailerServiceTest extends WebTestCase
         $client->request("GET", "/");
         $client->followRedirects();
 
+        /** @var \Swift_Mailer $mailer */
         $mailer = $this->getContainer()->get('mailer');
+        /** @var \Twig_Environment $twig */
         $twig = $this->getContainer()->get('twig');
+        /** @var Translator $translator */
         $translator = $this->getContainer()->get('translator');
         $fromEmail = 'sender@mail.com';
         $ticketId = '123';
         $ticketSubject = 'test';
         $ticketMessage = 'testMessage';
         $spamAlertsRecipientEmail = 'reciever@mail.com';
-        $entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
+        /** @var ManagerRegistry $managerRegistry */
+        $managerRegistry = $this->getContainer()->get('doctrine');
         $sendIntervalMinutes = 1;
 
         $mailgunMailerService = new AzineMailgunMailerService($mailer, $twig, $translator,$fromEmail, $ticketId,
-            $ticketSubject, $ticketMessage, $spamAlertsRecipientEmail, $entityManager, $sendIntervalMinutes);
+            $ticketSubject, $ticketMessage, $spamAlertsRecipientEmail, $managerRegistry, $sendIntervalMinutes);
 
         $messageSent = $mailgunMailerService->sendSpamComplaintNotification(123);
 
