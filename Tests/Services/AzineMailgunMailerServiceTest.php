@@ -29,11 +29,11 @@ class AzineMailgunMailerServiceTest extends WebTestCase
         $ticketSubject = 'test';
         $ticketMessage = 'testMessage';
         $spamAlertsRecipientEmail = 'reciever@mail.com';
-        $entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $managerRegistry = $this->getContainer()->get('doctrine');
         $sendIntervalMinutes = 1;
 
         $mailgunMailerService = new AzineMailgunMailerService($mailer, $twig, $translator,$fromEmail, $ticketId,
-            $ticketSubject, $ticketMessage, $spamAlertsRecipientEmail, $entityManager, $sendIntervalMinutes);
+            $ticketSubject, $ticketMessage, $spamAlertsRecipientEmail, $managerRegistry, $sendIntervalMinutes);
 
         $messageSent = $mailgunMailerService->sendSpamComplaintNotification(123);
 
