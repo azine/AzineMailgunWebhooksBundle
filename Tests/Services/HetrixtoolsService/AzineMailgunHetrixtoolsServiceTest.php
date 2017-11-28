@@ -50,18 +50,25 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
+    public function testIfEmptyIpisGiven()
+    {
+        $apiKey = 'testApiKey';
+        $url = 'blacklistIpCheckUr';
+        $ip = '';
+
+        $service = new AzineMailgunHetrixtoolsService($apiKey, $url);
+        $service->checkIpAddressInBlacklist($ip);
+    }
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testIfInvalidIpisGiven()
     {
         $apiKey = 'testApiKey';
         $url = 'blacklistIpCheckUr';
-
-        //Test with empty ip
-        $ip = '';
-        $service = new AzineMailgunHetrixtoolsService($apiKey, $url);
-        $service->checkIpAddressInBlacklist($ip);
-
-        //Test with invalid ip
         $ip = 'invalidIpAddress';
+
+        $service = new AzineMailgunHetrixtoolsService($apiKey, $url);
         $service->checkIpAddressInBlacklist($ip);
     }
 
@@ -75,7 +82,7 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit_Framework_TestCase
             ->setMethods(array('executeCheck'))->getMock();
         $hetrixtoolsService->expects($this->once())->method("executeCheck")->will($this->returnValue($this->responseJson));
 
-
+        /** @var AzineMailgunHetrixtoolsService $hetrixtoolsService */
         $response = $hetrixtoolsService->checkIpAddressInBlacklist('198.51.100.42');
 
         $this->assertInstanceOf(HetrixtoolsServiceResponse::class, $response);
