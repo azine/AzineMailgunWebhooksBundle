@@ -171,7 +171,9 @@ class AzineMailgunMailerService
             ->setBody(
                 $this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.html.twig', array('response' => $response)),
                 'text/html'
-            );
+            )
+            ->addPart($this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.txt.twig', array('response' => $response),
+                'text/plain'));
 
         $messagesSent = $this->mailer->send($message, $failedRecipients);
 

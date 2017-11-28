@@ -57,9 +57,11 @@ services:
     azine.mailgun.check_ip_address_is_blacklised.command:
         class: Azine\MailgunWebhooksBundle\Command\CheckIpAddressIsBlacklistedCommand
         arguments:
-            - '@doctrine.orm.entity_manager'
+            - '@doctrine'
             - '@azine.mailgun.hetrixtools.service'
             - '@azine.mailgun.mailer'
+            - '%kernel.root_dir%'
+            - '%kernel.environment%'
         tags:
             - { name: console.command }
 

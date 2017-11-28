@@ -110,7 +110,7 @@ azine_mailgun_webhooks:
         api_key:        ''
         
         #Url for checking if ip is in blacklist => see https://docs.hetrixtools.com/blacklist-check-api/
-        blacklist_check_ip_url:    ''
+        blacklist_check_ip_url:    'https://api.hetrixtools.com/v2/<API_TOKEN>/blacklist-check/ipv4/<IP_ADDRESS>/'
             
 ```
 
