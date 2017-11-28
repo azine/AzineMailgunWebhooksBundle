@@ -38,6 +38,21 @@ class AzineMailgunHetrixtoolsService
     public function checkIpAddressInBlacklist($ip)
     {
         $url = $this->prepareBlacklistIpCheckUrl($ip);
+
+        $response = $this->get($url);
+        $response = HetrixtoolsServiceResponse::fromJson($response);
+
+        return $response;
+    }
+
+    /**
+     * sends a get request to the given url
+     *
+     * @param  string $url
+     * @return string $response| null
+     */
+    protected function get($url)
+    {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_HEADER, true);
@@ -48,14 +63,12 @@ class AzineMailgunHetrixtoolsService
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close($ch);
 
-        $response = substr($server_output, $header_size);
-
         if($info['http_code'] != 200){
 
             return null;
         }
 
-        $response = HetrixtoolsServiceResponse::fromJson($response);
+        $response = substr($server_output, $header_size);
 
         return $response;
     }
@@ -65,7 +78,7 @@ class AzineMailgunHetrixtoolsService
      * @throws \InvalidArgumentException
      * @return string $url
      */
-    private function prepareBlacklistIpCheckUrl($ip)
+    protected function prepareBlacklistIpCheckUrl($ip)
     {
         if ($ip == null || !filter_var($ip, FILTER_VALIDATE_IP)) {
 
