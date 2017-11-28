@@ -24,6 +24,7 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
     const NO_RESPONSE_FROM_HETRIX = 'No response from Hetrixtools service, try later.';
     const BLACKLIST_REPORT_WAS_SENT = 'Blacklist report was sent.';
     const IP_IS_NOT_BLACKLISTED = 'Ip is not blacklisted.';
+    const STARTING_RETRY = 'Initiating retry of the checking command. Tries left: ';
 
     /**
      * @var string|null The default command name
@@ -83,6 +84,7 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $manager = $this->managerRegistry->getManager();
+        /** @var MailgunEventRepository $eventRepository */
         $eventRepository = $manager->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
         $ipAddress = $eventRepository->getLastKnownSenderIp();
 
@@ -90,17 +92,14 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
 
         $numberOfAttempts = $input->getArgument("numberOfAttempts");
 
-        if(!$response instanceof HetrixtoolsServiceResponse){
+        if($numberOfAttempts != null){
 
-            if($numberOfAttempts != null){
+            $this->retry($numberOfAttempts);
+        }
+        else{
 
-                $this->retry($numberOfAttempts);
-            }
-            else{
-
-                $output->write(self::NO_RESPONSE_FROM_HETRIX);
-                return false;
-            }
+            $output->write(self::NO_RESPONSE_FROM_HETRIX);
+            return false;
         }
 
         if($response->status == HetrixtoolsServiceResponse::RESPONSE_STATUS_SUCCESS){
@@ -113,7 +112,7 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
 
                     if($messagesSent > 0){
 
-                        $output->write(self::BLACKLIST_REPORT_WAS_SENT);
+                        $output->write(self::BLACKLIST_REPORT_WAS_SENT." ($ipAddress)");
                     }
                 }
                 catch (\Exception $e){
@@ -123,16 +122,17 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
             }
             else{
 
-                $output->write(self::IP_IS_NOT_BLACKLISTED);
+                $output->write(self::IP_IS_NOT_BLACKLISTED." ($ipAddress)");
             }
         }
         elseif ($response->status == HetrixtoolsServiceResponse::RESPONSE_STATUS_ERROR){
 
-            if($numberOfAttempts != null && $response->error_message == HetrixtoolsServiceResponse::BLACKLIST_CHECK_IN_PROGRESS){
+            $output->write($response->error_message);
 
+            if($numberOfAttempts != null && $response->error_message == HetrixtoolsServiceResponse::BLACKLIST_CHECK_IN_PROGRESS){
+                $output->write(self::STARTING_RETRY . $numberOfAttempts);
                 $this->retry($numberOfAttempts);
             }
-            $output->write($response->error_message);
             return false;
         }
     }
