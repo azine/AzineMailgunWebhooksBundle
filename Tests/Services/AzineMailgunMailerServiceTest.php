@@ -51,7 +51,6 @@ class AzineMailgunMailerServiceTest extends WebTestCase
 
         // Check that  email was sent after azine_mailgun_webhooks_send_spam_alerts_interval have passed
         $this->assertEquals(1, $messageSent);
-
     }
 
 

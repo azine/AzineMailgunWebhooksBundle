@@ -12,7 +12,8 @@ use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService;
 use Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService;
 use Symfony\Component\Translation\TranslatorInterface;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Symfony\Component\Process\Process;
 
 /**
  * Checks if the last ip address from MailgunEvent entity is in blacklist
@@ -30,9 +31,9 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
     protected static $defaultName = 'mailgun:check-ip-in-blacklist';
 
     /**
-     * @var EntityManager
+     * @var ManagerRegistry
      */
-    private $entityManager;
+    private $managerRegistry;
 
     /**
      * @var AzineMailgunHetrixtoolsService
@@ -44,12 +45,25 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
      */
     private $azineMailgunService;
 
+    /**
+     * @var string
+     */
+    private $kernelRootDir;
 
-    public function __construct(EntityManager $entityManager, AzineMailgunHetrixtoolsService $hetrixtoolsService, AzineMailgunMailerService $azineMailgunService)
+    /**
+     * @var string
+     */
+    private $kernelEnvironment;
+
+
+    public function __construct(ManagerRegistry $managerRegistry, AzineMailgunHetrixtoolsService $hetrixtoolsService,
+                                AzineMailgunMailerService $azineMailgunService, $kernelRootDir, $environment)
     {
-        $this->entityManager = $entityManager;
+        $this->managerRegistry = $managerRegistry;
         $this->hetrixtoolsService = $hetrixtoolsService;
         $this->azineMailgunService = $azineMailgunService;
+        $this->kernelRootDir = $kernelRootDir;
+        $this->kernelEnvironment = $environment;
 
         parent::__construct();
 
@@ -59,21 +73,34 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
     {
         $this
             ->setName(static::$defaultName)
-            ->setDescription('Checks if the last ip address from MailgunEvent entity is in blacklist');
+            ->setDescription('Checks if the last sending IP address from MailgunEvent entity is in blacklist')
+            ->addArgument('numberOfAttempts',
+                InputArgument::OPTIONAL,
+                'Number of retry attempts in case if there were no response from hetrixtools or the process of checking blacklist was still in progress')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $eventRepository = $this->entityManager->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
+        $manager = $this->managerRegistry->getManager();
+        $eventRepository = $manager->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
         $ipAddress = $eventRepository->getLastKnownSenderIp();
 
         $response = $this->hetrixtoolsService->checkIpAddressInBlacklist($ipAddress);
 
+        $numberOfAttempts = $input->getArgument("numberOfAttempts");
+
         if(!$response instanceof HetrixtoolsServiceResponse){
 
-            $output->write(self::NO_RESPONSE_FROM_HETRIX);
-            return false;
+            if($numberOfAttempts != null){
+
+                $this->retry($numberOfAttempts);
+            }
+            else{
+
+                $output->write(self::NO_RESPONSE_FROM_HETRIX);
+                return false;
+            }
         }
 
         if($response->status == HetrixtoolsServiceResponse::RESPONSE_STATUS_SUCCESS){
@@ -99,5 +126,29 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
                 $output->write(self::IP_IS_NOT_BLACKLISTED);
             }
         }
+        elseif ($response->status == HetrixtoolsServiceResponse::RESPONSE_STATUS_ERROR){
+
+            if($numberOfAttempts != null && $response->error_message == HetrixtoolsServiceResponse::BLACKLIST_CHECK_IN_PROGRESS){
+
+                $this->retry($numberOfAttempts);
+            }
+            $output->write($response->error_message);
+            return false;
+        }
+    }
+
+    private function retry($numberOfAttempts)
+    {
+        $numberOfAttempts--;
+
+        $cmd = sprintf(
+            '%s/console %s %s --env=%s',
+            static::$defaultName,
+            $numberOfAttempts,
+            $this->kernelEnvironment
+        );
+
+        $process = new Process( $cmd );
+        $process->start();
     }
 }

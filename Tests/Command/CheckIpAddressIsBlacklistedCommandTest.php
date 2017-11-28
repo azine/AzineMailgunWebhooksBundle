@@ -10,6 +10,8 @@ use Symfony\Component\Console\Application;
 
 class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
 {
+    private $registry;
+
     private $entityManager;
 
     private $hetrixtoolsService;
@@ -29,19 +31,19 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
 
             [
                 'rbl' => 'dnsbl.cobion.com',
-                'delist' => 'https://exchange.test.ibmcloud.com/ip/44.44.44.44'
+                'delist' => 'https://example.test.com/ip/44.44.44.44'
             ],
             [
                 'rbl' => 'pbl.spamhaus.org',
-                'delist' => 'https://www.test.org/query/ip/44.44.44.44'
+                'delist' => 'https://www.example.org/query/ip/44.44.44.44'
             ]
         ];
 
         $this->hetrixtoolsRespose->links = [
-            'report_link' => 'https://test.com/report/blacklist/token/',
+            'report_link' => 'https://example.com/report/blacklist/token/',
             'whitelabel_report_link' => '',
-            'api_report_link' => 'https://api.test.com/v1/token/blacklist/report/44.44.44.44/',
-            'api_blacklist_check_link' => 'https://api.test.com/v2/token/blacklist-check/ipv4/44.44.44.44/'
+            'api_report_link' => 'https://api.example.com/v1/token/blacklist/report/44.44.44.44/',
+            'api_blacklist_check_link' => 'https://api.example.com/v2/token/blacklist-check/ipv4/44.44.44.44/'
         ];
 
         $repository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')->disableOriginalConstructor()->setMethods(array('getLastKnownSenderIp'))->getMock();
@@ -49,6 +51,9 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->entityManager = $this->getMockBuilder("Doctrine\ORM\EntityManager")->disableOriginalConstructor()->setMethods(array('getRepository'))->getMock();
         $this->entityManager->expects($this->any())->method("getRepository")->will($this->returnValue($repository));
+
+        $this->registry = $this->getMockBuilder("Doctrine\Common\Persistence\ManagerRegistry")->disableOriginalConstructor()->getMock();
+        $this->registry->expects($this->any())->method("getManager")->will($this->returnValue($this->entityManager));
 
         $this->hetrixtoolsService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService")->disableOriginalConstructor()->setMethods(array('checkIpAddressInBlacklist'))->getMock();
 
@@ -94,7 +99,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
     private function getTester()
     {
         $application = new Application();
-        $application->add(new CheckIpAddressIsBlacklistedCommand($this->entityManager, $this->hetrixtoolsService, $this->azineMailgunService));
+        $application->add(new CheckIpAddressIsBlacklistedCommand($this->registry, $this->hetrixtoolsService, $this->azineMailgunService));
         $command = $this->getCheckIpAddressIsBlacklistedCommand($application);
         $tester = new CommandTester($command);
 

@@ -8,6 +8,7 @@ class HetrixtoolsServiceResponse
 {
     const RESPONSE_STATUS_SUCCESS = 'SUCCESS';
     const RESPONSE_STATUS_ERROR = 'ERROR';
+    const BLACKLIST_CHECK_IN_PROGRESS = 'blacklist check in progress for this ipv4';
 
     /**
      * @var string
