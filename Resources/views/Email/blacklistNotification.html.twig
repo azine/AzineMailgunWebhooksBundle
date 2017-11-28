@@ -1,4 +1,4 @@
-<h3>{{ 'notification.blacklist_received' | trans }}</h3>
+<h3>{{ 'notification.blacklist_received.%ipAddress%' | trans("%ipAddress%" : ipAddress) }}</h3>
 
 
 {% for blacklist in response.blacklisted_on %}

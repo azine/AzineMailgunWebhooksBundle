@@ -155,10 +155,11 @@ class AzineMailgunMailerService
 
     /**
      * @param HetrixtoolsServiceResponse $response
+     * @param string $ipAddress
+     * @return int
      * @throws \Exception
-     * @return int $messagesSent
      */
-    public function sendBlacklistNotification(HetrixtoolsServiceResponse $response)
+    public function sendBlacklistNotification(HetrixtoolsServiceResponse $response, $ipAddress)
     {
         $messagesSent = 0;
         $failedRecipients = [];
@@ -169,10 +170,10 @@ class AzineMailgunMailerService
             ->setFrom($this->fromEmail)
             ->setSubject($this->translator->trans('notification.blacklist_received'))
             ->setBody(
-                $this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.html.twig', array('response' => $response)),
+                $this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.html.twig', array('response' => $response, "ipAddress" => $ipAddress)),
                 'text/html'
             )
-            ->addPart($this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.txt.twig', array('response' => $response),
+            ->addPart($this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.txt.twig', array('response' => $response, "ipAddress" => $ipAddress),
                 'text/plain'));
 
         $messagesSent = $this->mailer->send($message, $failedRecipients);

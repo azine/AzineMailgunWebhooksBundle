@@ -109,7 +109,7 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
 
                 try{
 
-                    $messagesSent = $this->azineMailgunService->sendBlacklistNotification($response);
+                    $messagesSent = $this->azineMailgunService->sendBlacklistNotification($response, $ipAddress);
 
                     if($messagesSent > 0){
 

@@ -1,12 +1,9 @@
-{{ 'notification.blacklist_received' | trans }}
+{{ 'notification.blacklist_received.%ipAddress%' | trans("%ipAddress%" : ipAddress) }}
 
+{% for blacklist in response.blacklisted_on %}{% for val in blacklist %}
 
-{% for blacklist in response.blacklisted_on %}
-
-    {% for val in blacklist%}
-        {{ val }}
-    {% endfor %}
-{% endfor %}
+    {{ val }}
+{% endfor %}{% endfor %}
 
 {{ 'notification.blacklist_report_links' | trans }}
 {% for key,value in response.links %}
