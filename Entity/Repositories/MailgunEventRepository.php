@@ -21,6 +21,14 @@ class MailgunEventRepository extends EntityRepository
         return sizeof($result);
     }
 
+    /**
+     * Get MailgunEvent that match the search criteria
+     * @param $criteria
+     * @param $orderBy
+     * @param $limit
+     * @param $offset
+     * @return mixed
+     */
     public function getEvents($criteria, $orderBy, $limit, $offset)
     {
         $qb = $this->getEventsQuery($criteria);
@@ -38,7 +46,7 @@ class MailgunEventRepository extends EntityRepository
     }
 
     /**
-     * @param  array        $criteria
+     * @param  array $criteria
      * @return QueryBuilder
      */
     private function getEventsQuery($criteria)
@@ -76,6 +84,10 @@ class MailgunEventRepository extends EntityRepository
         return $qb;
     }
 
+    /**
+     * Get distinct list of types of events
+     * @return array of string
+     */
     public function getEventTypes()
     {
         $q = $this->getEntityManager()->createQueryBuilder()
@@ -92,6 +104,10 @@ class MailgunEventRepository extends EntityRepository
         return $result;
     }
 
+    /**
+     * Get distinct list of email domains
+     * @return array of string
+     */
     public function getDomains()
     {
         $q = $this->getEntityManager()->createQueryBuilder()
@@ -109,6 +125,10 @@ class MailgunEventRepository extends EntityRepository
         return $result;
     }
 
+    /**
+     * Get distinct list of email recipients
+     * @return array of string
+     */
     public function getRecipients()
     {
         $q = $this->getEntityManager()->createQueryBuilder()
@@ -153,6 +173,10 @@ class MailgunEventRepository extends EntityRepository
         return null;
     }
 
+    /**
+     * Get a list of event fields that can be used for ordering results
+     * @return array
+     */
     public function getFieldsToOrderBy()
     {
         return array(
@@ -192,6 +216,7 @@ class MailgunEventRepository extends EntityRepository
      * 3. Infos (accepted, delivered, opened, clicked, stored)
      *
      * @param integer $count max number of events to fetch
+     * @return array of MailgunEvent
      */
     public function getImportantEvents($count)
     {
@@ -220,7 +245,7 @@ class MailgunEventRepository extends EntityRepository
     /**
      * Get events by severity/type
      * @param  string   $severity [info, warning, error]
-     * @return Ambigous <multitype:, unknown>
+     * @return array of MailgunEvent
      */
     public function getEventsBySeverity($severity = MailgunEvent::SEVERITY_INFO, $maxResults = 0)
     {
@@ -249,28 +274,5 @@ class MailgunEventRepository extends EntityRepository
         $results = $q->execute();
 
         return $results;
-    }
-
-    /**
-     * Get last MailgunEvent
-     *
-     * @return MailgunEvent
-     */
-    public function getLastEvent()
-    {
-        $q = $this->getEntityManager()->createQueryBuilder()
-            ->setMaxResults( 1 )
-            ->select('e')
-            ->from($this->getEntityName(), "e")
-            ->orderBy('e.timestamp ', 'desc');
-
-        try {
-
-            return $q->getQuery()->getSingleResult();
-        }
-        catch(\Doctrine\ORM\NoResultException $e) {
-
-            return null;
-        }
     }
 }
