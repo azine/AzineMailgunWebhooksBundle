@@ -39,10 +39,10 @@ class AzineMailgunHetrixtoolsService
     {
         $url = $this->prepareBlacklistIpCheckUrl($ip);
 
-        $response = $this->get($url);
-        $response = HetrixtoolsServiceResponse::fromJson($response);
+        $jsonResponse = $this->executeCheck($url);
+        $hetrixtoolsServiceResponse = HetrixtoolsServiceResponse::fromJson($jsonResponse);
 
-        return $response;
+        return $hetrixtoolsServiceResponse;
     }
 
     /**
@@ -51,7 +51,7 @@ class AzineMailgunHetrixtoolsService
      * @param  string $url
      * @return string $response| null
      */
-    protected function get($url)
+    protected function executeCheck($url)
     {
         $ch = curl_init($url);
 
@@ -78,7 +78,7 @@ class AzineMailgunHetrixtoolsService
      * @throws \InvalidArgumentException
      * @return string $url
      */
-    protected function prepareBlacklistIpCheckUrl($ip)
+    private function prepareBlacklistIpCheckUrl($ip)
     {
         if ($ip == null || !filter_var($ip, FILTER_VALIDATE_IP)) {
 

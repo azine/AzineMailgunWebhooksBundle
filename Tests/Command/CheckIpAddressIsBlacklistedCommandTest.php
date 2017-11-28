@@ -31,23 +31,23 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
 
             [
                 'rbl' => 'dnsbl.cobion.com',
-                'delist' => 'https://example.test.com/ip/44.44.44.44'
+                'delist' => 'https://example.test.com/ip/198.51.100.42'
             ],
             [
                 'rbl' => 'pbl.spamhaus.org',
-                'delist' => 'https://www.example.org/query/ip/44.44.44.44'
+                'delist' => 'https://www.example.org/query/ip/198.51.100.42'
             ]
         ];
 
         $this->hetrixtoolsRespose->links = [
             'report_link' => 'https://example.com/report/blacklist/token/',
             'whitelabel_report_link' => '',
-            'api_report_link' => 'https://api.example.com/v1/token/blacklist/report/44.44.44.44/',
-            'api_blacklist_check_link' => 'https://api.example.com/v2/token/blacklist-check/ipv4/44.44.44.44/'
+            'api_report_link' => 'https://api.example.com/v1/token/blacklist/report/198.51.100.42/',
+            'api_blacklist_check_link' => 'https://api.example.com/v2/token/blacklist-check/ipv4/198.51.100.42/'
         ];
 
         $repository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')->disableOriginalConstructor()->setMethods(array('getLastKnownSenderIp'))->getMock();
-        $repository->expects($this->any())->method('getLastKnownSenderIp')->will($this->returnValue('44.44.44.44'));
+        $repository->expects($this->any())->method('getLastKnownSenderIp')->will($this->returnValue('198.51.100.42'));
 
         $this->entityManager = $this->getMockBuilder("Doctrine\ORM\EntityManager")->disableOriginalConstructor()->setMethods(array('getRepository'))->getMock();
         $this->entityManager->expects($this->any())->method("getRepository")->will($this->returnValue($repository));

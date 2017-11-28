@@ -15,22 +15,22 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit_Framework_TestCase
             "blacklisted_on": [
                 {
                     "rbl": "example1.com",
-                    "delist": "https://example1.com/ip/44.44.44.44"
+                    "delist": "https://1.example.com/ip/198.51.100.42"
                 },
                 {
                     "rbl": "example2.org",
-                    "delist": "https://www.example2.org/query/ip/44.44.44.44"
+                    "delist": "https://2.example.com/query/ip/198.51.100.42"
                 },
                 {
                     "rbl": "example3.org",
-                    "delist": "https://www.example3.org/query/ip/44.44.44.44"
+                    "delist": "https://3.example.com/query/ip/198.51.100.42"
                 }
             ],
             "links": {
-                "report_link": "https://example3.com/report/blacklist/token/",
+                "report_link": "https://3.example.com/report/blacklist/token/",
                 "whitelabel_report_link": "",
-                "api_report_link": "https://api.example3.com/v1/token/report/44.44.44.44/",
-                "api_blacklist_check_link": "https://api.example3.com/v2/token/blacklist-check/ipv4/44.44.44.44/"
+                "api_report_link": "https://api.example.com/v1/token/report/198.51.100.42/",
+                "api_blacklist_check_link": "https://api.example.com/v2/token/blacklist-check/ipv4/198.51.100.42/"
             }
         }';
 
@@ -42,7 +42,7 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit_Framework_TestCase
         $apiKey = '';
         $url = 'blacklistIpCheckUr';
 
-        $ip = '44.44.44.44';
+        $ip = '198.51.100.42';
         $service = new AzineMailgunHetrixtoolsService($apiKey, $url);
         $service->checkIpAddressInBlacklist($ip);
     }
@@ -61,7 +61,6 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit_Framework_TestCase
         $service->checkIpAddressInBlacklist($ip);
 
         //Test with invalid ip
-
         $ip = 'invalidIpAddress';
         $service->checkIpAddressInBlacklist($ip);
     }
@@ -69,15 +68,15 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit_Framework_TestCase
     public function testSuccessReponse()
     {
         $apiKey = 'test';
-        $url = 'https://api.example.com/v2/testkey/blacklist-check/ipv4/44.44.44.44/';
+        $url = 'https://api.example.com/v2/testkey/blacklist-check/ipv4/198.51.100.42/';
 
         $hetrixtoolsService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService")
             ->setConstructorArgs([$apiKey, $url])
-            ->setMethods(array('get'))->getMock();
-        $hetrixtoolsService->expects($this->once())->method("get")->will($this->returnValue($this->responseJson));
+            ->setMethods(array('executeCheck'))->getMock();
+        $hetrixtoolsService->expects($this->once())->method("executeCheck")->will($this->returnValue($this->responseJson));
 
 
-        $response = $hetrixtoolsService->checkIpAddressInBlacklist('44.44.44.44');
+        $response = $hetrixtoolsService->checkIpAddressInBlacklist('198.51.100.42');
 
         $this->assertInstanceOf(HetrixtoolsServiceResponse::class, $response);
     }
