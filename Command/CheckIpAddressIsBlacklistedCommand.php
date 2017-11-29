@@ -49,21 +49,15 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
     /**
      * @var string
      */
-    private $kernelRootDir;
-
-    /**
-     * @var string
-     */
     private $kernelEnvironment;
 
 
     public function __construct(ManagerRegistry $managerRegistry, AzineMailgunHetrixtoolsService $hetrixtoolsService,
-                                AzineMailgunMailerService $azineMailgunService, $kernelRootDir, $environment)
+                                AzineMailgunMailerService $azineMailgunService, $environment)
     {
         $this->managerRegistry = $managerRegistry;
         $this->hetrixtoolsService = $hetrixtoolsService;
         $this->azineMailgunService = $azineMailgunService;
-        $this->kernelRootDir = $kernelRootDir;
         $this->kernelEnvironment = $environment;
 
         parent::__construct();
@@ -88,18 +82,19 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
         $eventRepository = $manager->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
         $ipAddress = $eventRepository->getLastKnownSenderIp();
 
-        $response = $this->hetrixtoolsService->checkIpAddressInBlacklist($ipAddress);
+        try {
+            $response = $this->hetrixtoolsService->checkIpAddressInBlacklist($ipAddress);
+        } catch (\InvalidArgumentException $ex) {
+            $numberOfAttempts = $input->getArgument("numberOfAttempts");
 
-        $numberOfAttempts = $input->getArgument("numberOfAttempts");
+            if ($numberOfAttempts != null) {
 
-        if($numberOfAttempts != null){
+                $this->retry($numberOfAttempts);
+            } else {
 
-            $this->retry($numberOfAttempts);
-        }
-        else{
-
-            $output->write(self::NO_RESPONSE_FROM_HETRIX);
-            return false;
+                $output->write(self::NO_RESPONSE_FROM_HETRIX);
+                return false;
+            }
         }
 
         if($response->status == HetrixtoolsServiceResponse::RESPONSE_STATUS_SUCCESS){
