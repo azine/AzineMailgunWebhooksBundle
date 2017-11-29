@@ -59,4 +59,13 @@ class HetrixtoolsServiceResponseTest extends \PHPUnit_Framework_TestCase
         $responseJson = 'invalidJson';
         HetrixtoolsServiceResponse::fromJson($responseJson);
     }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testHetrixtoolsServiceResponseNullJson()
+    {
+        //Test with invalid Json
+        HetrixtoolsServiceResponse::fromJson(null);
+    }
 }

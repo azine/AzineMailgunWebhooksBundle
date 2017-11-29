@@ -61,7 +61,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
         $this->azineMailgunService->expects($this->any())->method('sendBlacklistNotification')->will($this->returnvalue(1));
     }
 
-    public function testReportSending()
+    public function testSendingBlackListReport()
     {
         $tester = $this->getTester();
 
@@ -72,6 +72,14 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
 
         $display = $tester->getDisplay();
         $this->assertContains(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_WAS_SENT, $display);
+    }
+
+    public function testNotSendingBlackListReport()
+    {
+        $tester = $this->getTester();
+
+        //test if response status is 'SUCCESS' and ip is blacklisted
+        $this->hetrixtoolsService->expects($this->any())->method("checkIpAddressInBlacklist")->will($this->returnValue($this->hetrixtoolsRespose));
 
         //test if response status is 'SUCCESS' but ip is not blacklisted
         $this->hetrixtoolsRespose->blacklisted_count = 0;
@@ -85,7 +93,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
     public function testNoResponse()
     {
         $tester = $this->getTester();
-        $this->hetrixtoolsService->expects($this->once())->method("checkIpAddressInBlacklist")->will($this->returnValue(null));
+        $this->hetrixtoolsService->expects($this->once())->method("checkIpAddressInBlacklist")->will($this->throwException(new \InvalidArgumentException('no parseable response received.')));
 
         $tester->execute(array(''));
 
@@ -99,7 +107,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
     private function getTester()
     {
         $application = new Application();
-        $application->add(new CheckIpAddressIsBlacklistedCommand($this->registry, $this->hetrixtoolsService, $this->azineMailgunService));
+        $application->add(new CheckIpAddressIsBlacklistedCommand($this->registry, $this->hetrixtoolsService, $this->azineMailgunService, 'test'));
         $command = $this->getCheckIpAddressIsBlacklistedCommand($application);
         $tester = new CommandTester($command);
 
