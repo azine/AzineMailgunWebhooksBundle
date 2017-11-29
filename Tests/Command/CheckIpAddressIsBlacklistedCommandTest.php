@@ -98,7 +98,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
         $tester->execute(array(''));
 
         $display = $tester->getDisplay();
-        $this->assertContains(CheckIpAddressIsBlacklistedCommand::NO_RESPONSE_FROM_HETRIX, $display);
+        $this->assertContains(CheckIpAddressIsBlacklistedCommand::NO_VALID_RESPONSE_FROM_HETRIX, $display);
     }
 
     /**
