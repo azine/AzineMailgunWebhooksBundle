@@ -19,7 +19,10 @@ delete them when you don't need them anymore (or when you need to save some disk
 - capture all data that mailgun.com can post via the "webhooks" provided by mailgun.com => http://documentation.mailgun.com/user_manual.html#webhooks
 - display lists of event entries with search and filter functionality
 - show all details of a singel event
-- delete events 
+- cli command to delete events 'old' events
+- cli command to check if mailguns sending ip address is on any block-list, including email notification to administrator if the IP is on a black-list.
+- email notification to administrator when mails bounce because of a SPAM rating
+ 
 
 ## Installation
 To install AzineMailgunWebhooksBundle with Composer just add the following to your `composer.json` file:
@@ -176,6 +179,31 @@ You can implement your own means of notification for failures or if you configur
 application to use the swiftmailer, you can use the SwiftMailerMailgunWebhookEventListener,
 to send emails to an address you specified.
 
+# Cli Commands
+This bundle offers two commands for you to automate things via a scheduler (cronjob).
+
+## Delete old MailgunEvents
+If you only want to keep mailgun events younger than `date string`, to prevent your database of running full, you can run the command via scheduler/cronjob. 
+
+```
+# e.g. delete all events older than 60 days
+php app/console mailgun:delete-events -date '60 days ago'
+```
+
+## Check if Sending IP is on Black-Lists
+If the IP address, your emails are sent from, gets listed on a SPAM block-list, your email deliverability drops drastically. 
+To be able to be notified a.s.a.p. you can run this command to check the last IP, that was used for sending your emails, against
+hetrixtools.com. If the IP is listed, the administrator will receive an email.
+
+```
+# e.g. delete all events older than 60 days
+php app/console mailgun:check-ip-in-blacklist -numberOfAttempts 5
+```
+With the parameter `numberOfAttempts` you can specify how many times the command should try to get the hetrixtools report, if an attempt fails for any reason.
+
+HetrixTools.com has a free, limited plan that will allow ~3 checks per day. See https://hetrixtools.com/pricing/blacklist-monitor/ for details.
+  
+
 # ToDos / Contribute
 Anyone is welcome to contribute.
 
@@ -185,9 +213,6 @@ Here's a list of open TODOs
 - add SwiftMailerMailgunWebhookEventListener to notify admins when certain events occur => email upon "dropped" event
 - write some CSS, style pages 
 
-
-
-
 ## Build-Status ec.
 
 [![Build Status](https://travis-ci.org/azine/AzineMailgunWebhooksBundle.png)](https://travis-ci.org/azine/AzineMailgunWebhooksBundle)
@@ -195,4 +220,3 @@ Here's a list of open TODOs
 [![Latest Stable Version](https://poser.pugx.org/azine/mailgunwebhooks-bundle/v/stable.png)](https://packagist.org/packages/azine/mailgunwebhooks-bundle)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/azine/AzineMailgunWebhooksBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/azine/AzineMailgunWebhooksBundle/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/azine/AzineMailgunWebhooksBundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/azine/AzineMailgunWebhooksBundle/?branch=master)
-[![Dependency Status](https://www.versioneye.com/user/projects/567eaea7eb4f47003c000015/badge.svg?style=flat)](https://www.versioneye.com/user/projects/567eaea7eb4f47003c000015)
