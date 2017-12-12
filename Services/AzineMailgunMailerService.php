@@ -161,7 +161,6 @@ class AzineMailgunMailerService
      */
     public function sendBlacklistNotification(HetrixtoolsServiceResponse $response, $ipAddress)
     {
-        $messagesSent = 0;
         $failedRecipients = [];
 
         /** @var \Swift_Message $message */

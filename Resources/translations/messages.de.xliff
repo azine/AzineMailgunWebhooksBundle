@@ -6,6 +6,10 @@
       <note>The source node in most cases contains the sample message as written by the developer. If it looks like a dot-delimitted string such as "form.label.firstname", then the developer has not provided a default message.</note>
     </header>
     <body>
+      <trans-unit id="107a9be15374d27199cea578eb02970a082ae21d" resname="notification.blacklist_received">
+        <source>notification.blacklist_received</source>
+        <target state="new">notification.blacklist_received</target>
+      </trans-unit>
       <trans-unit id="838d2b56298b4f33c2674e788522667745633686" resname="notification.blacklist_received.%ipAddress%">
         <source>notification.blacklist_received.%ipAddress%</source>
         <target>Blacklist Meldung für Email-Versand-IP: %ipAddress%</target>

@@ -19,10 +19,11 @@ class AzineMailgunService {
 		$this->managerRegistry = $managerRegistry;
 	}
 
-	/**
-	 * Deletes all MailgunEvents that are older than the ageLimit
-	 * @param \DateTime $ageLimit
-	 */
+    /**
+     * Deletes all MailgunEvents that are older than the ageLimit
+     * @param \DateTime $ageLimit
+     * @return int
+     */
 	public function removeOldEventEntries(\DateTime $ageLimit) {
 		return $this->removeEvents(null, $ageLimit);
 	}

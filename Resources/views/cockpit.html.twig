@@ -3,13 +3,19 @@
 		<th>Mailgun</th>
 	</tr>
 	<tr>
-		<td><a href="https://mailgun.com/app/dashboard" target="mailgun_dashboard">
+		<td><a href="https://mailgun.com/app/dashboard"
+			   target="mailgun_dashboard"
+			   title="Dashboard on Mailgun.com">
 				Dashboard</a>
 			|
-			<a href="https://mailgun.com/app/support/new" target="mailgun_support">
+			<a href="https://mailgun.com/app/support/new"
+			   target="mailgun_support"
+			   title="Mailgun Online Support">
 				Support</a>
 			|
-			<a href="https://mailgun.com/app/domains/{{ emailDomain }}" target="mailgun_domain_config">
+			<a href="https://mailgun.com/app/domains/{{ emailDomain }}"
+			   target="mailgun_domain_config"
+			   title="Mailgun Overview for {{ emailDomain }}">
 				Domain Configuration</a>
 	</tr>
 	<tr>
@@ -19,17 +25,30 @@
 		<th >Other Tools</th>
 	</tr>
 	<tr>
-		<td><a href="http://www.mail-tester.com/" target="mailtester.com">
+		<td><a href="http://www.mail-tester.com/" target="mailtester.com"
+			   title="Test an emails SPAM Score">
 				Mail Tester</a>
 			|
-			<a href="https://senderscore.org/lookup.php?lookup={{ lastKnownIp }}&validLookup=true" target="senderscore_ip">
+			<a href="https://senderscore.org/lookup.php?lookup={{ lastKnownIp }}&validLookup=true"
+			   target="senderscore_ip"
+			   title="Sender Score for your ip">
 				SenderScore IP Lookup</a>
 			<br/>
-			<a href="https://senderscore.org/lookup.php?lookup={{ emailDomain }}&validLookup=true" target="senderscore_domain">
+			<a href="https://senderscore.org/lookup.php?lookup={{ emailDomain }}&validLookup=true"
+			   target="senderscore_domain"
+			   title="Sender Score for you domain">
 				SenderScore Domain Lookup</a>
 			|
-			<a href="https://mxtoolbox.com/SuperTool.aspx?action=mx%3a{{ emailDomain }}&run=toolpage" target="mxtoolbox">
-				MxToolbox</a></td>
+			<a href="https://mxtoolbox.com/SuperTool.aspx?action=mx%3a{{ emailDomain }}&run=toolpage"
+			   target="mxtoolbox"
+			   title="MX Lookup Problem Analysis">
+				MxToolbox</a>
+			|
+			<a href="https://hetrixtools.com/blacklist-check/{{ lastKnownIp }}"
+			   target="hetrixtools"
+			   title="SPAM Blacklist Check">
+				HetrixTools</a>
+		</td>
 	</tr>
 </table>
 {% if emailDomain == '' %}

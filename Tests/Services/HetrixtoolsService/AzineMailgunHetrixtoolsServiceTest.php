@@ -50,7 +50,7 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testIfEmptyIpisGiven()
+    public function testIfEmptyIpIsGiven()
     {
         $apiKey = 'testApiKey';
         $url = 'blacklistIpCheckUr';
@@ -62,7 +62,7 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testIfInvalidIpisGiven()
+    public function testIfInvalidIpIsGiven()
     {
         $apiKey = 'testApiKey';
         $url = 'blacklistIpCheckUr';
