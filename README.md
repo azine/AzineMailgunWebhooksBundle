@@ -156,7 +156,12 @@ Here's a list of open TODOs
 - add SwiftMailerMailgunWebhookEventListener to notify admins when certain events occur => email upon "dropped" event
 - write some CSS, style pages 
 
-
+# Contributing
+## Code style
+You can control the code style by setting up the pre-commit hook which contains the php-cs-fixer check. 
+All you have to do is to move pre-commit.sample file from commit-hooks/ to .git/hooks/ folder and rename it to pre-commit.
+Php-cs-fixer will check the style of your new added code each time you commit, showing you what you have to fix.
+## php-cs-fixer pre-commit-hook
 
 
 ## Build-Status ec.
