@@ -31,10 +31,10 @@ class AzineMailgunMailerServiceTest extends WebTestCase
         $spamAlertsRecipientEmail = 'reciever@mail.com';
         /** @var ManagerRegistry $managerRegistry */
         $managerRegistry = $this->getContainer()->get('doctrine');
-        $sendIntervalMinutes = 1;
+        $sendIntervalSeconds = 1;
 
         $mailgunMailerService = new AzineMailgunMailerService($mailer, $twig, $translator,$fromEmail, $ticketId,
-            $ticketSubject, $ticketMessage, $spamAlertsRecipientEmail, $managerRegistry, $sendIntervalMinutes);
+            $ticketSubject, $ticketMessage, $spamAlertsRecipientEmail, $managerRegistry, $sendIntervalSeconds);
 
         $messageSent = $mailgunMailerService->sendSpamComplaintNotification(123);
 
@@ -46,7 +46,7 @@ class AzineMailgunMailerServiceTest extends WebTestCase
         // Check that an email was not sent because the last email was sent less then azine_mailgun_webhooks_send_spam_alerts_interval
         $this->assertEquals(0, $messageSent);
 
-        $timeToWait = ($sendIntervalMinutes + 1) * 60;
+        $timeToWait = ($sendIntervalSeconds + 1);
         sleep($timeToWait);
         $messageSent = $mailgunMailerService->sendSpamComplaintNotification(123);
 

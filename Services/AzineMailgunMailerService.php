@@ -72,7 +72,7 @@ class AzineMailgunMailerService
      * @param string $ticketMessage
      * @param string $spamAlertsRecipientEmail
      * @param ManagerRegistry $managerRegistry
-     * @param int $sendNotificationsInterval
+     * @param int $sendNotificationsInterval in Seconds
      */
     public function __construct(
         \Swift_Mailer $mailer,
@@ -126,7 +126,7 @@ class AzineMailgunMailerService
             $time = new \DateTime();
             $timeDiff = $time->diff($lastSpamReport->getCreated());
 
-            if($timeDiff->i > $this->sendNotificationsInterval) {
+            if($timeDiff->s > $this->sendNotificationsInterval) {
 
                 $messagesSent = $this->mailer->send($message, $failedRecipients);
             }

@@ -45,7 +45,7 @@ class AzineMailgunWebhooksExtension extends Extension
         $container->setParameter(self::PREFIX."_".self::EMAIL_DOMAIN, $config[self::EMAIL_DOMAIN]);
 
         $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::SEND_ENABLED, $config[self::SPAM_ALERTS_PREFIX][self::SEND_ENABLED]);
-        $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::SEND_INTERVAL, $config[self::SPAM_ALERTS_PREFIX][self::SEND_INTERVAL]);
+        $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::SEND_INTERVAL, $config[self::SPAM_ALERTS_PREFIX][self::SEND_INTERVAL]*60);
         $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::TICKET_ID, $config[self::SPAM_ALERTS_PREFIX][self::TICKET_ID]);
         $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::TICKET_SUBJECT, $config[self::SPAM_ALERTS_PREFIX][self::TICKET_SUBJECT]);
         $container->setParameter(self::PREFIX."_".self::SPAM_ALERTS_PREFIX."_".self::TICKET_MESSAGE, $config[self::SPAM_ALERTS_PREFIX][self::TICKET_MESSAGE]);
