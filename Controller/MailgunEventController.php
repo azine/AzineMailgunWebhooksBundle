@@ -303,6 +303,11 @@ class MailgunEventController extends Controller
             $event->setTag($params['tag']);
             unset($params['tag']);
         }
+        // x-mailgun-tag
+        if (array_key_exists('x-mailgun-tag', $params)) {
+            $event->setTag($params['x-mailgun-tag']);
+            unset($params['x-mailgun-tag']);
+        }
         // userAgent
         if (array_key_exists('user-agent', $params)) {
             $event->setUserAgent($params['user-agent']);
