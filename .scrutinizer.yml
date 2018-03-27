@@ -10,5 +10,7 @@ tools:
     php_pdepend:
         excluded_dirs:
           - Entity
+
+    php_cs_fixer: true
         
         

@@ -204,16 +204,31 @@ With the parameter `numberOfAttempts` you can specify how many times the command
 HetrixTools.com has a free, limited plan that will allow ~3 checks per day. See https://hetrixtools.com/pricing/blacklist-monitor/ for details.
   
 
-# ToDos / Contribute
-Anyone is welcome to contribute.
+# Contribute
+Contributions are very welcome. Please fork the repository and issue your pull-request against the master branch.
 
+The PR should:
+- contain a description what the PR solves or adds to the bundle (reference existing issues if applicable)
+- contain clean code with some iniline documentation and phpdocs, no "pure whitespace" changes.
+- respect the [Symfony best practices](http://symfony.com/doc/current/bundles/best_practices.html) and coding style
+- have phpunit tests covering the new feature or fix
+- result in a 'green' build for your branch on [travis-ci.org](https://travis-ci.org/azine/AzineMailgunWebhooksBundle/branches) before you issue the PR
+
+## Code style
+You can check the code style with the `php-cs-fixer`. Optionally you can set up a pre-commit hook which contains the `php-cs-fixer` check. Also see https://github.com/FriendsOfPHP/PHP-CS-Fixer
+
+All you have to do is to move `pre-commit.sample` file from `commit-hooks/` to `.git/hooks/` folder and rename it to `pre-commit`.
+
+`php-cs-fixer` will check the style of your new added code each time you commit, showing you what you have to fix.
+
+## ToDos 
 Here's a list of open TODOs
 - write more unit-tests
 - add commands to "cleanup" the database periodically
 - add SwiftMailerMailgunWebhookEventListener to notify admins when certain events occur => email upon "dropped" event
 - write some CSS, style pages 
 
-## Build-Status ec.
+# Build-Status ec.
 
 [![Build Status](https://travis-ci.org/azine/AzineMailgunWebhooksBundle.png)](https://travis-ci.org/azine/AzineMailgunWebhooksBundle)
 [![Total Downloads](https://poser.pugx.org/azine/mailgunwebhooks-bundle/downloads.png)](https://packagist.org/packages/azine/mailgunwebhooks-bundle)
