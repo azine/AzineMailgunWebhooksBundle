@@ -1,10 +1,10 @@
 <?php
+
 namespace Azine\MailgunWebhooksBundle\Services;
 
 /**
  * Class AzineMailgunTwigExtension
- * Provides some filters and global variables
- * @package Azine\MailgunWebhooksBundle\Services
+ * Provides some filters and global variables.
  */
 class AzineMailgunTwigExtension extends \Twig_Extension
 {
@@ -19,8 +19,8 @@ class AzineMailgunTwigExtension extends \Twig_Extension
     }
 
     /**
+     * @param array $var
      *
-     * @param  array $var
      * @return mixed
      */
     public static function printArray(array $var)

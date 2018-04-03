@@ -1,32 +1,32 @@
 <?php
+
 namespace Azine\MailgunWebhooksBundle\Controller;
 
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
+use Azine\MailgunWebhooksBundle\Entity\MailgunAttachment;
+use Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable;
+use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
-use Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable;
-use Azine\MailgunWebhooksBundle\Entity\MailgunAttachment;
-use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * MailgunEvent controller.
- *
  */
 class MailgunEventController extends Controller
 {
-
     /**
      * Lists all MailgunEvent entities.
      *
-     * @param  Request                                                                                       $request
-     * @param  integer                                                                                       $page
-     * @param  integer                                                                                       $pageSize
+     * @param Request $request
+     * @param int     $page
+     * @param int     $pageSize
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function indexAction(Request $request, $page, $pageSize)
@@ -36,49 +36,48 @@ class MailgunEventController extends Controller
         // get general filter options
         $params['filterOptions'] = array(
                 'orderBy' => $this->getRepository()->getFieldsToOrderBy(),
-                'eventTypes' => array_merge(array("all", "unopened"), $this->getRepository()->getEventTypes()),
+                'eventTypes' => array_merge(array('all', 'unopened'), $this->getRepository()->getEventTypes()),
                 'domains' => $this->getRepository()->getDomains(),
                 'recipients' => $this->getRepository()->getRecipients(),
         );
 
         // get filter criteria from session
         $session = $request->getSession();
-        $page = 		$session->get('page', $page);
-        $pageSize =		$session->get('pageSize', $pageSize);
-        $domain =		$session->get('domain', $params['filterOptions']['domains'][0]);
-        $eventType =	$session->get('eventType', $params['filterOptions']['eventTypes'][0]);
-        $search =		$session->get('search',"");
-        $recipient =	$session->get('recipient',"");
-        $orderBy =		$session->get('orderBy', 'timestamp');
-        $orderDirection=$session->get('orderDirection', 'desc');
+        $page = $session->get('page', $page);
+        $pageSize = $session->get('pageSize', $pageSize);
+        $domain = $session->get('domain', $params['filterOptions']['domains'][0]);
+        $eventType = $session->get('eventType', $params['filterOptions']['eventTypes'][0]);
+        $search = $session->get('search', '');
+        $recipient = $session->get('recipient', '');
+        $orderBy = $session->get('orderBy', 'timestamp');
+        $orderDirection = $session->get('orderDirection', 'desc');
 
         // update filter criteria from get-request
-        $page = 		$request->get('page', $page);
-        $pageSize =		$request->get('pageSize', $pageSize);
+        $page = $request->get('page', $page);
+        $pageSize = $request->get('pageSize', $pageSize);
         if ($session->get('pageSize') != $pageSize) {
             $page = 1;
         }
         if ($request->get('clear')) {
-            $eventType = "all";
+            $eventType = 'all';
         } else {
-            $eventType =	$request->get('eventType', $eventType);
+            $eventType = $request->get('eventType', $eventType);
         }
 
         // update filter criteria from post-request
         $filter = $request->get('filter');
         if (is_array($filter)) {
-            $domain =		$filter['domain'];
-            $eventType =	$filter['eventType'];
-            $search =		trim($filter['search']);
+            $domain = $filter['domain'];
+            $eventType = $filter['eventType'];
+            $search = trim($filter['search']);
             $filter['search'] = $search;
-            $recipient =	trim($filter['recipient']);
+            $recipient = trim($filter['recipient']);
             $filter['recipient'] = $recipient;
-            $orderBy =		$filter['orderBy'];
-            $orderDirection =		$filter['orderDirection'];
-
+            $orderBy = $filter['orderBy'];
+            $orderDirection = $filter['orderDirection'];
         } else {
             $filter = array();
-            $filter['domain'] =	$domain;
+            $filter['domain'] = $domain;
             $filter['eventType'] = $eventType;
             $filter['search'] = $search;
             $filter['recipient'] = $recipient;
@@ -91,8 +90,8 @@ class MailgunEventController extends Controller
         $session->set('pageSize', $pageSize);
         $session->set('domain', $domain);
         $session->set('eventType', $eventType);
-        $session->set('search',$search);
-        $session->set('recipient',$recipient);
+        $session->set('search', $search);
+        $session->set('recipient', $recipient);
         $session->set('orderBy', $orderBy);
         $session->set('orderDirection', $orderDirection);
 
@@ -109,31 +108,32 @@ class MailgunEventController extends Controller
 
         $eventCount = $this->getRepository()->getEventCount($filter);
         // validate the page/pageSize and with the total number of result entries
-        if ($eventCount > 0 && (($page -1 ) *$pageSize >= $eventCount)) {
-            $maxPage = max(1,ceil($eventCount / $pageSize));
+        if ($eventCount > 0 && (($page - 1) * $pageSize >= $eventCount)) {
+            $maxPage = max(1, ceil($eventCount / $pageSize));
 
-            return $this->redirect($this->generateUrl("mailgunevent_list", array('page' => $maxPage, 'pageSize' => $pageSize))."?".$request->getQueryString());
+            return $this->redirect($this->generateUrl('mailgunevent_list', array('page' => $maxPage, 'pageSize' => $pageSize)).'?'.$request->getQueryString());
         }
 
         // get the events
-        $params['events'] = $this->getRepository()->getEvents($filter, array($orderBy => $orderDirection), $pageSize, ($page-1)*$pageSize);
+        $params['events'] = $this->getRepository()->getEvents($filter, array($orderBy => $orderDirection), $pageSize, ($page - 1) * $pageSize);
 
         // set the params for the pager
         $params['paginatorParams'] = array(
-                    'paginationPath' => "mailgunevent_list",
+                    'paginationPath' => 'mailgunevent_list',
                     'pageSize' => $pageSize,
                     'currentPage' => $page,
                     'currentFilters' => $params['currentFilters'],
                     'totalItems' => $eventCount,
-                    'lastPage' => ceil($eventCount/$pageSize),
+                    'lastPage' => ceil($eventCount / $pageSize),
                     'showAlwaysFirstAndLast' => true,
                 );
-        
+
         return $this->render('AzineMailgunWebhooksBundle:MailgunEvent:index.html.twig', $params);
     }
 
     /**
-     * Get the MailgunEvent Repository
+     * Get the MailgunEvent Repository.
+     *
      * @return MailgunEventRepository
      */
     private function getRepository()
@@ -151,12 +151,12 @@ class MailgunEventController extends Controller
         }
 
         // validate post-data
-        $key = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX."_".AzineMailgunWebhooksExtension::API_KEY);
+        $key = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
         $timestamp = $params['timestamp'];
         $token = $params['token'];
-        $expectedSignature = hash_hmac("SHA256", $timestamp.$token, $key);
+        $expectedSignature = hash_hmac('SHA256', $timestamp.$token, $key);
         if ($expectedSignature != $params['signature']) {
-            return new Response("Signature verification failed.", 401);
+            return new Response('Signature verification failed.', 401);
         }
 
         // drop unused variables
@@ -170,21 +170,20 @@ class MailgunEventController extends Controller
         try {
             // create event & populate with supplied data
             $this->createEvent($params);
-
         } catch (\Exception $e) {
-            $this->container->get('logger')->warning("AzineMailgunWebhooksBundle: creating entities failed: ".$e->getMessage());
+            $this->container->get('logger')->warning('AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage());
             $this->container->get('logger')->warning($e->getTraceAsString());
 
-            return new Response("AzineMailgunWebhooksBundle: creating entities failed: ".$e->getMessage(), 500);
+            return new Response('AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage(), 500);
         }
 
         // send response
-        return new Response(print_r($params, true)."Thanx, for the info.", 200);
-
+        return new Response(print_r($params, true).'Thanx, for the info.', 200);
     }
 
     /**
-     * Map all params to MailgunEvent-fields and MailgunAttachments and MailgunCustomVariables
+     * Map all params to MailgunEvent-fields and MailgunAttachments and MailgunCustomVariables.
+     *
      * @param EntityManager $params
      */
     private function createEvent(array $params)
@@ -294,7 +293,7 @@ class MailgunEventController extends Controller
         }
         // messageId
         if (array_key_exists('message-id', $params)) {
-            $trimmedMessageId = trim(trim($params['message-id']),"<>");
+            $trimmedMessageId = trim(trim($params['message-id']), '<>');
             $event->setMessageId($trimmedMessageId);
             unset($params['message-id']);
         }
@@ -324,7 +323,7 @@ class MailgunEventController extends Controller
             unset($params['token']);
         }
         // timestamp
-       if (array_key_exists('timestamp', $params)) {
+        if (array_key_exists('timestamp', $params)) {
             $event->setTimestamp($params['timestamp']);
             unset($params['timestamp']);
         }
@@ -339,14 +338,14 @@ class MailgunEventController extends Controller
 
         // process the remaining posted values
         foreach ($params as $key => $value) {
-
-            if (strpos($key, "attachment-") === 0 ) {
+            if (0 === strpos($key, 'attachment-')) {
                 // create event attachments
                 $attachment = new MailgunAttachment($event);
-                $attachment->setCounter(substr($key,11));
+                $attachment->setCounter(substr($key, 11));
 
                 // get the file
-                if ($value instanceof UploadedFile) {}
+                if ($value instanceof UploadedFile) {
+                }
                 $file = $value;
 
                 $attachment->setContent(file_get_contents($file->getPathname()));
@@ -355,7 +354,6 @@ class MailgunEventController extends Controller
                 $attachment->setName($file->getFilename());
 
                 $manager->persist($attachment);
-
             } else {
                 // create custom-variables for event
                 $customVar = new MailgunCustomVariable($event);
@@ -364,19 +362,17 @@ class MailgunEventController extends Controller
 
                 $manager->persist($customVar);
             }
-
         }
 
         // save all entities
         $manager->flush();
 
         // Dispatch an event about the logging of a Webhook-call
-        $this->get("event_dispatcher")->dispatch(MailgunEvent::CREATE_EVENT, new MailgunWebhookEvent($event));
+        $this->get('event_dispatcher')->dispatch(MailgunEvent::CREATE_EVENT, new MailgunWebhookEvent($event));
     }
 
     /**
      * Finds and displays a MailgunEvent entity.
-     *
      */
     public function showAction($id)
     {
@@ -389,13 +385,12 @@ class MailgunEventController extends Controller
         }
 
         return $this->render('AzineMailgunWebhooksBundle:MailgunEvent:show.html.twig', array(
-            'entity'	  => $entity,
+            'entity' => $entity,
         ));
     }
 
     /**
      * Deletes a MailgunEvent entity.
-     *
      */
     public function deleteAction(Request $request)
     {
@@ -412,14 +407,13 @@ class MailgunEventController extends Controller
         $em->flush();
 
         if ($request->isXmlHttpRequest()) {
-            return new JsonResponse(array("success" => true));
+            return new JsonResponse(array('success' => true));
         }
 
         $session = $request->getSession();
-        $page = 		$session->get('page', 1);
-        $pageSize =		$session->get('pageSize', 25);
+        $page = $session->get('page', 1);
+        $pageSize = $session->get('pageSize', 25);
 
         return $this->redirect($this->generateUrl('mailgunevent_list', array('page' => $page, 'pageSize' => $pageSize)));
     }
-
 }

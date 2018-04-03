@@ -7,14 +7,14 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
 /**
- * This is the class that validates and merges configuration from your app/config files
+ * This is the class that validates and merges configuration from your app/config files.
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html#cookbook-bundles-extension-config-class}
  */
 class Configuration implements ConfigurationInterface
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getConfigTreeBuilder()
     {
@@ -23,9 +23,9 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode(AzineMailgunWebhooksExtension::API_KEY)->isRequired()->cannotBeEmpty()->info("Your api-key for mailgun => see https://mailgun.com/cp")->end()
-                ->scalarNode(AzineMailgunWebhooksExtension::PUBLIC_API_KEY)->defaultValue("")->info("Your public-api-key for mailgun => see https://mailgun.com/cp")->end()
-                ->scalarNode(AzineMailgunWebhooksExtension::EMAIL_DOMAIN)->defaultValue("")->info("Your email domain configured on Mailgun")->end()
+                ->scalarNode(AzineMailgunWebhooksExtension::API_KEY)->isRequired()->cannotBeEmpty()->info('Your api-key for mailgun => see https://mailgun.com/cp')->end()
+                ->scalarNode(AzineMailgunWebhooksExtension::PUBLIC_API_KEY)->defaultValue('')->info('Your public-api-key for mailgun => see https://mailgun.com/cp')->end()
+                ->scalarNode(AzineMailgunWebhooksExtension::EMAIL_DOMAIN)->defaultValue('')->info('Your email domain configured on Mailgun')->end()
             ->end();
 
         $this->addSpamAlertsSection($rootNode);
