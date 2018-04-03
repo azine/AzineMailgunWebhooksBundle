@@ -1,18 +1,18 @@
 <?php
+
 namespace Azine\MailgunWebhooksBundle\Command;
 
 use Azine\MailgunWebhooksBundle\Services\AzineMailgunService;
-use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 
 /**
- * Delete old MailgunEvent entries from the database
+ * Delete old MailgunEvent entries from the database.
  *
  * @author dominik
- *
  */
 class DeleteOldEntriesCommand extends ContainerAwareCommand
 {
@@ -21,11 +21,11 @@ class DeleteOldEntriesCommand extends ContainerAwareCommand
         $this->setName('mailgun:delete-events')
             ->setDescription('Delete old mailgun events from the database')
             ->setDefinition(array(
-                                    new InputArgument(	'date',
+                                    new InputArgument('date',
                                                         InputArgument::OPTIONAL,
                                                         'Delete Mailgun Events that are older than "date" (Default: 60 days ago). The date must be something that strtotime() is able to parse:  => e.g. "since yesterday", "until 2 days ago", "> now - 2 hours", ">= 2005-10-15" '
                                                     ),
-                                    new InputArgument(	'type',
+                                    new InputArgument('type',
                                                         InputArgument::OPTIONAL,
                                                         'Delete Mailgun Events of the given type. It no type is supplied, events of all types are deleted.'
                                                     ),
@@ -53,28 +53,28 @@ EOF
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $type = $input->getArgument("type");
-        $ageLimit = $input->getArgument("date");
+        $type = $input->getArgument('type');
+        $ageLimit = $input->getArgument('date');
 
-        if ($type == null || $type == "") {
-            $output->write("deleting entries of any type.", true);
-            $typeDesc = "any type";
-        } elseif (array_search($type, array("accepted", "rejected", "delivered", "failed", "opened", "clicked", "unsubscribed", "complained", "stored"))) {
+        if (null == $type || '' == $type) {
+            $output->write('deleting entries of any type.', true);
+            $typeDesc = 'any type';
+        } elseif (array_search($type, array('accepted', 'rejected', 'delivered', 'failed', 'opened', 'clicked', 'unsubscribed', 'complained', 'stored'))) {
             $typeDesc = "type '$type'";
         } else {
             throw new InvalidArgumentException("Unknown type: $type");
         }
 
-        if ($ageLimit == null || $ageLimit == "") {
+        if (null == $ageLimit || '' == $ageLimit) {
             $output->write("using default age-limit of '60 days ago'.", true);
-            $ageLimit = "60 days ago";
+            $ageLimit = '60 days ago';
         }
 
         $date = new \DateTime($ageLimit);
 
         $result = $this->getMailgunService()->removeEvents($type, $date);
 
-        $output->write("All MailgunEvents (& their CustomVariables & Attachments) older than ".$date->format("Y-m-d H:i:s")." of $typeDesc have been deleted ($result).", true);
+        $output->write('All MailgunEvents (& their CustomVariables & Attachments) older than '.$date->format('Y-m-d H:i:s')." of $typeDesc have been deleted ($result).", true);
     }
 
     /**

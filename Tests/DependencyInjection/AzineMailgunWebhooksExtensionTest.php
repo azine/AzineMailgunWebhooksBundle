@@ -1,12 +1,13 @@
 <?php
+
 namespace Azine\MailgunWebhooksBundle\Tests\DependencyInjection;
 
-use Symfony\Component\Yaml\Parser;
 use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Yaml\Parser;
 
 /**
- * This is the class that loads and manages your bundle configuration
+ * This is the class that loads and manages your bundle configuration.
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
@@ -16,7 +17,8 @@ class AzineMailgunWebhooksExtensionTest extends \PHPUnit_Framework_TestCase
     protected $configuration;
 
     /**
-     * This should throw an exception
+     * This should throw an exception.
+     *
      * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
     public function testEmptyConfig()
@@ -27,7 +29,7 @@ class AzineMailgunWebhooksExtensionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * This should not throw an exception
+     * This should not throw an exception.
      */
     public function testMinimalConfigEmpty()
     {
@@ -37,7 +39,7 @@ class AzineMailgunWebhooksExtensionTest extends \PHPUnit_Framework_TestCase
         $loader->load(array($config), $this->configuration);
 
         $this->assertTrue($this->configuration instanceof ContainerBuilder);
-        $this->assertParameter("someKey_adf4343lki5432543cfcab54325fabiacbzfac", "azine_mailgun_webhooks_api_key");
+        $this->assertParameter('someKey_adf4343lki5432543cfcab54325fabiacbzfac', 'azine_mailgun_webhooks_api_key');
     }
 
     public function testFullConfig()
@@ -48,12 +50,12 @@ class AzineMailgunWebhooksExtensionTest extends \PHPUnit_Framework_TestCase
         $loader->load(array($config), $this->configuration);
 
         $this->assertTrue($this->configuration instanceof ContainerBuilder);
-        $this->assertParameter("someKey_adf4343lki5432543cfcab54325fabiacbzfac", "azine_mailgun_webhooks_api_key");
-        $this->assertParameter("somePublicKey_adflkiacfcajkhkhkjhkj8767654654bfabiacbzfac", "azine_mailgun_webhooks_public_api_key");
+        $this->assertParameter('someKey_adf4343lki5432543cfcab54325fabiacbzfac', 'azine_mailgun_webhooks_api_key');
+        $this->assertParameter('somePublicKey_adflkiacfcajkhkhkjhkj8767654654bfabiacbzfac', 'azine_mailgun_webhooks_public_api_key');
     }
 
     /**
-     * Get a full config for this bundle
+     * Get a full config for this bundle.
      */
     protected function getFullConfig()
     {
@@ -72,7 +74,7 @@ EOF;
     }
 
     /**
-     * Get a the minimal config for this bundle
+     * Get a the minimal config for this bundle.
      */
     protected function getMinimalConfig()
     {
@@ -88,7 +90,8 @@ EOF;
     }
 
     /**
-     * Get the minimal config
+     * Get the minimal config.
+     *
      * @return array
      */
     protected function getEmptyConfig()
@@ -107,12 +110,11 @@ EOF;
      */
     private function assertParameter($value, $key)
     {
-        $this->assertEquals($value, $this->configuration->getParameter($key), sprintf('%s parameter is correct', $key));
+        $this->assertSame($value, $this->configuration->getParameter($key), sprintf('%s parameter is correct', $key));
     }
 
     protected function tearDown()
     {
         unset($this->configuration);
     }
-
 }

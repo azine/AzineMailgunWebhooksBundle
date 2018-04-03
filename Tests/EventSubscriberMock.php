@@ -1,8 +1,9 @@
 <?php
+
 namespace Azine\MailgunWebhooksBundle\Tests;
 
-use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
+use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class EventSubscriberMock implements EventSubscriberInterface
@@ -18,5 +19,4 @@ class EventSubscriberMock implements EventSubscriberInterface
     {
         return $event->getMailgunEvent();
     }
-
 }

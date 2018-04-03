@@ -7,7 +7,7 @@ use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 class MailgunEventTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Do not allow country or region to be set to 'Unknown'
+     * Do not allow country or region to be set to 'Unknown'.
      */
     public function testCannotSetAsUnknown()
     {
@@ -21,7 +21,7 @@ class MailgunEventTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test decoding of Json into messageHeaders property
+     * Test decoding of Json into messageHeaders property.
      *
      * @dataProvider messageHeadersJsonString
      *
