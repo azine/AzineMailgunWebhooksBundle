@@ -52,8 +52,8 @@ class DeleteOldEntriesCommandTest extends \PHPUnit_Framework_TestCase
     public static function removeEventsCallback($type, $date)
     {
         $checkDate = new \DateTime(self::$days.' days ago');
-        self::assertEquals(self::$type, $type, 'type null expected.');
-        self::assertEquals($checkDate->format('Y-m-d H:i'), $date->format('Y-m-d H:i'), 'wrong date.');
+        self::assertSame(self::$type, $type, 'type null expected.');
+        self::assertSame($checkDate->format('Y-m-d H:i'), $date->format('Y-m-d H:i'), 'wrong date.');
 
         return self::$count;
     }
