@@ -1,12 +1,11 @@
 <?php
+
 namespace Azine\MailgunWebhooksBundle\Tests\Command;
 
 use Azine\MailgunWebhooksBundle\Command\CheckIpAddressIsBlacklistedCommand;
-use Azine\MailgunWebhooksBundle\Command\DeleteOldEntriesCommand;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
 
 class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,33 +26,32 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
         $this->hetrixtoolsRespose->api_calls_left = 5;
         $this->hetrixtoolsRespose->blacklist_check_credits_left = 5;
         $this->hetrixtoolsRespose->blacklisted_count = 5;
-        $this->hetrixtoolsRespose->blacklisted_on = [
-
-            [
+        $this->hetrixtoolsRespose->blacklisted_on = array(
+            array(
                 'rbl' => 'dnsbl.cobion.com',
-                'delist' => 'https://example.test.com/ip/198.51.100.42'
-            ],
-            [
+                'delist' => 'https://example.test.com/ip/198.51.100.42',
+            ),
+            array(
                 'rbl' => 'pbl.spamhaus.org',
-                'delist' => 'https://www.example.org/query/ip/198.51.100.42'
-            ]
-        ];
+                'delist' => 'https://www.example.org/query/ip/198.51.100.42',
+            ),
+        );
 
-        $this->hetrixtoolsRespose->links = [
+        $this->hetrixtoolsRespose->links = array(
             'report_link' => 'https://example.com/report/blacklist/token/',
             'whitelabel_report_link' => '',
             'api_report_link' => 'https://api.example.com/v1/token/blacklist/report/198.51.100.42/',
-            'api_blacklist_check_link' => 'https://api.example.com/v2/token/blacklist-check/ipv4/198.51.100.42/'
-        ];
+            'api_blacklist_check_link' => 'https://api.example.com/v2/token/blacklist-check/ipv4/198.51.100.42/',
+        );
 
         $repository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')->disableOriginalConstructor()->setMethods(array('getLastKnownSenderIp'))->getMock();
         $repository->expects($this->any())->method('getLastKnownSenderIp')->will($this->returnValue('198.51.100.42'));
 
         $this->entityManager = $this->getMockBuilder("Doctrine\ORM\EntityManager")->disableOriginalConstructor()->setMethods(array('getRepository'))->getMock();
-        $this->entityManager->expects($this->any())->method("getRepository")->will($this->returnValue($repository));
+        $this->entityManager->expects($this->any())->method('getRepository')->will($this->returnValue($repository));
 
         $this->registry = $this->getMockBuilder("Doctrine\Common\Persistence\ManagerRegistry")->disableOriginalConstructor()->getMock();
-        $this->registry->expects($this->any())->method("getManager")->will($this->returnValue($this->entityManager));
+        $this->registry->expects($this->any())->method('getManager')->will($this->returnValue($this->entityManager));
 
         $this->hetrixtoolsService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService")->disableOriginalConstructor()->setMethods(array('checkIpAddressInBlacklist'))->getMock();
 
@@ -66,7 +64,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
         $tester = $this->getTester();
 
         //test if response status is 'SUCCESS' and ip is blacklisted
-        $this->hetrixtoolsService->expects($this->any())->method("checkIpAddressInBlacklist")->will($this->returnValue($this->hetrixtoolsRespose));
+        $this->hetrixtoolsService->expects($this->any())->method('checkIpAddressInBlacklist')->will($this->returnValue($this->hetrixtoolsRespose));
 
         $tester->execute(array(''));
 
@@ -79,7 +77,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
         $tester = $this->getTester();
 
         //test if response status is 'SUCCESS' and ip is blacklisted
-        $this->hetrixtoolsService->expects($this->any())->method("checkIpAddressInBlacklist")->will($this->returnValue($this->hetrixtoolsRespose));
+        $this->hetrixtoolsService->expects($this->any())->method('checkIpAddressInBlacklist')->will($this->returnValue($this->hetrixtoolsRespose));
 
         //test if response status is 'SUCCESS' but ip is not blacklisted
         $this->hetrixtoolsRespose->blacklisted_count = 0;
@@ -93,7 +91,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
     public function testNoResponse()
     {
         $tester = $this->getTester();
-        $this->hetrixtoolsService->expects($this->once())->method("checkIpAddressInBlacklist")->will($this->throwException(new \InvalidArgumentException('no parseable response received.')));
+        $this->hetrixtoolsService->expects($this->once())->method('checkIpAddressInBlacklist')->will($this->throwException(new \InvalidArgumentException('no parseable response received.')));
 
         $tester->execute(array(''));
 
@@ -115,13 +113,12 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param  Application  $application
+     * @param Application $application
+     *
      * @return CheckIpAddressIsBlacklistedCommand
      */
     private function getCheckIpAddressIsBlacklistedCommand($application)
     {
         return $application->find('mailgun:check-ip-in-blacklist');
     }
-
-
 }

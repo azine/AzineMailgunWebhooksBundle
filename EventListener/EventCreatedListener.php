@@ -6,8 +6,7 @@ use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
 use Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService;
 
 /**
- * Class EventCreatedListener
- * @package Azine\MailgunWebhooksBundle\EventListener
+ * Class EventCreatedListener.
  */
 class EventCreatedListener
 {
@@ -25,11 +24,11 @@ class EventCreatedListener
      * EventCreatedListener constructor.
      *
      * @param AzineMailgunMailerService $mailer
-     * @param bool                $sendNotifications
+     * @param bool                      $sendNotifications
      */
     public function __construct(AzineMailgunMailerService $mailer, $sendNotifications)
     {
-        $this->mailer = $mailer;   
+        $this->mailer = $mailer;
         $this->sendNotifications = $sendNotifications;
     }
 
@@ -39,9 +38,9 @@ class EventCreatedListener
     public function onEventCreated(MailgunWebhookEvent $event)
     {
         $eventType = $event->getMailgunEvent()->getEvent();
-        if ($eventType === 'complained') {
+        if ('complained' === $eventType) {
             if ($this->sendNotifications) {
-                $this->mailer->sendSpamComplaintNotification($event->getMailgunEvent()->getId());                
+                $this->mailer->sendSpamComplaintNotification($event->getMailgunEvent()->getId());
             }
         }
     }

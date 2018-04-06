@@ -1,19 +1,17 @@
 <?php
+
 namespace Azine\MailgunWebhooksBundle\Controller;
 
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
 /**
  * Mailgun controller.
- *
  */
-
 class MailgunController extends Controller
 {
-
     /**
-     * Show Mailgun-Overview
-     *
+     * Show Mailgun-Overview.
      */
     public function overviewAction()
     {
@@ -25,7 +23,7 @@ class MailgunController extends Controller
         $params['complained'] = sizeof($this->getRepository()->findBy(array('event' => 'complained')));
         $params['unsubscribed'] = sizeof($this->getRepository()->findBy(array('event' => 'unsubscribed')));
         $params['unopened'] = $this->getRepository()->getEventCount(array('eventType' => 'unopened'));
-        
+
         return $this->render('AzineMailgunWebhooksBundle::overview.html.twig', $params);
     }
 
@@ -35,12 +33,12 @@ class MailgunController extends Controller
     }
 
     /**
-     * Get the MailgunEvent Repository
+     * Get the MailgunEvent Repository.
+     *
      * @return MailgunEventRepository
      */
     private function getRepository()
     {
         return $this->getDoctrine()->getManager()->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
     }
-
 }

@@ -3,7 +3,7 @@
 namespace Azine\MailgunWebhooksBundle\Entity;
 
 /**
- * MailgunAttachment
+ * MailgunAttachment.
  */
 class MailgunAttachment
 {
@@ -21,17 +21,17 @@ class MailgunAttachment
     ///////////////////////////////////////////////////////////////////
 
     /**
-     * @var integer
+     * @var int
      */
     private $id;
 
     /**
-     * @var integer
+     * @var int
      */
     private $eventId;
 
     /**
-     * @var integer
+     * @var int
      */
     private $counter;
 
@@ -51,7 +51,7 @@ class MailgunAttachment
     private $type;
 
     /**
-     * @var integer
+     * @var int
      */
     private $size;
 
@@ -61,9 +61,9 @@ class MailgunAttachment
     private $event;
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -71,9 +71,10 @@ class MailgunAttachment
     }
 
     /**
-     * Set eventId
+     * Set eventId.
      *
-     * @param  integer           $eventId
+     * @param int $eventId
+     *
      * @return MailgunAttachment
      */
     public function setEventId($eventId)
@@ -84,9 +85,9 @@ class MailgunAttachment
     }
 
     /**
-     * Get eventId
+     * Get eventId.
      *
-     * @return integer
+     * @return int
      */
     public function getEventId()
     {
@@ -94,9 +95,10 @@ class MailgunAttachment
     }
 
     /**
-     * Set counter
+     * Set counter.
      *
-     * @param  integer           $counter
+     * @param int $counter
+     *
      * @return MailgunAttachment
      */
     public function setCounter($counter)
@@ -107,9 +109,9 @@ class MailgunAttachment
     }
 
     /**
-     * Get counter
+     * Get counter.
      *
-     * @return integer
+     * @return int
      */
     public function getCounter()
     {
@@ -117,9 +119,10 @@ class MailgunAttachment
     }
 
     /**
-     * Set content
+     * Set content.
      *
-     * @param  string            $content
+     * @param string $content
+     *
      * @return MailgunAttachment
      */
     public function setContent($content)
@@ -130,7 +133,7 @@ class MailgunAttachment
     }
 
     /**
-     * Get content
+     * Get content.
      *
      * @return string
      */
@@ -140,9 +143,10 @@ class MailgunAttachment
     }
 
     /**
-     * Set name
+     * Set name.
      *
-     * @param  string            $name
+     * @param string $name
+     *
      * @return MailgunAttachment
      */
     public function setName($name)
@@ -153,7 +157,7 @@ class MailgunAttachment
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -163,9 +167,10 @@ class MailgunAttachment
     }
 
     /**
-     * Set type
+     * Set type.
      *
-     * @param  string            $type
+     * @param string $type
+     *
      * @return MailgunAttachment
      */
     public function setType($type)
@@ -176,7 +181,7 @@ class MailgunAttachment
     }
 
     /**
-     * Get type
+     * Get type.
      *
      * @return string
      */
@@ -186,9 +191,10 @@ class MailgunAttachment
     }
 
     /**
-     * Set size
+     * Set size.
      *
-     * @param  integer           $size
+     * @param int $size
+     *
      * @return MailgunAttachment
      */
     public function setSize($size)
@@ -199,9 +205,9 @@ class MailgunAttachment
     }
 
     /**
-     * Get size
+     * Get size.
      *
-     * @return integer
+     * @return int
      */
     public function getSize()
     {
@@ -209,9 +215,10 @@ class MailgunAttachment
     }
 
     /**
-     * Set event
+     * Set event.
      *
-     * @param  \Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event
+     * @param \Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event
+     *
      * @return MailgunAttachment
      */
     public function setEvent(\Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event = null)
@@ -222,7 +229,7 @@ class MailgunAttachment
     }
 
     /**
-     * Get event
+     * Get event.
      *
      * @return \Azine\MailgunWebhooksBundle\Entity\MailgunEvent
      */

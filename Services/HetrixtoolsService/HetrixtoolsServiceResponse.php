@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Azine\MailgunWebhooksBundle\Services\HetrixtoolsService;
-
 
 class HetrixtoolsServiceResponse
 {
@@ -47,23 +45,23 @@ class HetrixtoolsServiceResponse
 
     /**
      * @param string $response
+     *
      * @throws \InvalidArgumentException
+     *
      * @return HetrixtoolsServiceResponse $responseObject
      */
     public static function fromJson($response)
     {
         $response = json_decode($response, true);
 
-        if(!is_array($response)) {
+        if (!is_array($response)) {
             throw new \InvalidArgumentException('Invalid JSON provided');
         }
 
         $responseObject = new self();
 
-        foreach($responseObject as $key => $value){
-
-            if(isset($response[$key])){
-
+        foreach ($responseObject as $key => $value) {
+            if (isset($response[$key])) {
                 $responseObject->$key = $response[$key];
             }
         }

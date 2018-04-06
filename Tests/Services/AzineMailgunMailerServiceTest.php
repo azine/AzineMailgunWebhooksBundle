@@ -1,10 +1,11 @@
 <?php
+
 namespace Azine\MailgunWebhooksBundle\Tests\Services;
 
+use Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService;
 use Symfony\Component\Translation\Translator;
 
 class AzineMailgunMailerServiceTest extends WebTestCase
@@ -15,7 +16,7 @@ class AzineMailgunMailerServiceTest extends WebTestCase
 
         // Create a new client to browse the application
         $client = static::createClient();
-        $client->request("GET", "/");
+        $client->request('GET', '/');
         $client->followRedirects();
 
         /** @var \Swift_Mailer $mailer */
@@ -39,35 +40,34 @@ class AzineMailgunMailerServiceTest extends WebTestCase
         $messageSent = $mailgunMailerService->sendSpamComplaintNotification(123);
 
         // Check that email was sent
-        $this->assertEquals(1, $messageSent);
+        $this->assertSame(1, $messageSent);
 
         $messageSent = $mailgunMailerService->sendSpamComplaintNotification(123);
 
         // Check that an email was not sent because the last email was sent less then azine_mailgun_webhooks_send_spam_alerts_interval
-        $this->assertEquals(0, $messageSent);
+        $this->assertSame(0, $messageSent);
 
         $timeToWait = ($sendIntervalSeconds + 1);
         sleep($timeToWait);
         $messageSent = $mailgunMailerService->sendSpamComplaintNotification(123);
 
         // Check that  email was sent after azine_mailgun_webhooks_send_spam_alerts_interval have passed
-        $this->assertEquals(1, $messageSent);
+        $this->assertSame(1, $messageSent);
     }
-
 
     /**
      * @var ContainerInterface
      */
     private $container;
 
-
     /**
-     * Get the current container
+     * Get the current container.
+     *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface
      */
     private function getContainer()
     {
-        if ($this->container == null) {
+        if (null == $this->container) {
             $this->container = static::$kernel->getContainer();
         }
 
@@ -83,7 +83,7 @@ class AzineMailgunMailerServiceTest extends WebTestCase
         try {
             static::$kernel = static::createKernel(array());
         } catch (\RuntimeException $ex) {
-            $this->markTestSkipped("There does not seem to be a full application available (e.g. running tests on travis.org). So this test is skipped.");
+            $this->markTestSkipped('There does not seem to be a full application available (e.g. running tests on travis.org). So this test is skipped.');
 
             return;
         }

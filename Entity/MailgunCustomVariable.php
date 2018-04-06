@@ -1,8 +1,9 @@
 <?php
 
 namespace Azine\MailgunWebhooksBundle\Entity;
+
 /**
- * MailgunCustomVariable
+ * MailgunCustomVariable.
  */
 class MailgunCustomVariable
 {
@@ -20,17 +21,17 @@ class MailgunCustomVariable
     ///////////////////////////////////////////////////////////////////
 
     /**
-     * @var integer
+     * @var int
      */
     private $id;
 
     /**
-     * @var integer
+     * @var int
      */
     private $eventId;
 
     /**
-     * @var integer
+     * @var int
      */
     private $variableName;
 
@@ -45,9 +46,9 @@ class MailgunCustomVariable
     private $event;
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -55,9 +56,10 @@ class MailgunCustomVariable
     }
 
     /**
-     * Set eventId
+     * Set eventId.
      *
-     * @param  integer               $eventId
+     * @param int $eventId
+     *
      * @return MailgunCustomVariable
      */
     public function setEventId($eventId)
@@ -68,9 +70,9 @@ class MailgunCustomVariable
     }
 
     /**
-     * Get eventId
+     * Get eventId.
      *
-     * @return integer
+     * @return int
      */
     public function getEventId()
     {
@@ -78,9 +80,10 @@ class MailgunCustomVariable
     }
 
     /**
-     * Set variableName
+     * Set variableName.
      *
-     * @param  integer               $variableName
+     * @param int $variableName
+     *
      * @return MailgunCustomVariable
      */
     public function setVariableName($variableName)
@@ -91,9 +94,9 @@ class MailgunCustomVariable
     }
 
     /**
-     * Get variableName
+     * Get variableName.
      *
-     * @return integer
+     * @return int
      */
     public function getVariableName()
     {
@@ -101,9 +104,10 @@ class MailgunCustomVariable
     }
 
     /**
-     * Set content
+     * Set content.
      *
-     * @param  array                 $content
+     * @param array $content
+     *
      * @return MailgunCustomVariable
      */
     public function setContent($content)
@@ -114,7 +118,7 @@ class MailgunCustomVariable
     }
 
     /**
-     * Get content
+     * Get content.
      *
      * @return array
      */
@@ -124,9 +128,10 @@ class MailgunCustomVariable
     }
 
     /**
-     * Set event
+     * Set event.
      *
-     * @param  \Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event
+     * @param \Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event
+     *
      * @return MailgunCustomVariable
      */
     public function setEvent(\Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event = null)
@@ -137,7 +142,7 @@ class MailgunCustomVariable
     }
 
     /**
-     * Get event
+     * Get event.
      *
      * @return \Azine\MailgunWebhooksBundle\Entity\MailgunEvent
      */

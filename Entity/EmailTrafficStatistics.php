@@ -3,13 +3,13 @@
 namespace Azine\MailgunWebhooksBundle\Entity;
 
 /**
- * EmailTrafficStatistics
+ * EmailTrafficStatistics.
  */
 class EmailTrafficStatistics
 {
     const SPAM_ALERT_SENT = 'spam_alert_sent';
     /**
-     * @var integer
+     * @var int
      */
     private $id;
 
@@ -24,9 +24,9 @@ class EmailTrafficStatistics
     private $created;
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -34,9 +34,10 @@ class EmailTrafficStatistics
     }
 
     /**
-     * Set action
+     * Set action.
      *
-     * @param  string       $action
+     * @param string $action
+     *
      * @return EmailTrafficStatistics
      */
     public function setAction($action)
@@ -47,7 +48,7 @@ class EmailTrafficStatistics
     }
 
     /**
-     * Get $action
+     * Get $action.
      *
      * @return string
      */
@@ -57,9 +58,10 @@ class EmailTrafficStatistics
     }
 
     /**
-     * Set created
+     * Set created.
      *
-     * @param  \DateTime $created
+     * @param \DateTime $created
+     *
      * @return EmailTrafficStatistics
      */
     public function setCreated($created)
@@ -70,7 +72,7 @@ class EmailTrafficStatistics
     }
 
     /**
-     * Get created
+     * Get created.
      *
      * @return \DateTime
      */

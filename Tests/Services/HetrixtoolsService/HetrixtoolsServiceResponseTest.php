@@ -1,6 +1,6 @@
 <?php
-namespace Azine\MailgunWebhooksBundle\Tests\Services\HetrixtoolsService;
 
+namespace Azine\MailgunWebhooksBundle\Tests\Services\HetrixtoolsService;
 
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
 
@@ -38,9 +38,9 @@ class HetrixtoolsServiceResponseTest extends \PHPUnit_Framework_TestCase
         $response = HetrixtoolsServiceResponse::fromJson($responseJson);
 
         $this->assertInstanceOf(HetrixtoolsServiceResponse::class, $response);
-        $this->assertEquals('SUCCESS', $response->status);
-        $this->assertEquals(4, sizeof($response->links));
-        $this->assertEquals(3, $response->blacklisted_count);
+        $this->assertSame('SUCCESS', $response->status);
+        $this->assertSame(4, sizeof($response->links));
+        $this->assertSame(3, $response->blacklisted_count);
     }
 
     /**

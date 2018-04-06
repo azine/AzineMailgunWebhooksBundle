@@ -1,12 +1,11 @@
 <?php
 
-
 namespace Azine\MailgunWebhooksBundle\Services;
 
+use Azine\MailgunWebhooksBundle\Entity\EmailTrafficStatistics;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Translation\TranslatorInterface;
-use Azine\MailgunWebhooksBundle\Entity\EmailTrafficStatistics;
 
 class AzineMailgunMailerService
 {
@@ -63,16 +62,16 @@ class AzineMailgunMailerService
     /**
      * AzineMailgunMailerService constructor.
      *
-     * @param \Swift_Mailer $mailer
-     * @param \Twig_Environment $twig
+     * @param \Swift_Mailer       $mailer
+     * @param \Twig_Environment   $twig
      * @param TranslatorInterface $translator
-     * @param string $fromEmail
-     * @param string $ticketId
-     * @param string $ticketSubject
-     * @param string $ticketMessage
-     * @param string $spamAlertsRecipientEmail
-     * @param ManagerRegistry $managerRegistry
-     * @param int $sendNotificationsInterval in Seconds
+     * @param string              $fromEmail
+     * @param string              $ticketId
+     * @param string              $ticketSubject
+     * @param string              $ticketMessage
+     * @param string              $spamAlertsRecipientEmail
+     * @param ManagerRegistry     $managerRegistry
+     * @param int                 $sendNotificationsInterval in Seconds
      */
     public function __construct(
         \Swift_Mailer $mailer,
@@ -100,13 +99,15 @@ class AzineMailgunMailerService
 
     /**
      * @param string $eventId
+     *
      * @throws \Exception
+     *
      * @return int $messagesSent
      */
-    public function  sendSpamComplaintNotification($eventId)
+    public function sendSpamComplaintNotification($eventId)
     {
         $messagesSent = 0;
-        $failedRecipients = [];
+        $failedRecipients = array();
 
         /** @var \Swift_Message $message */
         $message = $this->mailer->createMessage();
@@ -121,23 +122,18 @@ class AzineMailgunMailerService
         $lastSpamReport = $this->managerRegistry->getManager()->getRepository(EmailTrafficStatistics::class)
             ->getLastByAction(EmailTrafficStatistics::SPAM_ALERT_SENT);
 
-        if($lastSpamReport instanceof EmailTrafficStatistics) {
-
+        if ($lastSpamReport instanceof EmailTrafficStatistics) {
             $time = new \DateTime();
             $timeDiff = $time->diff($lastSpamReport->getCreated());
 
-            if($timeDiff->s > $this->sendNotificationsInterval) {
-
+            if ($timeDiff->s > $this->sendNotificationsInterval) {
                 $messagesSent = $this->mailer->send($message, $failedRecipients);
             }
-
-        }else{
-
+        } else {
             $messagesSent = $this->mailer->send($message, $failedRecipients);
         }
 
-        if($messagesSent > 0) {
-
+        if ($messagesSent > 0) {
             $spamAlert = new EmailTrafficStatistics();
             $spamAlert->setAction(EmailTrafficStatistics::SPAM_ALERT_SENT);
             $manager = $this->managerRegistry->getManager();
@@ -146,22 +142,24 @@ class AzineMailgunMailerService
             $manager->clear();
         }
 
-        if($messagesSent == 0 && !empty($failedRecipients)){
-
+        if (0 == $messagesSent && !empty($failedRecipients)) {
             throw new \Exception('Tried to send notification about spam complaint but no messages were sent');
         }
+
         return $messagesSent;
     }
 
     /**
      * @param HetrixtoolsServiceResponse $response
-     * @param string $ipAddress
+     * @param string                     $ipAddress
+     *
      * @return int
+     *
      * @throws \Exception
      */
     public function sendBlacklistNotification(HetrixtoolsServiceResponse $response, $ipAddress)
     {
-        $failedRecipients = [];
+        $failedRecipients = array();
 
         /** @var \Swift_Message $message */
         $message = $this->mailer->createMessage();
@@ -169,18 +167,18 @@ class AzineMailgunMailerService
             ->setFrom($this->fromEmail)
             ->setSubject($this->translator->trans('notification.blacklist_received'))
             ->setBody(
-                $this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.html.twig', array('response' => $response, "ipAddress" => $ipAddress)),
+                $this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.html.twig', array('response' => $response, 'ipAddress' => $ipAddress)),
                 'text/html'
             )
-            ->addPart($this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.txt.twig', array('response' => $response, "ipAddress" => $ipAddress),
+            ->addPart($this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.txt.twig', array('response' => $response, 'ipAddress' => $ipAddress),
                 'text/plain'));
 
         $messagesSent = $this->mailer->send($message, $failedRecipients);
 
-        if($messagesSent == 0 && !empty($failedRecipients)){
-
+        if (0 == $messagesSent && !empty($failedRecipients)) {
             throw new \Exception('Tried to send notification about ip is blacklisted but no messages were sent');
         }
+
         return $messagesSent;
     }
 }

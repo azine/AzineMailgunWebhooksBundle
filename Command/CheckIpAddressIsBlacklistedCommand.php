@@ -2,20 +2,19 @@
 
 namespace Azine\MailgunWebhooksBundle\Command;
 
+use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
+use Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService;
+use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
-use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
-use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService;
-use Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 /**
- * Checks if the last ip address from MailgunEvent entity is in blacklist
- *
+ * Checks if the last ip address from MailgunEvent entity is in blacklist.
  */
 class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
 {
@@ -51,9 +50,10 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
 
     /**
      * CheckIpAddressIsBlacklistedCommand constructor.
-     * @param ManagerRegistry $managerRegistry
+     *
+     * @param ManagerRegistry                $managerRegistry
      * @param AzineMailgunHetrixtoolsService $hetrixtoolsService
-     * @param AzineMailgunMailerService $azineMailgunService
+     * @param AzineMailgunMailerService      $azineMailgunService
      * @param $environment
      */
     public function __construct(ManagerRegistry $managerRegistry, AzineMailgunHetrixtoolsService $hetrixtoolsService,
@@ -65,7 +65,6 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
         $this->kernelEnvironment = $environment;
 
         parent::__construct();
-
     }
 
     protected function configure()
@@ -84,56 +83,50 @@ class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
         /** @var MailgunEventRepository $eventRepository */
         $eventRepository = $manager->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
         $ipAddress = $eventRepository->getLastKnownSenderIp();
-        $numberOfAttempts = $input->getArgument("numberOfAttempts");
+        $numberOfAttempts = $input->getArgument('numberOfAttempts');
 
         try {
             $response = $this->hetrixtoolsService->checkIpAddressInBlacklist($ipAddress);
         } catch (\InvalidArgumentException $ex) {
-
             $output->write(self::NO_VALID_RESPONSE_FROM_HETRIX);
 
-            if ($numberOfAttempts != null && $numberOfAttempts > 0 ) {
-                $output->write(self::STARTING_RETRY . $numberOfAttempts);
+            if (null != $numberOfAttempts && $numberOfAttempts > 0) {
+                $output->write(self::STARTING_RETRY.$numberOfAttempts);
                 $this->retry($numberOfAttempts);
             }
+
             return false;
         }
 
-        if ($response->status == HetrixtoolsServiceResponse::RESPONSE_STATUS_SUCCESS) {
-
+        if (HetrixtoolsServiceResponse::RESPONSE_STATUS_SUCCESS == $response->status) {
             if ($response->blacklisted_count > 0) {
-
                 try {
-
                     $messagesSent = $this->azineMailgunService->sendBlacklistNotification($response, $ipAddress);
 
                     if ($messagesSent > 0) {
-
-                        $output->write(self::BLACKLIST_REPORT_WAS_SENT . " ($ipAddress)");
+                        $output->write(self::BLACKLIST_REPORT_WAS_SENT." ($ipAddress)");
                     }
                 } catch (\Exception $e) {
-
                     $output->write($e->getMessage(), true);
                 }
             } else {
-
-                $output->write(self::IP_IS_NOT_BLACKLISTED . " ($ipAddress)");
+                $output->write(self::IP_IS_NOT_BLACKLISTED." ($ipAddress)");
             }
-        } elseif ($response->status == HetrixtoolsServiceResponse::RESPONSE_STATUS_ERROR) {
-
+        } elseif (HetrixtoolsServiceResponse::RESPONSE_STATUS_ERROR == $response->status) {
             $output->write($response->error_message);
 
-            if ($numberOfAttempts != null && $numberOfAttempts > 0 && $response->error_message == HetrixtoolsServiceResponse::BLACKLIST_CHECK_IN_PROGRESS) {
-                $output->write(self::STARTING_RETRY . $numberOfAttempts);
+            if (null != $numberOfAttempts && $numberOfAttempts > 0 && HetrixtoolsServiceResponse::BLACKLIST_CHECK_IN_PROGRESS == $response->error_message) {
+                $output->write(self::STARTING_RETRY.$numberOfAttempts);
                 $this->retry($numberOfAttempts);
             }
+
             return false;
         }
     }
 
     private function retry($numberOfAttempts)
     {
-        $numberOfAttempts--;
+        --$numberOfAttempts;
 
         $cmd = sprintf(
             '%s/console %s %s --env=%s',

@@ -3,7 +3,7 @@
 namespace Azine\MailgunWebhooksBundle\Services\HetrixtoolsService;
 
 /**
- * AzineMailgunHetrixtoolsService
+ * AzineMailgunHetrixtoolsService.
  *
  * This service is a wrapper for using Hetrixtools blacklist check functionality https://hetrixtools.com/.
  */
@@ -33,6 +33,7 @@ class AzineMailgunHetrixtoolsService
 
     /**
      * @param string $ip
+     *
      * @return HetrixtoolsServiceResponse $response
      */
     public function checkIpAddressInBlacklist($ip)
@@ -46,9 +47,10 @@ class AzineMailgunHetrixtoolsService
     }
 
     /**
-     * sends a get request to the given url
+     * sends a get request to the given url.
      *
-     * @param  string $url
+     * @param string $url
+     *
      * @return string $response| null
      */
     protected function executeCheck($url)
@@ -63,8 +65,7 @@ class AzineMailgunHetrixtoolsService
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close($ch);
 
-        if($info['http_code'] != 200){
-
+        if (200 != $info['http_code']) {
             return null;
         }
 
@@ -75,18 +76,18 @@ class AzineMailgunHetrixtoolsService
 
     /**
      * @param string $ip
+     *
      * @throws \InvalidArgumentException
+     *
      * @return string $url
      */
     private function prepareBlacklistIpCheckUrl($ip)
     {
-        if ($ip == null || !filter_var($ip, FILTER_VALIDATE_IP)) {
-
+        if (null == $ip || !filter_var($ip, FILTER_VALIDATE_IP)) {
             throw new \InvalidArgumentException('Given Ip address is invalid');
         }
 
-        if($this->apiKey == null){
-
+        if (null == $this->apiKey) {
             throw new \InvalidArgumentException('Api key for Hetrixtools blacklist check service is not set');
         }
 
