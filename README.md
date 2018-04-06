@@ -221,6 +221,8 @@ All you have to do is to move `pre-commit.sample` file from `commit-hooks/` to `
 
 `php-cs-fixer` will check the style of your new added code each time you commit and apply fixes to the commit.
 
+To run `php-cs-fixer` manually, install dependencies (`composer install`) and execute `php vendor/friendsofphp/php-cs-fixer/php-cs-fixer --diff --dry-run -v fix --config=.php_cs.dist .`
+
 ## ToDos 
 Here's a list of open TODOs
 - write more unit-tests
