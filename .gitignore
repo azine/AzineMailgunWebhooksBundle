@@ -1,7 +1,6 @@
-/Entity/MailgunAttachment.php~
-/Entity/MailgunCustomVariable.php~
-/Entity/MailgunEvent.php~
+*.php~
 .php_cs
 .php_cs.cache
 composer.lock
 vendor/
+.idea
