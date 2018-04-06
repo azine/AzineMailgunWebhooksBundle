@@ -8,7 +8,7 @@
     <body>
       <trans-unit id="107a9be15374d27199cea578eb02970a082ae21d" resname="notification.blacklist_received">
         <source>notification.blacklist_received</source>
-        <target state="new">notification.blacklist_received</target>
+        <target>Received a notification about an entry on a "Email-SPAM-Blacklist"</target>
       </trans-unit>
       <trans-unit id="838d2b56298b4f33c2674e788522667745633686" resname="notification.blacklist_received.%ipAddress%">
         <source>notification.blacklist_received.%ipAddress%</source>
