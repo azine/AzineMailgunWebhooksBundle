@@ -219,7 +219,7 @@ You can check the code style with the `php-cs-fixer`. Optionally you can set up 
 
 All you have to do is to move `pre-commit.sample` file from `commit-hooks/` to `.git/hooks/` folder and rename it to `pre-commit`.
 
-`php-cs-fixer` will check the style of your new added code each time you commit, showing you what you have to fix.
+`php-cs-fixer` will check the style of your new added code each time you commit and apply fixes to the commit.
 
 ## ToDos 
 Here's a list of open TODOs
