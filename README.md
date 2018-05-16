@@ -196,7 +196,7 @@ To be able to be notified a.s.a.p. you can run this command to check the last IP
 hetrixtools.com. If the IP is listed, the administrator will receive an email.
 
 ```
-# e.g. delete all events older than 60 days
+# e.g. check the blacklists, retry 5 times before failing
 php app/console mailgun:check-ip-in-blacklist -numberOfAttempts 5
 ```
 With the parameter `numberOfAttempts` you can specify how many times the command should try to get the hetrixtools report, if an attempt fails for any reason.
