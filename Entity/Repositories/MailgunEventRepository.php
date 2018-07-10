@@ -37,7 +37,7 @@ class MailgunEventRepository extends EntityRepository
         $orderField = key($orderBy);
         $orderDirection = $orderBy[$orderField];
         $qb->orderBy('e.'.$orderField, $orderDirection);
-        if ($limit != -1) {
+        if (-1 != $limit) {
             $qb->setMaxResults($limit);
             $qb->setFirstResult($offset);
         }
