@@ -11,22 +11,16 @@
          syntaxCheck="false"
          bootstrap="Tests/bootstrap.php"
 	>
+
+    <php>
+        <server name="KERNEL_DIR" value="app/" />
+        <env name="KERNEL_CLASS" value="AppKernel" />
+    </php>
+
     <testsuites>
         <testsuite name="Azine/MailgunWebhooksBundle Test Suite">
             <directory>./Tests</directory>
         </testsuite>
     </testsuites>
 
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true"
-                   addUncoveredFilesFromWhitelist="false">
-            <directory suffix=".php">./Command</directory>
-            <directory suffix=".php">./Controller</directory>
-            <directory suffix=".php">./DependencyInjection</directory>
-            <directory suffix=".php">./Entity</directory>
-            <directory suffix=".php">./Services</directory>
-            <!-- <exclude>
-            </exclude> -->
-        </whitelist>
-    </filter>
 </phpunit>
