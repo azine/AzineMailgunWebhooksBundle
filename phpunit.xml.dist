@@ -11,6 +11,11 @@
          syntaxCheck="false"
          bootstrap="Tests/bootstrap.php"
 	>
+
+    <php>
+        <env name="KERNEL_CLASS" value="AppKernel" />
+    </php>
+
     <testsuites>
         <testsuite name="Azine/MailgunWebhooksBundle Test Suite">
             <directory>./Tests</directory>

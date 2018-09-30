@@ -84,7 +84,7 @@ class MailgunControllerTest extends WebTestCase
     /**
      * @var ContainerInterface
      */
-    private $container;
+    private $appContainer;
 
     /**
      * Get the current container.
@@ -93,11 +93,11 @@ class MailgunControllerTest extends WebTestCase
      */
     private function getContainer()
     {
-        if (null == $this->container) {
-            $this->container = static::$kernel->getContainer();
+        if (null == $this->appContainer) {
+            $this->appContainer = static::$kernel->getContainer();
         }
 
-        return $this->container;
+        return $this->appContainer;
     }
 
     /**
