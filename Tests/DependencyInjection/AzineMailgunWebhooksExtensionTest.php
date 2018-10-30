@@ -3,9 +3,9 @@
 namespace Azine\MailgunWebhooksBundle\Tests\DependencyInjection;
 
 use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
+use Azine\MailgunWebhooksBundle\Tests\AzineTestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Yaml\Parser;
-use Azine\MailgunWebhooksBundle\Tests\AzineTestCase;
 
 /**
  * This is the class that loads and manages your bundle configuration.
