@@ -5,13 +5,14 @@ namespace Azine\MailgunWebhooksBundle\Tests\DependencyInjection;
 use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Yaml\Parser;
+use Azine\MailgunWebhooksBundle\Tests\AzineTestCase;
 
 /**
  * This is the class that loads and manages your bundle configuration.
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class AzineMailgunWebhooksExtensionTest extends \PHPUnit_Framework_TestCase
+class AzineMailgunWebhooksExtensionTest extends AzineTestCase
 {
     /** @var ContainerBuilder */
     protected $configuration;

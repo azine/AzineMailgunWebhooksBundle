@@ -3,8 +3,9 @@
 namespace Azine\MailgunWebhooksBundle\Tests\Services\HetrixtoolsService;
 
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
+use Azine\MailgunWebhooksBundle\Tests\AzineTestCase;
 
-class HetrixtoolsServiceResponseTest extends \PHPUnit_Framework_TestCase
+class HetrixtoolsServiceResponseTest extends AzineTestCase
 {
     public function testHetrixtoolsServiceResponse()
     {

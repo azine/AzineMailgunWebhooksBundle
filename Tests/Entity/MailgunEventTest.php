@@ -3,8 +3,9 @@
 namespace Azine\MailgunWebhooksBundle\Tests\Entity;
 
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
+use Azine\MailgunWebhooksBundle\Tests\AzineTestCase;
 
-class MailgunEventTest extends \PHPUnit_Framework_TestCase
+class MailgunEventTest extends AzineTestCase
 {
     /**
      * Do not allow country or region to be set to 'Unknown'.

@@ -6,8 +6,9 @@ namespace Azine\MailgunWebhooksBundle\Tests\Services;
  * @author Dominik Businger
  */
 use Azine\MailgunWebhooksBundle\Services\AzineMailgunService;
+use Azine\MailgunWebhooksBundle\Tests\AzineTestCase;
 
-class AzineMailgunServiceTest extends \PHPUnit_Framework_TestCase
+class AzineMailgunServiceTest extends AzineTestCase
 {
     public function testRemoveOldEventEntries()
     {

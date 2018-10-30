@@ -4,8 +4,9 @@ namespace Azine\MailgunWebhooksBundle\Tests\Services\HetrixtoolsService;
 
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
+use Azine\MailgunWebhooksBundle\Tests\AzineTestCase;
 
-class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit_Framework_TestCase
+class AzineMailgunHetrixtoolsServiceTest extends AzineTestCase
 {
     private $responseJson = '{
             "status": "SUCCESS",

@@ -6,8 +6,9 @@ use Azine\MailgunWebhooksBundle\Command\CheckIpAddressIsBlacklistedCommand;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use Azine\MailgunWebhooksBundle\Tests\AzineTestCase;
 
-class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit_Framework_TestCase
+class CheckIpAddressIsBlacklistedCommandTest extends AzineTestCase
 {
     private $registry;
 
