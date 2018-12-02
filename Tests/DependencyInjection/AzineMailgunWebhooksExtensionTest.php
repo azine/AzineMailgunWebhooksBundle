@@ -11,7 +11,7 @@ use Symfony\Component\Yaml\Parser;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class AzineMailgunWebhooksExtensionTest extends \PHPUnit_Framework_TestCase
+class AzineMailgunWebhooksExtensionTest extends \PHPUnit\Framework\TestCase
 {
     /** @var ContainerBuilder */
     protected $configuration;
