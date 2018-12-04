@@ -7,7 +7,7 @@
 
 {% block body %}
 	{{ render(controller('AzineMailgunWebhooksBundle:Mailgun:cockpit')) }}
-	
+
 	<h1>MailgunEvents</h1>
 	<a class="backToOverview" href="{{ path('mailgun_overview') }}" >Back to overview</a>
 	<hr/>
@@ -132,9 +132,9 @@
 					{% if eventEntry.messageHeaders | length > 0 %}
 					<br />
 					MessageHeaders:
-						<ul>
-						{% for key, value in eventEntry.messageHeaders %}
-							{% if value is iterable %}
+					<ul class="expandcollapse">
+                        {% for key, value in eventEntry.messageHeaders %}
+                            {% if value is iterable %}
 								<li>{{ key }}: <pre>{{ value | printArray }}</pre></li>
 							{% else %}
 								<li>{{ key }}: {{ value }}</li>
@@ -147,12 +147,12 @@
 					{{ eventEntry.tag }}
 				</td>
 				<td>
-					{% if eventEntry.variables | length > 0 %}
-						<ul>
-						{% for item in eventEntry.variables %}
-							<li>{% if item.variableName != "" %} {{ item.variableName }} : {% endif %}
-								{% if item.content is iterable %}
-									<pre>
+                    {% if eventEntry.variables | length > 0 %}
+						<ul class="expandcollapse">
+							{% for item in eventEntry.variables %}
+								<li>{% if item.variableName != "" %} {{ item.variableName }} : {% endif %}
+                                    {% if item.content is iterable %}
+										<pre>
 									    {{ item.content | printArray }}
 									</pre>
 								{% else %}
@@ -177,10 +177,36 @@
 {% endblock %}
 
 {% block templateJQueryJS %}
-		$(".pageSizeSelector").change(function(){
-			// reload the page with the new pagesize
-			var newSize = this.value;
-			var baseUrl = '{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : '-1'}) }}';
-			window.location.href = baseUrl.substring(0, baseUrl.length - 2) + newSize;
-		});
+	$(".pageSizeSelector").change(function(){
+	// reload the page with the new pagesize
+	var newSize = this.value;
+	var baseUrl = '{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : '-1'}) }}';
+	window.location.href = baseUrl.substring(0, baseUrl.length - 2) + newSize;
+
+	});
+
+	$( ".expandcollapse" ).each(function(){
+
+		if($(this).height() > 150){
+
+			$(this).css('display', 'none');
+			$(this).after( '<div class="expandcollapseBtn">Click to expand... (+)</div>' );
+			$(this).siblings( ".expandcollapseBtn" ).css('cursor', 'pointer');
+		}
+	});
+
+	$( ".expandcollapseBtn" ).on('click', function() {
+
+		$expandcollapseList = $(this).siblings( ".expandcollapse" );
+
+		if($expandcollapseList.is(':hidden')){
+
+			$(this).text('Click to collapse... (-)');
+		}
+		else{
+			$(this).text('Click to expand... (+)');
+		}
+
+		$expandcollapseList.slideToggle( "slow" );
+	});
 {% endblock %}
