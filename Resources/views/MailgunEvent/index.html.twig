@@ -136,6 +136,8 @@
 						{% for key, value in eventEntry.messageHeaders %}
 							{% if value is iterable %}
 								<li>{{ key }}: <pre>{{ value | printArray }}</pre></li>
+                            {% elseif 'azine-webview-token' in key %}
+                                {{ key }} : <a href="{{ path(emailWebViewRoute, {'sentEmail': {'token' : value}}) }}" target="_blank">{{ value }}</a>
 							{% else %}
 								<li>{{ key }}: {{ value }}</li>
 							{% endif %}
@@ -154,10 +156,12 @@
 								{% if item.content is iterable %}
 									<pre>
 									    {{ item.content | printArray }}
-									</pre>
-								{% else %}
-									{{ item.content }}
-								{% endif %}
+										</pre>
+									{% elseif 'azine-webview-token' in item.variableName %}
+                                        {{ item.variableName }} : <a href="{{ path(emailWebViewRoute, {'sentEmail': {'token' : item.content}}) }}" target="_blank">{{ item.content }}</a>
+									{% else %}
+										{{ item.content }}
+									{% endif %}
 							</li>
 						{% endfor %}
 						</ul>

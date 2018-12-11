@@ -51,6 +51,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode(AzineMailgunWebhooksExtension::TICKET_SUBJECT)->defaultValue('IP on spam-list, please fix.')->info('Mailgun HelpDesk ticket subject')->end()
                         ->scalarNode(AzineMailgunWebhooksExtension::TICKET_MESSAGE)->defaultValue('It looks like my ip is on a spam-list. Please, assign a clean IP to my domain.')->info('Mailgun HelpDesk ticket subject')->end()
                         ->scalarNode(AzineMailgunWebhooksExtension::ALERTS_RECIPIENT_EMAIL)->defaultValue('')->info('Admin E-Mail to send notification about spam complaints')->end()
+                        ->scalarNode(AzineMailgunWebhooksExtension::SENT_EMAIL_ADMIN_OVERVIEW_ROUTE)->defaultValue('azine_admin_email_dashboard')->info('The route to admin email dashboard from AzineEmailBundle')->end()
         ->end();
     }
 
