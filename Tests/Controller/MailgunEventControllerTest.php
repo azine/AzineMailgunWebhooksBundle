@@ -173,7 +173,6 @@ class MailgunEventControllerTest extends WebTestCase
         $this->assertSame(2, $crawler->filter(".pagination .disabled:contains('Next')")->count(), 'Expected to be on the last page => the next button should be disabled.');
     }
 
-
     public function testWebViewLinks()
     {
         $this->checkApplication();
@@ -195,7 +194,7 @@ class MailgunEventControllerTest extends WebTestCase
         $events = $eventReop->findAll();
 
         $testTokenValue = 'testValue';
-        $messageHeader = [AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN => $testTokenValue];
+        $messageHeader = array(AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN => $testTokenValue);
         $events[0]->setMessageHeaders(json_encode($messageHeader));
         $manager->persist($events[0]);
         $manager->flush();
@@ -206,8 +205,8 @@ class MailgunEventControllerTest extends WebTestCase
         $listUrl = substr($this->getRouter()->generate('mailgunevent_list', array('_locale' => 'en', 'page' => 1, 'pageSize' => $pageSize, 'clear' => true)), 13);
         $crawler = $this->loginUserIfRequired($client, $listUrl);
 
-        $this->assertSame(1, $crawler->filter("ul:contains('".AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN."')")->count(), "There should be events with the webView headers in the list");
-        $this->assertSame(1, $crawler->filter("ul a:contains('".$testTokenValue."')")->count(), "There should be events with the webView links in the list");
+        $this->assertSame(1, $crawler->filter("ul:contains('".AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN."')")->count(), 'There should be events with the webView headers in the list');
+        $this->assertSame(1, $crawler->filter("ul a:contains('".$testTokenValue."')")->count(), 'There should be events with the webView links in the list');
     }
 
     /**
