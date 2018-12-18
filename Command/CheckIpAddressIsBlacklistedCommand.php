@@ -7,7 +7,7 @@ use Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,7 +16,7 @@ use Symfony\Component\Process\Process;
 /**
  * Checks if the last ip address from MailgunEvent entity is in blacklist.
  */
-class CheckIpAddressIsBlacklistedCommand extends ContainerAwareCommand
+class CheckIpAddressIsBlacklistedCommand extends Command
 {
     const NO_VALID_RESPONSE_FROM_HETRIX = 'No valid response from Hetrixtools service, try later.';
     const BLACKLIST_REPORT_WAS_SENT = 'Blacklist report was sent.';
