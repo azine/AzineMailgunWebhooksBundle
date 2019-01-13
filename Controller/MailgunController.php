@@ -3,12 +3,12 @@
 namespace Azine\MailgunWebhooksBundle\Controller;
 
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * Mailgun controller.
  */
-class MailgunController extends Controller
+class MailgunController extends AbstractController
 {
     /**
      * Show Mailgun-Overview.
