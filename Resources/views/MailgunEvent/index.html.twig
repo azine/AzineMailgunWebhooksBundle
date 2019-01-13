@@ -178,10 +178,11 @@
 
 {% block templateJQueryJS %}
 	$(".pageSizeSelector").change(function(){
-	// reload the page with the new pagesize
-	var newSize = this.value;
-	var baseUrl = '{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : '-1'}) }}';
-	window.location.href = baseUrl.substring(0, baseUrl.length - 2) + newSize;
+
+		// reload the page with the new pagesize
+		var newSize = this.value;
+		var baseUrl = '{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : '-1'}) }}';
+		window.location.href = baseUrl.substring(0, baseUrl.length - 2) + newSize;
 
 	});
 
