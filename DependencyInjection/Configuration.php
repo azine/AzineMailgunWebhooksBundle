@@ -18,8 +18,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root(AzineMailgunWebhooksExtension::PREFIX);
+        $treeBuilder = new TreeBuilder(AzineMailgunWebhooksExtension::PREFIX);
+        $rootNode = $this->getRootNode($treeBuilder, AzineMailgunWebhooksExtension::PREFIX);
 
         $rootNode
             ->children()
@@ -68,5 +68,19 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode(AzineMailgunWebhooksExtension::BLACKLIST_CHECK_API_KEY)->defaultValue('')->info('Your public-api-key for hetrixtools => see https://hetrixtools.com/')->end()
                         ->scalarNode(AzineMailgunWebhooksExtension::BLACKLIST_CHECK_IP_URL)->defaultValue('https://api.hetrixtools.com/v2/<API_TOKEN>/blacklist-check/ipv4/<IP_ADDRESS>/')->info('Url for checking if ip is in blacklist => see https://docs.hetrixtools.com/blacklist-check-api/')->end()
         ->end();
+    }
+
+    /**
+     * @param TreeBuilder $treeBuilder
+     * @param $name
+     */
+    private function getRootNode(TreeBuilder $treeBuilder, $name)
+    {
+        // BC layer for symfony/config 4.1 and older
+        if (!\method_exists($treeBuilder, 'getRootNode')) {
+            return $treeBuilder->root($name);
+        }
+
+        return $treeBuilder->getRootNode();
     }
 }
