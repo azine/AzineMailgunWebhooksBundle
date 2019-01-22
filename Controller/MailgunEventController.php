@@ -9,7 +9,7 @@ use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
 use Doctrine\ORM\EntityManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * MailgunEvent controller.
  */
-class MailgunEventController extends Controller
+class MailgunEventController extends AbstractController
 {
     /**
      * Lists all MailgunEvent entities.
