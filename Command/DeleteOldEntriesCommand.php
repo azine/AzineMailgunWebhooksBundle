@@ -3,7 +3,7 @@
 namespace Azine\MailgunWebhooksBundle\Command;
 
 use Azine\MailgunWebhooksBundle\Services\AzineMailgunService;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
  *
  * @author dominik
  */
-class DeleteOldEntriesCommand extends ContainerAwareCommand
+class DeleteOldEntriesCommand extends Command
 {
     /**
      * @var string|null The default command name
