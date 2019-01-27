@@ -191,7 +191,7 @@
 		if($(this).height() > 150){
 
 			$(this).css('display', 'none');
-			$(this).after( '<div class="expandcollapseBtn">Click to expand... (+)</div>' );
+			$(this).before( '<div class="expandcollapseBtn">Click to expand... (+)</div>' );
 			$(this).siblings( ".expandcollapseBtn" ).css('cursor', 'pointer');
 		}
 	});
