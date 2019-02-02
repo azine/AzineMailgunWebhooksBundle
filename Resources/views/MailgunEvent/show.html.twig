@@ -7,7 +7,7 @@
 
 {% block body -%}
     <h1>MailgunEvent: {% if entity.eventTitle != ''  %}{{ entity.eventTitle }} {% endif %} => {{ entity.recipient }} </h1>
-    <table class="record_properties">
+    <table class="record_properties" border="1">
         <tbody>
             <tr>
                 <th>Id</th>
@@ -98,7 +98,7 @@
                 <td>
 					MessageHeaders:
 					{% if entity.messageHeaders | length > 0 %}
-						<ul>
+						<ul class="expandcollapse">
 						{% for key, value in entity.messageHeaders %}
 							<li>{{ key }}: {{ value }}</li>
 						{% endfor %}
@@ -116,7 +116,7 @@
                 <th>Customvariables</th>
                 <td>
 					{% if entity.variables | length > 0 %}
-						<ul>
+						<ul class="expandcollapse">
 						{% for item in entity.variables %}
 							<li>
 								{% if item.variableName != "" %}

@@ -177,6 +177,8 @@
 {% endblock %}
 
 {% block templateJQueryJS %}
+    {{ parent() }}
+
 	$(".pageSizeSelector").change(function(){
 
 		// reload the page with the new pagesize
@@ -184,30 +186,5 @@
 		var baseUrl = '{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : '-1'}) }}';
 		window.location.href = baseUrl.substring(0, baseUrl.length - 2) + newSize;
 
-	});
-
-	$( ".expandcollapse" ).each(function(){
-
-		if($(this).height() > 150){
-
-			$(this).css('display', 'none');
-			$(this).before( '<div class="expandcollapseBtn">Click to expand... (+)</div>' );
-			$(this).siblings( ".expandcollapseBtn" ).css('cursor', 'pointer');
-		}
-	});
-
-	$( ".expandcollapseBtn" ).on('click', function() {
-
-		$expandcollapseList = $(this).siblings( ".expandcollapse" );
-
-		if($expandcollapseList.is(':hidden')){
-
-			$(this).text('Click to collapse... (-)');
-		}
-		else{
-			$(this).text('Click to expand... (+)');
-		}
-
-		$expandcollapseList.slideToggle( "slow" );
 	});
 {% endblock %}
