@@ -3,11 +3,16 @@
 {{ parent() }}
 	<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.blue.css">
 	<link type="text/css" rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/flick/jquery-ui.min.css" />
+    <style>
+        .record_properties th, td {
+            border: 1px solid #000;
+        }
+    </style>
 {% endblock %}
 
 {% block body -%}
     <h1>MailgunEvent: {% if entity.eventTitle != ''  %}{{ entity.eventTitle }} {% endif %} => {{ entity.recipient }} </h1>
-    <table class="record_properties" border="1">
+    <table class="record_properties">
         <tbody>
             <tr>
                 <th>Id</th>
