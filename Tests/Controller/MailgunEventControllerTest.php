@@ -104,7 +104,7 @@ class MailgunEventControllerTest extends WebTestCase
 
         $apiKey = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
 
-        // make sure there is some data in the application
+        // make sure there is plenty of data in the application to be able to verify paging
         if (sizeof($eventReop->findAll()) < 102) {
             TestHelper::addMailgunEvents($manager, 102, $apiKey);
         }
@@ -171,6 +171,42 @@ class MailgunEventControllerTest extends WebTestCase
         $client->request('GET', $beyondListUrl);
         $crawler = $client->followRedirect();
         $this->assertSame(2, $crawler->filter(".pagination .disabled:contains('Next')")->count(), 'Expected to be on the last page => the next button should be disabled.');
+    }
+
+    public function testWebViewLinks()
+    {
+        $this->checkApplication();
+
+        // Create a new client to browse the application
+        $client = static::createClient();
+        $client->followRedirects();
+
+        $manager = $this->getEntityManager();
+        $eventReop = $manager->getRepository("Azine\MailgunWebhooksBundle\Entity\MailgunEvent");
+
+        $apiKey = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
+
+        // make sure there is some data in the application
+        if (sizeof($eventReop->findAll()) < 5) {
+            TestHelper::addMailgunEvents($manager, 5, $apiKey);
+        }
+
+        $events = $eventReop->findAll();
+
+        $testTokenValue = 'testValue';
+        $messageHeader = array(AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN => $testTokenValue);
+        $events[0]->setMessageHeaders(json_encode($messageHeader));
+        $manager->persist($events[0]);
+        $manager->flush();
+
+        $events = $eventReop->findAll();
+        $pageSize = count($events);
+
+        $listUrl = substr($this->getRouter()->generate('mailgunevent_list', array('_locale' => 'en', 'page' => 1, 'pageSize' => $pageSize, 'clear' => true)), 13);
+        $crawler = $this->loginUserIfRequired($client, $listUrl);
+
+        $this->assertSame(1, $crawler->filter("ul:contains('".AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN."')")->count(), 'There should be events with the webView headers in the list');
+        $this->assertSame(1, $crawler->filter("ul a:contains('".$testTokenValue."')")->count(), 'There should be events with the webView links in the list');
     }
 
     /**
