@@ -104,7 +104,7 @@ class MailgunEventControllerTest extends WebTestCase
 
         $apiKey = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
 
-        // make sure there is some data in the application
+        // make sure there is plenty of data in the application to be able to verify paging
         if (sizeof($eventReop->findAll()) < 102) {
             TestHelper::addMailgunEvents($manager, 102, $apiKey);
         }
@@ -187,8 +187,8 @@ class MailgunEventControllerTest extends WebTestCase
         $apiKey = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
 
         // make sure there is some data in the application
-        if (sizeof($eventReop->findAll()) < 102) {
-            TestHelper::addMailgunEvents($manager, 102, $apiKey);
+        if (sizeof($eventReop->findAll()) < 5) {
+            TestHelper::addMailgunEvents($manager, 5, $apiKey);
         }
 
         $events = $eventReop->findAll();
