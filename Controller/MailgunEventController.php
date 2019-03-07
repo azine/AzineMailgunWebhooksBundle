@@ -116,6 +116,8 @@ class MailgunEventController extends AbstractController
 
         // get the events
         $params['events'] = $this->getRepository()->getEvents($filter, array($orderBy => $orderDirection), $pageSize, ($page - 1) * $pageSize);
+        $params['emailWebViewRoute'] = $this->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_ROUTE);
+        $params['emailWebViewToken'] = $this->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
 
         // set the params for the pager
         $params['paginatorParams'] = array(

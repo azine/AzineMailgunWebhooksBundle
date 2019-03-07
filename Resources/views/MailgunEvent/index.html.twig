@@ -133,9 +133,11 @@
 					<br />
 					MessageHeaders:
 					<ul class="expandcollapse">
-                        {% for key, value in eventEntry.messageHeaders %}
-                            {% if value is iterable %}
+						{% for key, value in eventEntry.messageHeaders %}
+							{% if value is iterable %}
 								<li>{{ key }}: <pre>{{ value | printArray }}</pre></li>
+							{% elseif emailWebViewToken == key %}
+								{{ key }} : <a href="{{ path(emailWebViewRoute, {'sentEmail': {'token' : value}}) }}" target="_blank">{{ value }}</a>
 							{% else %}
 								<li>{{ key }}: {{ value }}</li>
 							{% endif %}
@@ -147,17 +149,19 @@
 					{{ eventEntry.tag }}
 				</td>
 				<td>
-                    {% if eventEntry.variables | length > 0 %}
+					{% if eventEntry.variables | length > 0 %}
 						<ul class="expandcollapse">
 							{% for item in eventEntry.variables %}
 								<li>{% if item.variableName != "" %} {{ item.variableName }} : {% endif %}
-                                    {% if item.content is iterable %}
+									{% if item.content is iterable %}
 										<pre>
-									    {{ item.content | printArray }}
-									</pre>
-								{% else %}
-									{{ item.content }}
-								{% endif %}
+										{{ item.content | printArray }}
+										</pre>
+									{% elseif emailWebViewToken == item.variableName %}
+										{{ item.variableName }} : <a href="{{ path(emailWebViewRoute, {'sentEmail': {'token' : item.content}}) }}" target="_blank">{{ item.content }}</a>
+									{% else %}
+										{{ item.content }}
+									{% endif %}
 							</li>
 						{% endfor %}
 						</ul>
