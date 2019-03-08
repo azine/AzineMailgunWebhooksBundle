@@ -64,4 +64,12 @@ services:
         tags:
             - { name: console.command }
 
+    Azine\MailgunWebhooksBundle\Controller\MailgunEventController:
+        calls:
+            - [setContainer, ["@service_container"]]
+
+    Azine\MailgunWebhooksBundle\Controller\MailgunController:
+        calls:
+            - [setContainer, ["@service_container"]]
+
 

@@ -186,15 +186,17 @@ class MailgunEventControllerTest extends WebTestCase
 
         $apiKey = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
 
-        // make sure there is some data in the application
-        if (sizeof($eventReop->findAll()) < 5) {
+        // make sure there is data in the application
+        $events = $eventReop->findAll();
+        if (sizeof($events) < 5) {
             TestHelper::addMailgunEvents($manager, 5, $apiKey);
+            $events = $eventReop->findAll();
         }
 
-        $events = $eventReop->findAll();
+        $webViewTokenName = $this->appContainer->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
 
         $testTokenValue = 'testValue';
-        $messageHeader = array(AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN => $testTokenValue);
+        $messageHeader = array($webViewTokenName => $testTokenValue);
         $events[0]->setMessageHeaders(json_encode($messageHeader));
         $manager->persist($events[0]);
         $manager->flush();
@@ -205,8 +207,8 @@ class MailgunEventControllerTest extends WebTestCase
         $listUrl = substr($this->getRouter()->generate('mailgunevent_list', array('_locale' => 'en', 'page' => 1, 'pageSize' => $pageSize, 'clear' => true)), 13);
         $crawler = $this->loginUserIfRequired($client, $listUrl);
 
-        $this->assertSame(1, $crawler->filter("ul:contains('".AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN."')")->count(), 'There should be events with the webView headers in the list');
-        $this->assertSame(1, $crawler->filter("ul a:contains('".$testTokenValue."')")->count(), 'There should be events with the webView links in the list');
+        $this->assertSame(1, $crawler->filter("ul:contains('$webViewTokenName')")->count(), 'There should be events with the webView headers in the list');
+        $this->assertSame(1, $crawler->filter("ul a:contains('$testTokenValue')")->count(), 'There should be events with the webView links in the list');
     }
 
     /**

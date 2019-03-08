@@ -2,6 +2,7 @@
 
 namespace Azine\MailgunWebhooksBundle\Controller;
 
+use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -23,6 +24,8 @@ class MailgunController extends AbstractController
         $params['complained'] = sizeof($this->getRepository()->findBy(array('event' => 'complained')));
         $params['unsubscribed'] = sizeof($this->getRepository()->findBy(array('event' => 'unsubscribed')));
         $params['unopened'] = $this->getRepository()->getEventCount(array('eventType' => 'unopened'));
+        $params['emailWebViewRoute'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_ROUTE);
+        $params['emailWebViewToken'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
 
         return $this->render('AzineMailgunWebhooksBundle::overview.html.twig', $params);
     }

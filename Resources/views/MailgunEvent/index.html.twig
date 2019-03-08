@@ -150,7 +150,7 @@
 				</td>
 				<td>
 					{% if eventEntry.variables | length > 0 %}
-						<ul class="expandcollapse">
+						<ul>
 							{% for item in eventEntry.variables %}
 								<li>{% if item.variableName != "" %} {{ item.variableName }} : {% endif %}
 									{% if item.content is iterable %}
@@ -158,7 +158,7 @@
 										{{ item.content | printArray }}
 										</pre>
 									{% elseif emailWebViewToken == item.variableName %}
-										{{ item.variableName }} : <a href="{{ path(emailWebViewRoute, {'sentEmail': {'token' : item.content}}) }}" target="_blank">{{ item.content }}</a>
+										<a href="{{ path(emailWebViewRoute, {'sentEmail': {'token' : item.content}}) }}" target="_blank">{{ item.content }}</a>
 									{% else %}
 										{{ item.content }}
 									{% endif %}
@@ -181,6 +181,8 @@
 {% endblock %}
 
 {% block templateJQueryJS %}
+    {{ parent() }}
+
 	$(".pageSizeSelector").change(function(){
 
 		// reload the page with the new pagesize
@@ -188,30 +190,5 @@
 		var baseUrl = '{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : '-1'}) }}';
 		window.location.href = baseUrl.substring(0, baseUrl.length - 2) + newSize;
 
-	});
-
-	$( ".expandcollapse" ).each(function(){
-
-		if($(this).height() > 150){
-
-			$(this).css('display', 'none');
-			$(this).after( '<div class="expandcollapseBtn">Click to expand... (+)</div>' );
-			$(this).siblings( ".expandcollapseBtn" ).css('cursor', 'pointer');
-		}
-	});
-
-	$( ".expandcollapseBtn" ).on('click', function() {
-
-		$expandcollapseList = $(this).siblings( ".expandcollapse" );
-
-		if($expandcollapseList.is(':hidden')){
-
-			$(this).text('Click to collapse... (-)');
-		}
-		else{
-			$(this).text('Click to expand... (+)');
-		}
-
-		$expandcollapseList.slideToggle( "slow" );
 	});
 {% endblock %}

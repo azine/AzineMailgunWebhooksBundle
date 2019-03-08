@@ -3,6 +3,11 @@
 {{ parent() }}
 	<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.blue.css">
 	<link type="text/css" rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/flick/jquery-ui.min.css" />
+    <style>
+        .record_properties th, td {
+            border: 1px solid #000;
+        }
+    </style>
 {% endblock %}
 
 {% block body -%}
@@ -98,7 +103,7 @@
                 <td>
 					MessageHeaders:
 					{% if entity.messageHeaders | length > 0 %}
-						<ul>
+						<ul class="expandcollapse">
 						{% for key, value in entity.messageHeaders %}
 							<li>{{ key }}: {{ value }}</li>
 						{% endfor %}
@@ -116,7 +121,7 @@
                 <th>Customvariables</th>
                 <td>
 					{% if entity.variables | length > 0 %}
-						<ul>
+						<ul class="expandcollapse">
 						{% for item in entity.variables %}
 							<li>
 								{% if item.variableName != "" %}
