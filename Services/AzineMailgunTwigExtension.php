@@ -2,11 +2,13 @@
 
 namespace Azine\MailgunWebhooksBundle\Services;
 
+use Twig\Extension\AbstractExtension;
+
 /**
  * Class AzineMailgunTwigExtension
  * Provides some filters and global variables.
  */
-class AzineMailgunTwigExtension extends \Twig_Extension
+class AzineMailgunTwigExtension extends AbstractExtension
 {
     /**
      * {@inheritdoc}
