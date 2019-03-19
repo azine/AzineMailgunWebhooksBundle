@@ -28,7 +28,13 @@ class AzineMailgunCockpitService
         if (is_null($this->cachedLastKnownIp)) {
             /** @var MailgunEventRepository $eventRepository */
             $eventRepository = $this->managerRegistry->getRepository(MailgunEvent::class);
-            $lastKnownIp = $eventRepository->getLastKnownSenderIp();
+            $lastKnownIp = null;
+            $ipAddressData = $eventRepository->getLastKnownSenderIpData();
+
+            if(isset($ipAddressData['id'])){
+
+                $lastKnownIp = $ipAddressData['id'];
+            }
 
             $this->cachedLastKnownIp = $lastKnownIp;
         } else {

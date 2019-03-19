@@ -82,7 +82,15 @@ class CheckIpAddressIsBlacklistedCommand extends Command
         $manager = $this->managerRegistry->getManager();
         /** @var MailgunEventRepository $eventRepository */
         $eventRepository = $manager->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
-        $ipAddress = $eventRepository->getLastKnownSenderIp();
+        $ipAddressData = $eventRepository->getLastKnownSenderIpData();
+        $ipAddress = null;
+
+        if(isset($ipAddressData['ip'])){
+
+            $ipAddress = $ipAddressData['ip'];
+            $sendDateTime = new \DateTime();
+            $sendDateTime->setTimestamp($ipAddressData['timestamp']);
+        }
         $numberOfAttempts = $input->getArgument('numberOfAttempts');
 
         try {
@@ -101,7 +109,7 @@ class CheckIpAddressIsBlacklistedCommand extends Command
         if (HetrixtoolsServiceResponse::RESPONSE_STATUS_SUCCESS == $response->status) {
             if ($response->blacklisted_count > 0) {
                 try {
-                    $messagesSent = $this->azineMailgunService->sendBlacklistNotification($response, $ipAddress);
+                    $messagesSent = $this->azineMailgunService->sendBlacklistNotification($response, $ipAddress, $sendDateTime);
 
                     if ($messagesSent > 0) {
                         $output->write(self::BLACKLIST_REPORT_WAS_SENT." ($ipAddress)");
