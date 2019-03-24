@@ -85,8 +85,7 @@ class CheckIpAddressIsBlacklistedCommand extends Command
         $ipAddressData = $eventRepository->getLastKnownSenderIpData();
         $ipAddress = null;
 
-        if(isset($ipAddressData['ip'])){
-
+        if (isset($ipAddressData['ip'])) {
             $ipAddress = $ipAddressData['ip'];
             $sendDateTime = new \DateTime();
             $sendDateTime->setTimestamp($ipAddressData['timestamp']);

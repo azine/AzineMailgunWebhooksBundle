@@ -174,7 +174,6 @@ class MailgunEventRepository extends EntityRepository
             if ($next['mh']) {
                 foreach ($next['mh'] as $nextHeader) {
                     if ('X-Mailgun-Sending-Ip' == $nextHeader[0]) {
-
                         $returnData['ip'] = $nextHeader[1];
                         $returnData['timestamp'] = $next['ts'];
                     }
