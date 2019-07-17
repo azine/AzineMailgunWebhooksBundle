@@ -13,4 +13,9 @@ tools:
 
     php_cs_fixer: true
         
-        
+build:
+    nodes:
+        analysis:
+            tests:
+                override:
+                    - php-scrutinizer-run
