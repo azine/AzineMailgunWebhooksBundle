@@ -44,8 +44,8 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
             'api_blacklist_check_link' => 'https://api.example.com/v2/token/blacklist-check/ipv4/198.51.100.42/',
         );
 
-        $repository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')->disableOriginalConstructor()->setMethods(array('getLastKnownSenderIp'))->getMock();
-        $repository->expects($this->any())->method('getLastKnownSenderIp')->will($this->returnValue('198.51.100.42'));
+        $repository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')->disableOriginalConstructor()->setMethods(array('getLastKnownSenderIpData'))->getMock();
+        $repository->expects($this->any())->method('getLastKnownSenderIpData')->will($this->returnValue(array('ip' => '198.51.100.42', 'timestamp' => '1552971782')));
 
         $this->entityManager = $this->getMockBuilder("Doctrine\ORM\EntityManager")->disableOriginalConstructor()->setMethods(array('getRepository'))->getMock();
         $this->entityManager->expects($this->any())->method('getRepository')->will($this->returnValue($repository));

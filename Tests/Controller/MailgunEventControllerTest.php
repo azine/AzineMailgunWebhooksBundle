@@ -3,7 +3,6 @@
 namespace Azine\MailgunWebhooksBundle\Tests\Controller;
 
 use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
-use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Tests\TestHelper;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Client;
@@ -11,7 +10,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -168,8 +166,8 @@ class MailgunEventControllerTest extends WebTestCase
         // show inexistent page
         $maxPage = floor($count / $pageSize);
         $beyondListUrl = $this->getRouter()->generate('mailgunevent_list', array('_locale' => 'en', 'page' => $maxPage + 1, 'pageSize' => $pageSize, 'clear' => true));
-        $client->request('GET', $beyondListUrl);
-        $crawler = $client->followRedirect();
+        $crawler = $client->followRedirects();
+        $crawler = $client->request('GET', $beyondListUrl);
         $this->assertSame(2, $crawler->filter(".pagination .disabled:contains('Next')")->count(), 'Expected to be on the last page => the next button should be disabled.');
     }
 
