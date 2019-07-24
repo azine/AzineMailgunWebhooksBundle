@@ -3,7 +3,6 @@
 namespace Azine\MailgunWebhooksBundle\Tests\Controller;
 
 use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
-use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Tests\TestHelper;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Client;
@@ -11,7 +10,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -23,15 +21,7 @@ class MailgunEventControllerTest extends WebTestCase
 
         $client = static::createClient();
         $client->request('GET', '/');
-
-        // create a subscriber to listen to create_events.
-        $subscriberMock = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Tests\EventSubscriberMock")->setMethods(array('handleCreate'))->getMock();
-        $this->assertTrue($subscriberMock  instanceof EventSubscriberInterface);
-        $this->getEventDispatcher()->addSubscriber($subscriberMock);
-        $this->assertTrue($this->getEventDispatcher()->hasListeners(MailgunEvent::CREATE_EVENT));
-
-        //		dominik I would expect the method handleCreate to be called once, but for some reason it is not.
-        //		$subscriberMock->expects($this->once())->method("handleCreate");
+        $client->enableProfiler();
 
         // get webhook url
         $url = $this->getRouter()->generate('mailgunevent_webhook', array('_locale', 'en'), UrlGeneratorInterface::ABSOLUTE_URL);
@@ -61,6 +51,14 @@ class MailgunEventControllerTest extends WebTestCase
         $this->assertSame(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata\n\n\n".$client->getResponse()->getContent());
         $this->assertContains('Thanx, for the info.', $crawler->text(), 'Response expected.');
         $this->assertSame($count + 1, sizeof($eventReop->findAll()), 'One new db entry for the webhook expected!');
+
+        $validPostData['event'] = 'complained';
+        $client->request('POST', $url, $validPostData, $attachments);
+
+        $mailCollector = $client->getProfile()->getCollector('swiftmailer');
+
+        // checks that an email was sent from the listener
+        $this->assertSame(1, $mailCollector->getMessageCount());
     }
 
     private function getValidPostData()
@@ -168,8 +166,8 @@ class MailgunEventControllerTest extends WebTestCase
         // show inexistent page
         $maxPage = floor($count / $pageSize);
         $beyondListUrl = $this->getRouter()->generate('mailgunevent_list', array('_locale' => 'en', 'page' => $maxPage + 1, 'pageSize' => $pageSize, 'clear' => true));
-        $client->request('GET', $beyondListUrl);
-        $crawler = $client->followRedirect();
+        $crawler = $client->followRedirects();
+        $crawler = $client->request('GET', $beyondListUrl);
         $this->assertSame(2, $crawler->filter(".pagination .disabled:contains('Next')")->count(), 'Expected to be on the last page => the next button should be disabled.');
     }
 
