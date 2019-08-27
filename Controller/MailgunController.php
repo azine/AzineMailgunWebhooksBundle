@@ -18,11 +18,11 @@ class MailgunController extends AbstractController
     {
         $params = array();
         $params['importantEvents'] = $this->getRepository()->getImportantEvents(10);
-        $params['events'] = sizeof($this->getRepository()->findAll());
-        $params['bounced'] = sizeof($this->getRepository()->findBy(array('event' => 'bounced')));
-        $params['dropped'] = sizeof($this->getRepository()->findBy(array('event' => 'dropped')));
-        $params['complained'] = sizeof($this->getRepository()->findBy(array('event' => 'complained')));
-        $params['unsubscribed'] = sizeof($this->getRepository()->findBy(array('event' => 'unsubscribed')));
+        $params['events'] = $this->getRepository()->getEventCount(array());
+        $params['bounced'] = $this->getRepository()->getEventCount(array('eventType' => 'bounced'));
+        $params['dropped'] = $this->getRepository()->getEventCount(array('eventType' => 'dropped'));
+        $params['complained'] = $this->getRepository()->getEventCount(array('eventType' => 'complained'));
+        $params['unsubscribed'] = $this->getRepository()->getEventCount(array('eventType' => 'unsubscribed'));
         $params['unopened'] = $this->getRepository()->getEventCount(array('eventType' => 'unopened'));
         $params['emailWebViewRoute'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_ROUTE);
         $params['emailWebViewToken'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
