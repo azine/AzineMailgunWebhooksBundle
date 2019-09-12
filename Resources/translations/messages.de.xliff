@@ -14,8 +14,6 @@
       <trans-unit id="838d2b56298b4f33c2674e788522667745633686" resname="notification.blacklist_received.%ipAddress%">
         <source>notification.blacklist_received.%ipAddress%</source>
         <target state="new">notification.blacklist_received.%ipAddress%</target>
-        <jms:reference-file line="1">/../vendor/azine/mailgunwebhooks-bundle/Azine/MailgunWebhooksBundle/Resources/views/Email/blacklistNotification.html.twig</jms:reference-file>
-        <jms:reference-file line="1">/../vendor/azine/mailgunwebhooks-bundle/Azine/MailgunWebhooksBundle/Resources/views/Email/blacklistNotification.txt.twig</jms:reference-file>
       </trans-unit>
       <trans-unit id="6eb51978dc9a890090023393f4dbb693e71e8ec4" resname="notification.blacklist_report_links">
         <source>notification.blacklist_report_links</source>
