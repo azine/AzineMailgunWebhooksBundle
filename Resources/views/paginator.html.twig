@@ -1,4 +1,5 @@
-Total records in result: {{ totalItems }} <br />
+<div class="mailgunEventPaginator">
+Total records in result: {{ totalItems }} |
 PageSize : <select class="pageSizeSelector">
 	<option value="25"  {% if (pageSize == 25)  %}selected{% endif %}>25</option>
 	<option value="50"  {% if (pageSize == 50)  %}selected{% endif %}>50</option>
@@ -68,3 +69,4 @@ PageSize : <select class="pageSizeSelector">
         </div>
     {% endif %}
 {% endspaceless %}
+</div>

@@ -1,16 +1,10 @@
 {% extends 'AzineMailgunWebhooksBundle::layout.html.twig' %}
 
-{% block stylesheets %}
-{{ parent() }}
-	<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.blue.css">
-	<link type="text/css" rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/flick/jquery-ui.min.css" />
-{% endblock %}
-
-{% block body %}	
+{% block body %}
+	{{ parent() }}
 	{{ render(controller('AzineMailgunWebhooksBundle:Mailgun:cockpit')) }}
 	
     <h1>Mailgun Overview</h1>
-
 	<ul>
 	    <li>
 			<a id="eventCount" href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?clear=true">EventList ({{ events }})</a>
@@ -34,12 +28,6 @@
     	   			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=unopened">un-opened emails({{ unopened }})</a>
     	   		</li>
 	    	</ul>
-	    </li>
-	    <li>
-	    	Remove entries older than <input type="text" />. <button type="submit">Execute!</button>
-	    </li>
-	    <li>
-	    	Remove successful deliveries older than <input type="text" />. <button type="submit">Execute!</button>
 	    </li>
 	</ul>
 
@@ -137,4 +125,4 @@
 		</tbody>
 	</table>
 
-{% endblock %}
+{% endblock body %}

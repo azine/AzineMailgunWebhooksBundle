@@ -19,9 +19,6 @@
 				Domain Configuration</a>
 	</tr>
 	<tr>
-		<td >&nbsp;</td>
-	</tr>
-	<tr>
 		<th >Other Tools</th>
 	</tr>
 	<tr>
@@ -50,10 +47,14 @@
 				HetrixTools</a>
 		</td>
 	</tr>
+	<tr>
+		<td>
+			{% if emailDomain == '' %}
+				<p class="warningMessage">Email domain is not configured</p>
+			{% endif %}
+			{% if lastKnownIp == '' %}
+				<p class="warningMessage">Unable to get last sender IP</p>
+			{% endif %}
+		</td>
+	</tr>
 </table>
-{% if emailDomain == '' %}
-	<h3 style="margin:0;float: right; clear: right;">Email domain is not configured</h3>
-{% endif %}
-{% if lastKnownIp == '' %}
-	<h3 style="margin:0;float: right; clear: right;">There are no events yet - unable to get last sender IP</h3>		
-{% endif %}

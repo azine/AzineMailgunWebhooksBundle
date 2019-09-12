@@ -1,17 +1,12 @@
 {% extends 'AzineMailgunWebhooksBundle::layout.html.twig' %}
-{% block stylesheets %}
-{{ parent() }}
-	<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.blue.css">
-	<link type="text/css" rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/flick/jquery-ui.min.css" />
-{% endblock %}
 
 {% block body %}
+	{{ parent() }}
 	{{ render(controller('AzineMailgunWebhooksBundle:Mailgun:cockpit')) }}
 
 	<h1>MailgunEvents</h1>
 	<a class="backToOverview" href="{{ path('mailgun_overview') }}" >Back to overview</a>
-	<hr/>
-	<h2>Filter criteria</h2>
+	<h3>Filter criteria</h3>
 	<form id="filter_event_form" action="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : currentFilters.pageSize}) }}" method="post">
 		<table>
 			<tr>
@@ -40,6 +35,8 @@
 						{% endfor %}
 					</datalist>
 				</td>
+			</tr>
+			<tr>
 				<th>Search :</th>
 				<td>
 					<input id="filter_search" name="filter[search]" type="text" value="{{ currentFilters.search }}"/>
@@ -56,7 +53,7 @@
 						<option value="desc"  {% if ('desc' == currentFilters.orderDirection)  %}selected{% endif %}>desc</option>
 					</select>
 								</td>
-				<td>
+				<td colspan="2">
 					<button class="button" type="filter_submit">Filter</button>
 				</td>
 			</tr>

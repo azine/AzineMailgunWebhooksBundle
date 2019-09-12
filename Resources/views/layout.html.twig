@@ -1,153 +1,188 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8" />
-		{% block stylesheets %}
-            <style>
-                .emailCockpitLinks {
-                    min-width: 320px;
-                    float: right;
-                    font-size: 13px;
-                    text-align: center;
-                    padding: 10px;
-                    border: black solid 1px;
-                }
+{% extends 'AzineMailgunWebhooksBundle::base.html.twig' %}
 
-            </style>
-        {% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
 
-        </head>
-    <body>
-	
-	{% block body %}{% endblock %}
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.blue.css">
+    <link type="text/css" rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/flick/jquery-ui.min.css" />
+    <style>
+        .emailCockpitLinks {
+            width: 320px;
+            float: right;
+            font-size: 13px;
+            text-align: center;
+            padding: 10px;
+            border: black solid 1px;
+        }
+        .emailCockpitLinks .warningMessage{
+            text-align: center;
+            margin: 0px;
+        }
+        .record_properties th, td {
+            border: 1px solid #000;
+        }
+        #filter_event_form {
+            width: 75%;
+        }
+        #filter_event_form td{
+            padding: 0px;
+        }
+        #filter_event_form select, #filter_event_form input{
+            margin: 0px;
+        }
+        #filter_event_form #filter_orderBy, #filter_event_form #filter_orderDirection{
+            width: 45%;
+        }
+        #filter_event_form td{
+            border: none;
+        }
+        #filter_event_form tr{
+            background-color: inherit;
+        }
+        #filter_event_form button{
+            margin-bottom: 2px;
+            margin-top: 2px;
+            margin-left: 50%;
+        }
+        .mailgunEventPaginator a{
+            display: unset;
+        }
+        .mailgunEventPaginator .pageSizeSelector{
+            width: unset;
+        }
+
+
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+    <div id="modalConfirmDialog" style="display: none" title="Should the event be deleted?">
+        <p id="dialogContent">Should the event be deleted?</p>
+    </div>
+{% endblock %}
 
 {% block javascripts %}
-<script type="text/javascript">
-<!--
-function loadLibrary(url, callback) {
-	var script_tag = document.createElement('script');
-	script_tag.setAttribute("src", url);
-	script_tag.onload = callback; // Run callback once jQuery has loaded
-	script_tag.onreadystatechange = function () { // Same thing but for IE
-		if (this.readyState == 'complete' || this.readyState == 'loaded') callback();
-	};
+    {{ parent() }}
 
-	document.getElementsByTagName("head")[0].appendChild(script_tag);
-}
+    <script type="text/javascript">
+    <!--
+    function loadLibrary(url, callback) {
+        var script_tag = document.createElement('script');
+        script_tag.setAttribute("src", url);
+        script_tag.onload = callback; // Run callback once jQuery has loaded
+        script_tag.onreadystatechange = function () { // Same thing but for IE
+            if (this.readyState == 'complete' || this.readyState == 'loaded') callback();
+        };
 
-// make sure jquery is loaded
-if (typeof jQuery === "undefined") {
-	loadLibrary("https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js", loadjQueryUI);
-} else {
-	$(document).ready(function() {
-		loadjQueryUI();
-	});
-}
+        document.getElementsByTagName("head")[0].appendChild(script_tag);
+    }
 
-// make sure jquery ui is loaded
-function loadjQueryUI(){
-	if(!$.ui){
-		loadLibrary("https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js", loadTableSorter);
-	} else {
-		loadTableSorter();
-	}
-}
+    // make sure jquery is loaded
+    if (typeof jQuery === "undefined") {
+        loadLibrary("https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js", loadjQueryUI);
+    } else {
+        $(document).ready(function() {
+            loadjQueryUI();
+        });
+    }
 
-// make sure jquery tablesorter plugin is loaded
-function loadTableSorter(){
-	if(!$.tablesorter){
-		loadLibrary("https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js", main);
-	} else {
-		main();
-	}
-}
+    // make sure jquery ui is loaded
+    function loadjQueryUI(){
+        if(!$.ui){
+            loadLibrary("https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js", loadTableSorter);
+        } else {
+            loadTableSorter();
+        }
+    }
 
-function main() {
-	$(document).ready(function() {
+    // make sure jquery tablesorter plugin is loaded
+    function loadTableSorter(){
+        if(!$.tablesorter){
+            loadLibrary("https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js", main);
+        } else {
+            main();
+        }
+    }
 
-		$(".eventsTable").tablesorter({widgets: ['zebra'] });
+    function main() {
+        $(document).ready(function() {
 
-		$.confirmDeleteDialog = function(eventId, eventType, eventTime, eventRecipient){
-			 $( "#modalConfirmDialog" ).dialog({
-												 resizable: false,
-												 height:300,
-												 width: 500,
-												 modal: true,
-												 title: 'Delete event '+eventId+'?',
-												 open: function(){
-											           		$("#dialogContent").html('Should the event be deleted?<br/><br/>EventType:'+eventType+'<br/>Date/Time:'+eventTime+'<br/>Recipient:'+eventRecipient+'')
-											           },
-												 buttons: {
-													 "Delete event": function() {
-														 $.ajaxDeleteEvent(eventId);
-														 $( this ).dialog( "close" );
-													 },
-													 Cancel: function() {
-														 $( this ).dialog( "close" );
-													 }
-												 }
-											 });
+            $(".eventsTable").tablesorter({widgets: ['zebra'] });
 
-		};
+            $.confirmDeleteDialog = function(eventId, eventType, eventTime, eventRecipient){
+                 $( "#modalConfirmDialog" ).dialog({
+                                                     resizable: false,
+                                                     height:300,
+                                                     width: 500,
+                                                     modal: true,
+                                                     title: 'Delete event '+eventId+'?',
+                                                     open: function(){
+                                                                $("#dialogContent").html('Should the event be deleted?<br/><br/>EventType:'+eventType+'<br/>Date/Time:'+eventTime+'<br/>Recipient:'+eventRecipient+'')
+                                                           },
+                                                     buttons: {
+                                                         "Delete event": function() {
+                                                             $.ajaxDeleteEvent(eventId);
+                                                             $( this ).dialog( "close" );
+                                                         },
+                                                         Cancel: function() {
+                                                             $( this ).dialog( "close" );
+                                                         }
+                                                     }
+                                                 });
 
-		$('.deleteLink').click(function(){
-			$.confirmDeleteDialog($(this).attr('eventId'), $(this).attr('eventType'), $(this).attr('eventTime'), $(this).attr('eventRecipient'));
-			return false;
-		});
+            };
 
-		$.ajaxDeleteEvent = function(eventId){
-			$.post('{{ path("mailgunevent_delete_ajax") | raw }}', { 'eventId' : eventId },
-		        function(response){
-	                if(response.success){
-	                	$('.eventsTable tr#event'+eventId).remove();
-	                } else {
-	                	alert('failed to delete event:'+eventId);
-	                }
-	            },"json");
-		};
+            $('.deleteLink').click(function(){
+                $.confirmDeleteDialog($(this).attr('eventId'), $(this).attr('eventType'), $(this).attr('eventTime'), $(this).attr('eventRecipient'));
+                return false;
+            });
 
-        $( ".expandcollapse" ).each(function(){
+            $.ajaxDeleteEvent = function(eventId){
+                $.post('{{ path("mailgunevent_delete_ajax") | raw }}', { 'eventId' : eventId },
+                    function(response){
+                        if(response.success){
+                            $('.eventsTable tr#event'+eventId).remove();
+                        } else {
+                            alert('failed to delete event:'+eventId);
+                        }
+                    },"json");
+            };
 
-            if($(this).height() > 150){
+            $( ".expandcollapse" ).each(function(){
 
-                $(this).css('display', 'none');
-                $(this).before( '<div class="expandcollapseBtn">Click to expand... (+)</div>' );
-                $(this).siblings( ".expandcollapseBtn" ).css('cursor', 'pointer');
-            }
+                if($(this).height() > 150){
+
+                    $(this).css('display', 'none');
+                    $(this).before( '<div class="expandcollapseBtn">Click to expand... (+)</div>' );
+                    $(this).siblings( ".expandcollapseBtn" ).css('cursor', 'pointer');
+                }
+            });
+
+            $( ".expandcollapseBtn" ).on('click', function() {
+
+                $expandcollapseList = $(this).siblings( ".expandcollapse" );
+
+                if($expandcollapseList.is(':hidden')){
+
+                    $(this).text('Click to collapse... (-)');
+                }
+                else{
+                    $(this).text('Click to expand... (+)');
+                }
+
+                $expandcollapseList.slideToggle( "slow" );
+            });
+
+
+            {% block templateJQueryJS %}
+            {# insert jQuery code for sub-templates into this block #}
+
+            {% endblock %}
+
         });
 
-        $( ".expandcollapseBtn" ).on('click', function() {
-
-            $expandcollapseList = $(this).siblings( ".expandcollapse" );
-
-            if($expandcollapseList.is(':hidden')){
-
-                $(this).text('Click to collapse... (-)');
-            }
-            else{
-                $(this).text('Click to expand... (+)');
-            }
-
-            $expandcollapseList.slideToggle( "slow" );
-        });
-
-
-        {% block templateJQueryJS %}
-		{# insert jQuery code for sub-templates into this block #}
-
-		{% endblock %}
-
-	});
-
-}// end document ready
-
-
-//-->
-</script>
-<div id="modalConfirmDialog" style="display: none" title="Should the event be deleted?">
-	<p id="dialogContent">Should the event be deleted?</p>
-</div>
-
+    }// end document ready
+    //-->
+    </script>
 {% endblock %}
-    </body>
-</html>
