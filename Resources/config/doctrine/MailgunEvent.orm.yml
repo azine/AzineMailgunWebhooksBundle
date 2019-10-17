@@ -12,12 +12,10 @@ Azine\MailgunWebhooksBundle\Entity\MailgunEvent:
         event:           {type: string,     length:  63, nullable: false                                } # Mailgun Field-Description: Event name (“opened”).
         domain:          {type: string,     length: 255, nullable: false                                } # Mailgun Field-Description: Domain that sent the message.
         description:     {type: text,                    nullable: true                                 } # Mailgun Field-Description: Detailed explanation of why the messages was dropped
-        notification:    {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: Detailed reason for bouncing (optional).
         reason:          {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: Reason for failure. Can be one of [“hardfail”, “maxfails”, “old”]. See below.
         recipient:       {type: string,     length: 255, nullable: false                                } # Mailgun Field-Description: Recipient who opened.
         errorCode:       {type: string,     length: 255, nullable: true,    column: error_code          } # Mailgun Field-Description: SMTP bounce error code in form (X.X.X).
         ip:              {type: string,     length:  15, nullable: true                                 } # Mailgun Field-Description: IP address the event originated from.
-        error:           {type: text,                    nullable: true                                 } # Mailgun Field-Description: SMTP bounce error string.
         country:         {type: string,     length:   2, nullable: true                                 } # Mailgun Field-Description: Two-letter country code (as specified by ISO3166) the event came from or ‘unknown’ if it couldn’t be determined.
         city:            {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: Name of the city the event came from or ‘unknown’ if it couldn’t be determined.
         region:          {type: string,     length:   4, nullable: true                                 } # Mailgun Field-Description: Two-letter or two-digit region code or ‘unknown’ if it couldn’t be determined.

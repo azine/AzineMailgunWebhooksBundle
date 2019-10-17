@@ -89,11 +89,6 @@ class MailgunEvent
     /**
      * @var string
      */
-    private $notification;
-
-    /**
-     * @var string
-     */
     private $reason;
 
     /**
@@ -110,11 +105,6 @@ class MailgunEvent
      * @var string
      */
     private $ip;
-
-    /**
-     * @var string
-     */
-    private $error;
 
     /**
      * @var string
@@ -308,30 +298,6 @@ class MailgunEvent
     }
 
     /**
-     * Set notification.
-     *
-     * @param string $notification
-     *
-     * @return MailgunEvent
-     */
-    public function setNotification($notification)
-    {
-        $this->notification = $notification;
-
-        return $this;
-    }
-
-    /**
-     * Get notification.
-     *
-     * @return string
-     */
-    public function getNotification()
-    {
-        return $this->notification;
-    }
-
-    /**
      * Set reason.
      *
      * @param string $reason
@@ -425,30 +391,6 @@ class MailgunEvent
     public function getIp()
     {
         return $this->ip;
-    }
-
-    /**
-     * Set error.
-     *
-     * @param string $error
-     *
-     * @return MailgunEvent
-     */
-    public function setError($error)
-    {
-        $this->error = $error;
-
-        return $this;
-    }
-
-    /**
-     * Get error.
-     *
-     * @return string
-     */
-    public function getError()
-    {
-        return $this->error;
     }
 
     /**
