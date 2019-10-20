@@ -89,5 +89,7 @@ EOF
         $result = $this->mailgunService->removeEvents($type, $date);
 
         $output->write('All MailgunEvents (& their CustomVariables & Attachments) older than '.$date->format('Y-m-d H:i:s')." of $typeDesc have been deleted ($result).", true);
+
+        return 0;
     }
 }
