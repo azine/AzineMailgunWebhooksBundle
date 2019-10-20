@@ -102,7 +102,7 @@ class CheckIpAddressIsBlacklistedCommand extends Command
                 $this->retry($numberOfAttempts);
             }
 
-            return false;
+            return -1;
         }
 
         if (HetrixtoolsServiceResponse::RESPONSE_STATUS_SUCCESS == $response->status) {
@@ -127,8 +127,10 @@ class CheckIpAddressIsBlacklistedCommand extends Command
                 $this->retry($numberOfAttempts);
             }
 
-            return false;
+            return -1;
         }
+
+        return 0;
     }
 
     private function retry($numberOfAttempts)
