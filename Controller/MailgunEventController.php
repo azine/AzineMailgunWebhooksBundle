@@ -8,7 +8,6 @@ use Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable;
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
-use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,10 +34,10 @@ class MailgunEventController extends AbstractController
 
         // get general filter options
         $params['filterOptions'] = array(
-                'orderBy' => $this->getRepository()->getFieldsToOrderBy(),
-                'eventTypes' => array_merge(array('all', 'unopened'), $this->getRepository()->getEventTypes()),
-                'domains' => $this->getRepository()->getDomains(),
-                'recipients' => $this->getRepository()->getRecipients(),
+            'orderBy' => $this->getRepository()->getFieldsToOrderBy(),
+            'eventTypes' => array_merge(array('all', 'unopened'), $this->getRepository()->getEventTypes()),
+            'domains' => $this->getRepository()->getDomains(),
+            'recipients' => $this->getRepository()->getRecipients(),
         );
 
         // get filter criteria from session
@@ -97,14 +96,14 @@ class MailgunEventController extends AbstractController
 
         // set params for filter-form
         $params['currentFilters'] = array(
-                    'domain' => $domain,
-                    'orderBy' => $orderBy,
-                    'orderDirection' => $orderDirection,
-                    'eventType' => $eventType,
-                    'pageSize' => $pageSize,
-                    'search' => $search,
-                    'recipient' => $recipient,
-                );
+            'domain' => $domain,
+            'orderBy' => $orderBy,
+            'orderDirection' => $orderDirection,
+            'eventType' => $eventType,
+            'pageSize' => $pageSize,
+            'search' => $search,
+            'recipient' => $recipient,
+        );
 
         $eventCount = $this->getRepository()->getEventCount($filter);
         // validate the page/pageSize and with the total number of result entries
@@ -121,14 +120,14 @@ class MailgunEventController extends AbstractController
 
         // set the params for the pager
         $params['paginatorParams'] = array(
-                    'paginationPath' => 'mailgunevent_list',
-                    'pageSize' => $pageSize,
-                    'currentPage' => $page,
-                    'currentFilters' => $params['currentFilters'],
-                    'totalItems' => $eventCount,
-                    'lastPage' => ceil($eventCount / $pageSize),
-                    'showAlwaysFirstAndLast' => true,
-                );
+            'paginationPath' => 'mailgunevent_list',
+            'pageSize' => $pageSize,
+            'currentPage' => $page,
+            'currentFilters' => $params['currentFilters'],
+            'totalItems' => $eventCount,
+            'lastPage' => ceil($eventCount / $pageSize),
+            'showAlwaysFirstAndLast' => true,
+        );
 
         return $this->render('AzineMailgunWebhooksBundle:MailgunEvent:index.html.twig', $params);
     }
@@ -150,16 +149,15 @@ class MailgunEventController extends AbstractController
 
         if (is_array($params) && !empty($params)) {
             return $this->createEventOldApi($params);
-
-        } else {
-            // new webhooks api
-            $json = json_decode($request->getContent(), true);
-            return $this->createEventNewApi($json);
         }
+        // new webhooks api
+        $json = json_decode($request->getContent(), true);
+
+        return $this->createEventNewApi($json);
     }
 
-    private function createEventNewApi($paramsPre){
-
+    private function createEventNewApi($paramsPre)
+    {
         $params = array_change_key_case($paramsPre, CASE_LOWER);
 
         if (sizeof($params) != sizeof($paramsPre)) {
@@ -175,7 +173,7 @@ class MailgunEventController extends AbstractController
         $timestamp = $signatureData['timestamp'];
         $tsAge = abs(time() - $timestamp);
         if ($tsAge > 15) {
-            return new Response("Signature verification failed. Timestamp too old abs(".time()." - $timestamp) = $tsAge", 401);
+            return new Response('Signature verification failed. Timestamp too old abs('.time()." - $timestamp) = $tsAge", 401);
         }
 
         // validate post-data
@@ -217,7 +215,7 @@ class MailgunEventController extends AbstractController
             if (array_key_exists('envelope', $eventData)) {
                 $envelope = $eventData['envelope'];
                 $sender = $envelope['sender'];
-                $event->setDomain(substr($sender, strrpos($sender,"@") + 1));
+                $event->setDomain(substr($sender, strrpos($sender, '@') + 1));
 
                 // ip
                 if (array_key_exists('sending-ip', $envelope)) {
@@ -229,26 +227,23 @@ class MailgunEventController extends AbstractController
             }
             // description & reason
             if (array_key_exists('delivery-status', $eventData)) {
-                $description = array_key_exists('message', $eventData['delivery-status']) ? $eventData['delivery-status']['message']." " : "";
-                $description .= array_key_exists('description', $eventData['delivery-status']) ? $eventData['delivery-status']['description'] : "";
+                $description = array_key_exists('message', $eventData['delivery-status']) ? $eventData['delivery-status']['message'].' ' : '';
+                $description .= array_key_exists('description', $eventData['delivery-status']) ? $eventData['delivery-status']['description'] : '';
 
                 $event->setDescription($description);
-                unset($eventData['delivery-status']['message']);
-                unset($eventData['delivery-status']['description']);
+                unset($eventData['delivery-status']['message'], $eventData['delivery-status']['description']);
 
                 // delivery status code
                 if (array_key_exists('code', $eventData['delivery-status'])) {
                     $event->setErrorCode($eventData['delivery-status']['code']);
                     unset($eventData['delivery-status']['code']);
                 }
-
-            } else if (array_key_exists('reject', $eventData)) {
-                $description = array_key_exists('description', $eventData['reject']) ? $eventData['reject']['description'] : "";
-                $reason = array_key_exists('reason', $eventData['reject']) ? $eventData['reject']['reason'] : "";
+            } elseif (array_key_exists('reject', $eventData)) {
+                $description = array_key_exists('description', $eventData['reject']) ? $eventData['reject']['description'] : '';
+                $reason = array_key_exists('reason', $eventData['reject']) ? $eventData['reject']['reason'] : '';
                 $event->setDescription($description);
                 $event->setReason($reason);
-                unset($eventData['delivery-status']['description']);
-                unset($eventData['delivery-status']['reason']);
+                unset($eventData['delivery-status']['description'], $eventData['delivery-status']['reason']);
             }
             // reason
             if (array_key_exists('reason', $eventData)) {
@@ -260,7 +255,7 @@ class MailgunEventController extends AbstractController
                 $event->setRecipient($eventData['recipient']);
                 unset($eventData['recipient']);
             }
-            if(array_key_exists("geolocation", $eventData)) {
+            if (array_key_exists('geolocation', $eventData)) {
                 $geolocation = $eventData['geolocation'];
                 // country
                 if (array_key_exists('country', $geolocation)) {
@@ -278,7 +273,7 @@ class MailgunEventController extends AbstractController
                     unset($eventData['geolocation']['region']);
                 }
             }
-            if(array_key_exists('client-info', $eventData)){
+            if (array_key_exists('client-info', $eventData)) {
                 $clientInfo = $eventData['client-info'];
                 // clientName
                 if (array_key_exists('client-name', $clientInfo)) {
@@ -307,12 +302,11 @@ class MailgunEventController extends AbstractController
                 }
             }
 
-            if(array_key_exists('message', $eventData)){
+            if (array_key_exists('message', $eventData)) {
                 $message = $eventData['message'];
 
                 // messageHeaders
                 if (array_key_exists('headers', $message)) {
-
                     $headers = $message['headers'];
                     // messageId
                     if (array_key_exists('message-id', $headers)) {
@@ -321,8 +315,8 @@ class MailgunEventController extends AbstractController
                         unset($eventData['message']['headers']['message-id']);
 
                         // set message domain from message id
-                        if($event->getDomain() == null){
-                            $event->setDomain(substr($trimmedMessageId, strrpos($trimmedMessageId,"@") + 1));
+                        if (null == $event->getDomain()) {
+                            $event->setDomain(substr($trimmedMessageId, strrpos($trimmedMessageId, '@') + 1));
                         }
                     }
 
@@ -345,14 +339,14 @@ class MailgunEventController extends AbstractController
             if (array_key_exists('url', $eventData)) {
                 $event->setUrl($eventData['url']);
                 unset($eventData['url']);
-            } else if (array_key_exists('storage', $eventData)){
+            } elseif (array_key_exists('storage', $eventData)) {
                 $event->setUrl($eventData['storage']['url']);
                 unset($eventData['storage']['url']);
             }
 
             // mailingList
             if (array_key_exists('recipients', $eventData)) {
-                $event->setmailingList(print_r($eventData['recipients'],true));
+                $event->setmailingList(print_r($eventData['recipients'], true));
                 unset($eventData['recipients']);
             }
 
@@ -369,7 +363,7 @@ class MailgunEventController extends AbstractController
                     $attachment->setCounter(substr($key, 11));
 
                     // get the file
-                    /** @var $value UploadedFile */
+                    /* @var $value UploadedFile */
                     $attachment->setContent(file_get_contents($value->getPathname()));
                     $attachment->setSize($value->getSize());
                     $attachment->setType($value->getMimeType());
@@ -391,20 +385,19 @@ class MailgunEventController extends AbstractController
 
             // Dispatch an event about the logging of a Webhook-call
             $this->get('event_dispatcher')->dispatch(MailgunEvent::CREATE_EVENT, new MailgunWebhookEvent($event));
-
         } catch (\Exception $e) {
             $this->container->get('logger')->warning('AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage());
             $this->container->get('logger')->warning($e->getTraceAsString());
-            return new Response(print_r($params, true) . 'AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage(), 500);
 
+            return new Response(print_r($params, true).'AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage(), 500);
         }
 
         // send response
         return new Response('Thanx, for the info.', 200);
     }
 
-    private function createEventOldApi($paramsPre){
-
+    private function createEventOldApi($paramsPre)
+    {
         $params = array_change_key_case($paramsPre, CASE_LOWER);
 
         if (sizeof($params) != sizeof($paramsPre)) {
@@ -591,7 +584,7 @@ class MailgunEventController extends AbstractController
                     $attachment->setCounter(substr($key, 11));
 
                     // get the file
-                    /** @var UploadedFile $value */
+                    /* @var UploadedFile $value */
                     $attachment->setContent(file_get_contents($value->getPathname()));
                     $attachment->setSize($value->getSize());
                     $attachment->setType($value->getMimeType());
@@ -611,10 +604,10 @@ class MailgunEventController extends AbstractController
 
             // Dispatch an event about the logging of a Webhook-call
             $this->get('event_dispatcher')->dispatch(MailgunEvent::CREATE_EVENT, new MailgunWebhookEvent($event));
-
         } catch (\Exception $e) {
             $this->container->get('logger')->warning('AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage());
             $this->container->get('logger')->warning($e->getTraceAsString());
+
             return new Response('AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage(), 500);
         }
 
@@ -670,6 +663,7 @@ class MailgunEventController extends AbstractController
 
     /**
      * @param $haystack
+     *
      * @return array without empty elements (recursively)
      */
     public function removeEmptyArrayElements($haystack)
@@ -683,6 +677,7 @@ class MailgunEventController extends AbstractController
                 unset($haystack[$key]);
             }
         }
+
         return $haystack;
     }
 }
