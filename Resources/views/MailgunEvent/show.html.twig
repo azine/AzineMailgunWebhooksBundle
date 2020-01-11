@@ -22,10 +22,6 @@
                 <td>{{ entity.description }}</td>
             </tr>
             <tr>
-                <th>Notification</th>
-                <td>{{ entity.notification }}</td>
-            </tr>
-            <tr>
                 <th>Reason</th>
                 <td>{{ entity.reason }}</td>
             </tr>
@@ -40,10 +36,6 @@
             <tr>
                 <th>Ip</th>
                 <td>{{ entity.ip }}</td>
-            </tr>
-            <tr>
-                <th>Error</th>
-                <td>{{ entity.error }}</td>
             </tr>
             <tr>
                 <th>Country</th>
@@ -92,16 +84,22 @@
             <tr>
                 <th>Messageheaders</th>
                 <td>
-					MessageHeaders:
-					{% if entity.messageHeaders | length > 0 %}
-						<ul class="expandcollapse">
-						{% for key, value in entity.messageHeaders %}
-							<li>{{ key }}: {{ value }}</li>
-						{% endfor %}
-					</ul>
-					{% else %}
-					-
-					{% endif %}
+                    MessageId: {{ entity.messageId }}
+                    {% if entity.messageHeaders | length > 0 %}
+                    <br />
+                    MessageHeaders:
+                    <ul class="expandcollapse">
+                        {% for key, value in entity.messageHeaders %}
+                            {% if value is iterable %}
+                                <li>{{ key }}: <pre>{{ value | printArray }}</pre></li>
+                            {% elseif emailWebViewToken == key %}
+                                {{ key }} : <a href="{{ path(emailWebViewRoute, {'sentEmail': {'token' : value}}) }}" target="_blank">{{ value }}</a>
+                            {% else %}
+                                <li>{{ key }}: {{ value }}</li>
+                            {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </ul>
                 </td>
             </tr>
             <tr>

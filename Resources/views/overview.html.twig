@@ -39,7 +39,6 @@
 				<th>Subject / Recipient</th>
 				<th>Description / Notification</th>
 				<th>Reason / Errorcode</th>
-				<th>Error</th>
 				<th>Messageid / Messageheaders</th>
 				<th>Customvariables</th>
 			</tr>
@@ -66,15 +65,11 @@
 
 				</td>
 				<td>
-					{{ eventEntry.description }}<br />
-					{{ eventEntry.notification }}
+					{{ eventEntry.description }}
 				</td>
 				<td>
 					{{ eventEntry.reason }}<br />
 					{{ eventEntry.errorCode }}
-				</td>
-				<td>
-					{{ eventEntry.error }}
 				</td>
 				<td>
 					MessageId: {{ eventEntry.messageId }}

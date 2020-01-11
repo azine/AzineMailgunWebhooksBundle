@@ -71,7 +71,6 @@
 				<th>Description / Notification</th>
 				<th>Reason / Errorcode</th>
 				<th>Location</th>
-				<th>Error</th>
 				<th>Campaignid / Campaignname</th>
 				<th>Client</th>
 				<th>Messageid / Messageheaders</th>
@@ -102,8 +101,7 @@
 
 				</td>
 				<td>
-					{{ eventEntry.description }}<br />
-					{{ eventEntry.notification }}
+					{{ eventEntry.description }}
 				</td>
 				<td>
 					{{ eventEntry.reason }}<br />
@@ -112,9 +110,6 @@
 				<td title="IP: {{ eventEntry.ip }} Region: {{ eventEntry.region }}">
 					{{ eventEntry.city }}
 					{% if eventEntry.country %} ({{ eventEntry.country }}) {% endif %}
-				</td>
-				<td>
-					{{ eventEntry.error }}
 				</td>
 				<td campaignId="{{ eventEntry.campaignId }}" campaignName="{{ eventEntry.campaignName }}">
 					{{ eventEntry.campaignId }}<br />
