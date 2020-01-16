@@ -28,10 +28,8 @@ class TestHelper
             $e->setMessageId('<'.md5(time()).$count.'@acme.com>');
             $e->setSignature(hash_hmac('SHA256', $e->getTimestamp().$e->getToken(), $mailgunApiKey));
             $e->setDescription('some description');
-            $e->setNotification('some notification');
             $e->setReason('don\'t know the reason');
             $e->setIp('42.42.42.42');
-            $e->setError('some error');
             $e->setErrorCode('123');
             $e->setCountry('CH');
             $e->setCity('Zurich');
