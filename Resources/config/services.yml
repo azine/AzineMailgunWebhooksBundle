@@ -51,6 +51,7 @@ services:
     azine.mailgun.hetrixtools.service:
         class: Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService
         arguments:
+            - '@logger'
             - '%azine_mailgun_webhooks_hetrixtools_service_api_key%'
             - '%azine_mailgun_webhooks_hetrixtools_service_blacklist_check_ip_url%'
 

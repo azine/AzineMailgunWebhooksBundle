@@ -2,6 +2,8 @@
 
 namespace Azine\MailgunWebhooksBundle\Services\HetrixtoolsService;
 
+use Psr\Log\LoggerInterface;
+
 /**
  * AzineMailgunHetrixtoolsService.
  *
@@ -20,15 +22,22 @@ class AzineMailgunHetrixtoolsService
     private $blacklistIpCheckUrl;
 
     /**
+     * @var LoggerInterface 
+     */
+    private $logger;
+    
+    /**
      * AzineMailgunHetrixtoolsService constructor.
      *
+     * @param LoggerInterface $logger
      * @param string $apiKey
      * @param string $url
      */
-    public function __construct($apiKey, $url)
+    public function __construct(LoggerInterface $logger, $apiKey, $url)
     {
         $this->apiKey = $apiKey;
         $this->blacklistIpCheckUrl = $url;
+        $this->logger = $logger;
     }
 
     /**
@@ -55,6 +64,7 @@ class AzineMailgunHetrixtoolsService
      */
     protected function executeCheck($url)
     {
+        $this->logger->debug("Calling $url to check HetrixTools for SPAM-List entries.");
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_HEADER, true);
@@ -64,6 +74,8 @@ class AzineMailgunHetrixtoolsService
         $info = curl_getinfo($ch);
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close($ch);
+        
+        $this->logger->debug("Hetrix returned: ". print_r($info, true));
 
         if (200 != $info['http_code']) {
             return null;
