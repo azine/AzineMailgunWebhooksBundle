@@ -1,0 +1,21 @@
+Azine\MailgunWebhooksBundle\Entity\HetrixToolsBlacklistResponseNotification:
+    type: entity
+    table: mailgun_blacklist_notification
+    repositoryClass: Azine\MailgunWebhooksBundle\Entity\Repositories\HetrixToolsBlacklistResponseNotificationRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        data:
+            type: json_array
+        date:
+            type: datetime
+        ip:
+            type: string
+            length: 255
+        ignoreUntil:
+            type: datetime
+    lifecycleCallbacks: {  }

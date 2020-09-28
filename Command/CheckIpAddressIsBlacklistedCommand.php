@@ -2,6 +2,8 @@
 
 namespace Azine\MailgunWebhooksBundle\Command;
 
+use Azine\MailgunWebhooksBundle\Entity\HetrixToolsBlacklistResponseNotification;
+use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
 use Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService;
@@ -20,6 +22,7 @@ class CheckIpAddressIsBlacklistedCommand extends Command
 {
     const NO_VALID_RESPONSE_FROM_HETRIX = 'No valid response from Hetrixtools service, try later.';
     const BLACKLIST_REPORT_WAS_SENT = 'Blacklist report was sent.';
+    const BLACKLIST_REPORT_IS_SAME_AS_PREVIOUS = 'Blacklist report contains the same info as the last report that was sent.';
     const IP_IS_NOT_BLACKLISTED = 'Ip is not blacklisted.';
     const STARTING_RETRY = 'Initiating retry of the checking command. Tries left: ';
 
@@ -49,6 +52,11 @@ class CheckIpAddressIsBlacklistedCommand extends Command
     private $kernelEnvironment;
 
     /**
+     * @var int
+     */
+    private $muteDays;
+
+    /**
      * CheckIpAddressIsBlacklistedCommand constructor.
      *
      * @param ManagerRegistry                $managerRegistry
@@ -57,12 +65,13 @@ class CheckIpAddressIsBlacklistedCommand extends Command
      * @param $environment
      */
     public function __construct(ManagerRegistry $managerRegistry, AzineMailgunHetrixtoolsService $hetrixtoolsService,
-                                AzineMailgunMailerService $azineMailgunService, $environment)
+                                AzineMailgunMailerService $azineMailgunService, $environment, $muteDays)
     {
         $this->managerRegistry = $managerRegistry;
         $this->hetrixtoolsService = $hetrixtoolsService;
         $this->azineMailgunService = $azineMailgunService;
         $this->kernelEnvironment = $environment;
+        $this->muteDays = $muteDays;
 
         parent::__construct();
     }
@@ -81,7 +90,7 @@ class CheckIpAddressIsBlacklistedCommand extends Command
     {
         $manager = $this->managerRegistry->getManager();
         /** @var MailgunEventRepository $eventRepository */
-        $eventRepository = $manager->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
+        $eventRepository = $manager->getRepository(MailgunEvent::class);
         $ipAddressData = $eventRepository->getLastKnownSenderIpData();
         $ipAddress = null;
 
@@ -106,20 +115,32 @@ class CheckIpAddressIsBlacklistedCommand extends Command
         }
 
         if (HetrixtoolsServiceResponse::RESPONSE_STATUS_SUCCESS == $response->status) {
-            if ($response->blacklisted_count > 0) {
+            if ($response->blacklisted_count == 0) {
+                $output->write(self::IP_IS_NOT_BLACKLISTED." ($ipAddress)");
+            } else if($this->muteNotification($response)) {
+                $output->write(self::BLACKLIST_REPORT_IS_SAME_AS_PREVIOUS." ($ipAddress)");
+            } else {
                 try {
                     $messagesSent = $this->azineMailgunService->sendBlacklistNotification($response, $ipAddress, $sendDateTime);
 
                     if ($messagesSent > 0) {
                         $output->write(self::BLACKLIST_REPORT_WAS_SENT." ($ipAddress)");
                     }
+                    if($this->muteDays > 0) {
+                        $blacklistResponseNotification = new HetrixToolsBlacklistResponseNotification();
+                        $blacklistResponseNotification->setData($response);
+                        $blacklistResponseNotification->setIp($ipAddress);
+                        $blacklistResponseNotification->setDate($sendDateTime);
+                        $blacklistResponseNotification->setIgnoreUntil(new \DateTime("+" . $this->muteDays . " days"));
+                        $manager = $this->managerRegistry->getManager();
+                        $manager->persist($blacklistResponseNotification);
+                        $manager->flush();
+                    }
                 } catch (\Exception $e) {
                     $output->write($e->getMessage(), true);
                 }
-            } else {
-                $output->write(self::IP_IS_NOT_BLACKLISTED." ($ipAddress)");
             }
-        } elseif (HetrixtoolsServiceResponse::RESPONSE_STATUS_ERROR == $response->status) {
+        } else if (HetrixtoolsServiceResponse::RESPONSE_STATUS_ERROR == $response->status) {
             $output->write($response->error_message);
 
             if (null != $numberOfAttempts && $numberOfAttempts > 0 && HetrixtoolsServiceResponse::BLACKLIST_CHECK_IN_PROGRESS == $response->error_message) {
@@ -146,5 +167,36 @@ class CheckIpAddressIsBlacklistedCommand extends Command
 
         $process = new Process($cmd);
         $process->start();
+    }
+
+    private function muteNotification($response){
+        if($this->muteDays == 0){
+            // don't mute if feature is disabled
+            return false;
+        }
+
+        $ip = substr($response->links['api_report_link'], strrpos($response->links['api_report_link'],"/", -3) + 1, -1);
+        $responseRepository = $this->managerRegistry->getManager()->getRepository(HetrixToolsBlacklistResponseNotification::class);
+        /** @var HetrixToolsBlacklistResponseNotification $lastNotifiedResponse */
+        $lastNotifiedResponses = $responseRepository->findBy(array('ip' => $ip), array('ignoreUntil' => 'desc'));
+
+        if(sizeof($lastNotifiedResponses) == 0) {
+            // don't mute if this is the first check for this ip
+            return false;
+        }
+
+        if($lastNotifiedResponses[0]->getIgnoreUntil() < new \DateTime()) {
+            // don't mute if the last notification it too long ago
+            return false;
+        }
+
+        $newBlackLists = $response->blacklisted_on;
+        $oldBlacklists = $lastNotifiedResponses[0]->getData()['blacklisted_on'];
+
+        $blacklistsUnchanged = is_array($newBlackLists) && is_array($oldBlacklists)
+            && count($newBlackLists) == count($oldBlacklists)
+            && $newBlackLists == $oldBlacklists;
+
+        return $blacklistsUnchanged;
     }
 }

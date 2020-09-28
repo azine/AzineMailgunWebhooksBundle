@@ -114,6 +114,9 @@ azine_mailgun_webhooks:
         
         #Url for checking if ip is in blacklist => see https://docs.hetrixtools.com/blacklist-check-api/
         blacklist_check_ip_url:    'https://api.hetrixtools.com/v2/<API_TOKEN>/blacklist-check/ipv4/<IP_ADDRESS>/'
+
+        #Number of days to mute spam-blacklist notifications if the blacklist didn't change
+        repeat_notification_after_days:     0
             
 ```
 
@@ -203,6 +206,9 @@ With the parameter `numberOfAttempts` you can specify how many times the command
 
 HetrixTools.com has a free, limited plan that will allow ~3 checks per day. See https://hetrixtools.com/pricing/blacklist-monitor/ for details.
   
+You can set the parameter `repeat_notification_after_days` in your `app/config/config.yml` to a non-zero integer to mute the notification email for a number of days if
+no change in the list of blacklistings has occured. You will only get the blacklist notification email again once either the mute-duration
+has passed or your ip has been been added to or removed from a blacklist.     
 
 # Contribute
 Contributions are very welcome. Please fork the repository and issue your pull-request against the master branch.

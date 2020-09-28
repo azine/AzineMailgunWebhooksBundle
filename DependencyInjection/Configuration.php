@@ -69,6 +69,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode(AzineMailgunWebhooksExtension::BLACKLIST_CHECK_API_KEY)->defaultValue('')->info('Your public-api-key for hetrixtools => see https://hetrixtools.com/')->end()
                         ->scalarNode(AzineMailgunWebhooksExtension::BLACKLIST_CHECK_IP_URL)->defaultValue('https://api.hetrixtools.com/v2/<API_TOKEN>/blacklist-check/ipv4/<IP_ADDRESS>/')->info('Url for checking if ip is in blacklist => see https://docs.hetrixtools.com/blacklist-check-api/')->end()
+                        ->integerNode(AzineMailgunWebhooksExtension::BLACKLIST_CHECK_IP_REPEAT_NOTIFICATION_DURATION)->defaultValue(0)->info("Number of days to mute the blacklist-notification if the reported blacklists didn't change.")->end()
         ->end();
     }
 

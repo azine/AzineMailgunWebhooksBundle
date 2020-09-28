@@ -28,6 +28,7 @@ class AzineMailgunWebhooksExtension extends Extension
     const HETRIXTOOLS_PREFIX = 'hetrixtools_service';
     const BLACKLIST_CHECK_API_KEY = 'api_key';
     const BLACKLIST_CHECK_IP_URL = 'blacklist_check_ip_url';
+    const BLACKLIST_CHECK_IP_REPEAT_NOTIFICATION_DURATION = 'repeat_notification_after_days';
     const WEB_VIEW_ROUTE = 'web_view_route';
     const WEB_VIEW_TOKEN = 'web_view_token';
 
@@ -58,6 +59,7 @@ class AzineMailgunWebhooksExtension extends Extension
 
         $container->setParameter(self::PREFIX.'_'.self::HETRIXTOOLS_PREFIX.'_'.self::BLACKLIST_CHECK_API_KEY, $config[self::HETRIXTOOLS_PREFIX][self::BLACKLIST_CHECK_API_KEY]);
         $container->setParameter(self::PREFIX.'_'.self::HETRIXTOOLS_PREFIX.'_'.self::BLACKLIST_CHECK_IP_URL, $config[self::HETRIXTOOLS_PREFIX][self::BLACKLIST_CHECK_IP_URL]);
+        $container->setParameter(self::PREFIX.'_'.self::HETRIXTOOLS_PREFIX.'_'.self::BLACKLIST_CHECK_IP_REPEAT_NOTIFICATION_DURATION, $config[self::HETRIXTOOLS_PREFIX][self::BLACKLIST_CHECK_IP_REPEAT_NOTIFICATION_DURATION]);
 
         $container->setParameter(self::PREFIX.'_'.self::WEB_VIEW_ROUTE, $config[self::WEB_VIEW_ROUTE]);
         $container->setParameter(self::PREFIX.'_'.self::WEB_VIEW_TOKEN, $config[self::WEB_VIEW_TOKEN]);

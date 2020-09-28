@@ -62,6 +62,7 @@ services:
             - '@azine.mailgun.hetrixtools.service'
             - '@azine.mailgun.mailer'
             - '%kernel.environment%'
+            - '%azine_mailgun_webhooks_hetrixtools_service_repeat_notification_after_days%'
         tags:
             - { name: console.command }
 
