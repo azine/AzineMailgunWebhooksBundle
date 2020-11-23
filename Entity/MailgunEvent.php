@@ -872,4 +872,62 @@ class MailgunEvent
     {
         return $this->attachments;
     }
+    /**
+     * @var \Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary
+     */
+    private $eventSummary;
+
+
+    /**
+     * Set eventSummary
+     *
+     * @param \Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary $eventSummary
+     *
+     * @return MailgunEvent
+     */
+    public function setEventSummary(\Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary $eventSummary = null)
+    {
+        $this->eventSummary = $eventSummary;
+
+        return $this;
+    }
+
+    /**
+     * Get eventSummary
+     *
+     * @return \Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary
+     */
+    public function getEventSummary()
+    {
+        return $this->eventSummary;
+    }
+    /**
+     * @var string
+     */
+    private $sender;
+
+
+    /**
+     * Set sender
+     *
+     * @param string $sender
+     *
+     * @return MailgunEvent
+     */
+    public function setSender($sender)
+    {
+        $this->sender = $sender;
+
+        return $this;
+    }
+
+    /**
+     * Get sender
+     *
+     * @return string
+     */
+    public function getSender()
+    {
+        return $this->sender;
+    }
 }

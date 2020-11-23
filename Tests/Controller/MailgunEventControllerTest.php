@@ -3,6 +3,7 @@
 namespace Azine\MailgunWebhooksBundle\Tests\Controller;
 
 use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
+use Azine\MailgunWebhooksBundle\Entity\EmailTrafficStatistics;
 use Azine\MailgunWebhooksBundle\Tests\TestHelper;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Client;
@@ -13,11 +14,47 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class MailgunEventControllerTest extends WebTestCase
+class MailgunWebhookControllerTest extends WebTestCase
 {
-    public function testWebHookCreateAndEventDispatching()
+    private $testStartTime;
+    protected function setUp()
     {
+        $this->testStartTime = new \DateTime();
+    }
+
+    protected function tearDown(){
+        $manager = $this->getEntityManager();
+        $queryBuilder = $manager->getRepository(EmailTrafficStatistics::class)->createQueryBuilder("e");
+        $ets = $queryBuilder->where('e.created >= :testStartTime')
+            ->setParameter('testStartTime', $this->testStartTime)
+            ->getQuery()->execute();
+
+        if($ets != null && sizeof($ets) > 0){
+            foreach ($ets as $next){
+                $manager->remove($next);
+            }
+            $manager->flush();
+        }
+    }
+
+    public function testWebHookCreateAndEventDispatching_oldAPI(){
         $this->checkApplication();
+
+        $validPostData = $this->getValidPostData(false);
+        $invalidPostData = $this->getInvalidPostData(false);
+        $this->internalWebHookCreateAndEventDispatching($validPostData, $invalidPostData, false);
+    }
+
+
+    public function testWebHookCreateAndEventDispatching_newAPI(){
+        $this->checkApplication();
+
+        $validPostData = $this->getValidPostData(true);
+        $invalidPostData = $this->getInvalidPostData(true);
+        $this->internalWebHookCreateAndEventDispatching($validPostData, $invalidPostData, true);
+    }
+
+    private function internalWebHookCreateAndEventDispatching($validPostData, $invalidPostData, $newApi){
 
         $client = static::createClient();
         $client->request('GET', '/');
@@ -30,30 +67,67 @@ class MailgunEventControllerTest extends WebTestCase
         $eventReop = $manager->getRepository("Azine\MailgunWebhooksBundle\Entity\MailgunEvent");
         $count = sizeof($eventReop->findAll());
 
-        // post invalid data to the webhook-url and check the response & database
-        $invalidPostData = $this->getInvalidPostData();
-        $webhookdata = json_encode($invalidPostData);
         $attachments = array(
             'attachment-1' => new UploadedFile(realpath(__DIR__.'/../testAttachment.small.png'), 'some.real.file.name1.png'),
             'attachment-2' => new UploadedFile(realpath(__DIR__.'/../testAttachment.small.png'), 'some.real.file.name2.png'),
             'attachment-3' => new UploadedFile(realpath(__DIR__.'/../testAttachment.small.png'), 'some.real.file.name3.png'),
         );
-        $crawler = $client->request('POST', $url, $invalidPostData, $attachments);
+
+        // post invalid data to the webhook-url and check the response & database
+        $webhookdata = json_encode($invalidPostData);
+        if($newApi){
+            $crawler = $client->request('POST', $url, array(), $attachments, array(), $webhookdata);
+        } else {
+            $crawler = $client->request('POST', $url, $invalidPostData, $attachments);
+        }
 
         $this->assertSame(401, $client->getResponse()->getStatusCode(), "Response-Code 401 expected for post-data with invalid signature: \n\n$webhookdata\n\n\n");
         $this->assertContains('Signature verification failed.', $crawler->text(), 'Response expected.');
         $this->assertSame($count, sizeof($eventReop->findAll()), 'No new db entry for the webhook expected!');
 
         // post valid data to the webhook-url and check the response
-        $validPostData = $this->getValidPostData();
         $webhookdata = json_encode($validPostData);
-        $crawler = $client->request('POST', $url, $validPostData, $attachments);
+        if($newApi){
+            $crawler = $client->request('POST', $url, array(), $attachments, array(), $webhookdata);
+        } else {
+            $crawler = $client->request('POST', $url, $validPostData, $attachments);
+        }
         $this->assertSame(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata\n\n\n".$client->getResponse()->getContent());
         $this->assertContains('Thanx, for the info.', $crawler->text(), 'Response expected.');
         $this->assertSame($count + 1, sizeof($eventReop->findAll()), 'One new db entry for the webhook expected!');
 
-        $validPostData['event'] = 'complained';
-        $client->request('POST', $url, $validPostData, $attachments);
+
+
+        // post valid data to the webhook-url and check the response
+        if($newApi){
+            $validPostData['event-data']['event'] = 'opened';
+            $webhookdata = json_encode($validPostData);
+            $crawler = $client->request('POST', $url, array(), $attachments, array(), $webhookdata);
+            $crawler = $client->request('POST', $url, array(), $attachments, array(), $webhookdata);
+        } else {
+            $validPostData['event'] = 'opened';
+            $webhookdata = json_encode($validPostData);
+            $crawler = $client->request('POST', $url, $validPostData, $attachments);
+            $crawler = $client->request('POST', $url, $validPostData, $attachments);
+        }
+        $this->assertSame(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata\n\n\n".$client->getResponse()->getContent());
+        $this->assertContains('Thanx, for the info.', $crawler->text(), 'Response expected.');
+        
+
+
+        // post a complaint event to check if mail is triggered.
+        if($newApi){
+            $validPostData['event-data']['event'] = 'complained';
+            $webhookdata = json_encode($validPostData);
+            $crawler = $client->request('POST', $url, array(), $attachments, array(), $webhookdata);
+        } else {
+            $validPostData['event'] = 'complained';
+            $webhookdata = json_encode($validPostData);
+            $crawler = $client->request('POST', $url, $validPostData, $attachments);
+        }
+        $this->assertSame(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata\n\n\n".$client->getResponse()->getContent());
+        $this->assertContains('Thanx, for the info.', $crawler->text(), 'Response expected.');
+        $this->assertSame($count + 4, sizeof($eventReop->findAll()), 'One new db entry for the webhook expected!');
 
         $mailCollector = $client->getProfile()->getCollector('swiftmailer');
 
@@ -61,32 +135,31 @@ class MailgunEventControllerTest extends WebTestCase
         $this->assertSame(1, $mailCollector->getMessageCount());
     }
 
-    private function getValidPostData()
+    private function getValidPostData($newApi)
     {
-        $postData = TestHelper::getPostDataWithoutSignature();
-        $postData['signature'] = $this->getValidSignature($postData['token'], $postData['timestamp']);
+        $postData = TestHelper::getPostDataWithoutSignature($newApi);
 
+        $key = 'fake_api_key';//$this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
+
+        if($newApi) {
+            $postData['signature']['signature'] = hash_hmac('SHA256', $postData['signature']['timestamp'].$postData['signature']['token'], $key);
+        } else {
+            $postData['signature'] = hash_hmac('SHA256', $postData['timestamp'].$postData['token'], $key);
+        }
         return $postData;
     }
 
-    private function getInvalidPostData()
+    private function getInvalidPostData($newApi)
     {
-        $postData = TestHelper::getPostDataWithoutSignature();
-        $postData['signature'] = 'invalid-signature';
+        $postData = TestHelper::getPostDataWithoutSignature($newApi);
+
+        if($newApi) {
+            $postData['signature']['signature'] = 'invalid-signature';
+        } else {
+            $postData['signature'] = 'invalid-signature';
+        }
 
         return $postData;
-    }
-
-    /**
-     * @param string $token
-     * @param int    $timestamp
-     */
-    private function getValidSignature($token, $timestamp)
-    {
-        $key = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
-        $signature = hash_hmac('SHA256', $timestamp.$token, $key);
-
-        return $signature;
     }
 
     public function testShowLog()
@@ -191,7 +264,7 @@ class MailgunEventControllerTest extends WebTestCase
             $events = $eventReop->findAll();
         }
 
-        $webViewTokenName = $this->appContainer->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
+        $webViewTokenName = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
 
         $testTokenValue = 'testValue';
         $messageHeader = array($webViewTokenName => $testTokenValue);
@@ -303,6 +376,7 @@ class MailgunEventControllerTest extends WebTestCase
     {
         try {
             static::$kernel = static::createKernel(array());
+            //static::$kernel->boot();
         } catch (\RuntimeException $ex) {
             $this->markTestSkipped('There does not seem to be a full application available (e.g. running tests on travis.org). So this test is skipped.');
 

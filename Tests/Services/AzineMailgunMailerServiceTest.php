@@ -82,6 +82,7 @@ class AzineMailgunMailerServiceTest extends WebTestCase
     {
         try {
             static::$kernel = static::createKernel(array());
+            static::$kernel->boot();
         } catch (\RuntimeException $ex) {
             $this->markTestSkipped('There does not seem to be a full application available (e.g. running tests on travis.org). So this test is skipped.');
 

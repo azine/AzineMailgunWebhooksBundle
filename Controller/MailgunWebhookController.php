@@ -6,8 +6,10 @@ use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtensio
 use Azine\MailgunWebhooksBundle\Entity\MailgunAttachment;
 use Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable;
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
+use Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary;
 use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -148,12 +150,14 @@ class MailgunEventController extends AbstractController
         $params = $request->request->all();
 
         if (is_array($params) && !empty($params)) {
+            $this->get("logger")->info("Creating MailgunEvent via old API.");
             return $this->createEventOldApi($params);
         }
         // new webhooks api
-        $json = json_decode($request->getContent(), true);
+        $this->get("logger")->info("Creating MailgunEvent via new API.");
+        $params = json_decode($request->getContent(), true);
 
-        return $this->createEventNewApi($json);
+        return $this->createEventNewApi($params);
     }
 
     private function createEventNewApi($paramsPre)
@@ -320,6 +324,11 @@ class MailgunEventController extends AbstractController
                         }
                     }
 
+                    // sender
+                    if(array_key_exists('from', $headers)){
+                        $event->setSender($headers['from']);
+                    }
+
                     $event->setMessageHeaders(json_encode($headers));
                     unset($eventData['message']['headers']);
                 }
@@ -352,6 +361,7 @@ class MailgunEventController extends AbstractController
 
             $manager = $this->container->get('doctrine.orm.entity_manager');
             $manager->persist($event);
+            $this->getDoctrine()->getRepository(MailgunMessageSummary::class)->createOrUpdateMessageSummary($event);
 
             $eventData = $this->removeEmptyArrayElements($eventData);
 
@@ -526,6 +536,13 @@ class MailgunEventController extends AbstractController
             }
             // messageHeaders
             if (array_key_exists('message-headers', $params)) {
+                $headers = json_decode($params['message-headers']);
+                foreach ($headers as $header) {
+                    // sender
+                    if ($header[0] == 'Sender') {
+                        $event->setSender($header[1]);
+                    }
+                }
                 $event->setMessageHeaders($params['message-headers']);
                 unset($params['message-headers']);
             }
@@ -574,6 +591,8 @@ class MailgunEventController extends AbstractController
             $manager = $this->container->get('doctrine.orm.entity_manager');
             $manager->persist($event);
 
+            $this->getDoctrine()->getRepository(MailgunMessageSummary::class)->createOrUpdateMessageSummary($event);
+
             $params = $this->removeEmptyArrayElements($params);
 
             // process the remaining posted values
@@ -613,52 +632,6 @@ class MailgunEventController extends AbstractController
 
         // send response
         return new Response('Thanx, for the info.', 200);
-    }
-
-    /**
-     * Finds and displays a MailgunEvent entity.
-     */
-    public function showAction($id)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('AzineMailgunWebhooksBundle:MailgunEvent')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find MailgunEvent entity.');
-        }
-
-        return $this->render('AzineMailgunWebhooksBundle:MailgunEvent:show.html.twig', array(
-            'entity' => $entity,
-        ));
-    }
-
-    /**
-     * Deletes a MailgunEvent entity.
-     */
-    public function deleteAction(Request $request)
-    {
-        $id = $request->get('eventId');
-
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('AzineMailgunWebhooksBundle:MailgunEvent')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find MailgunEvent entity.');
-        }
-
-        $em->remove($entity);
-        $em->flush();
-
-        if ($request->isXmlHttpRequest()) {
-            return new JsonResponse(array('success' => true));
-        }
-
-        $session = $request->getSession();
-        $page = $session->get('page', 1);
-        $pageSize = $session->get('pageSize', 25);
-
-        return $this->redirect($this->generateUrl('mailgunevent_list', array('page' => $page, 'pageSize' => $pageSize)));
     }
 
     /**

@@ -1,6 +1,6 @@
 Azine\MailgunWebhooksBundle\Entity\EmailTrafficStatistics:
     type: entity
-    table: email_traffic_statistics
+    table: mailgun_email_traffic_statistics
     repositoryClass: Azine\MailgunWebhooksBundle\Entity\Repositories\EmailTrafficStatisticsRepository
     fields:
         id:

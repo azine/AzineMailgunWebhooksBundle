@@ -1,0 +1,41 @@
+Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary:
+    type: entity
+    table: mailgun_message_summary
+    repositoryClass: Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunMessageSummaryRepository
+    id:
+        id:
+            type: string
+            length: 255
+            id: true
+    fields:
+        fromAddress:
+            type: string
+            length: 255
+        toAddress:
+            type: text
+        firstOpened:
+            type: datetime
+            nullable: true
+        lastOpened:
+            type: datetime
+            nullable: true
+        openCount:
+            type: integer
+        sendDate:
+            type: datetime
+        deliveryStatus:
+            type: string
+            length: 95
+        senderIp:
+            type: string
+            length: 15
+        subject:
+            type: text
+
+    lifecycleCallbacks: {  }
+
+    # one-eventSummary-has-many-events
+    oneToMany:
+        events:
+            targetEntity: MailgunEvent
+            mappedBy: eventSummary

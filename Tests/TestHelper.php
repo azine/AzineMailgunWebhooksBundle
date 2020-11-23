@@ -23,7 +23,8 @@ class TestHelper
             $d = new \DateTime(rand(1, 200).' days '.rand(1, 86400).' seconds ago');
             $e->setTimestamp($d->getTimestamp());
             $e->setToken(md5(time().$count));
-            $e->setRecipient('someone'.$count.'@email.com');
+            $e->setRecipient('recipient-'.$count.'@email.com');
+            $e->setSender('some-sender-'.$count.'@email.com');
             $e->setMessageHeaders(json_encode(array('some_json' => 'data', 'Subject' => "this mail was sent because it's important.")));
             $e->setMessageId('<'.md5(time()).$count.'@acme.com>');
             $e->setSignature(hash_hmac('SHA256', $e->getTimestamp().$e->getToken(), $mailgunApiKey));
@@ -80,9 +81,78 @@ class TestHelper
         $manager->flush();
     }
 
-    public static function getPostDataWithoutSignature()
+    public static function getPostDataWithoutSignature($newApi)
     {
-        return array(
+        if($newApi){
+            $timestamp = time();
+            $data = array(
+                'signature' => array (
+                    'timestamp' => $timestamp,
+                    'token' => '50dcec4a2d0ef27036c44ebd9ce9324736fc98ef9405428803',
+                ),
+                'event-data' =>
+                    array(
+                        'tags' =>
+                            array(
+                                0 => 'my_tag_1',
+                                1 => 'my_tag_2'
+                            ),
+                        'timestamp' => $timestamp,
+                        'storage' =>
+                            array(
+                                'url' => 'https://se.api.mailgun.net/v3/domains/acme.com/messages/message_key',
+                                'key' => 'message_key',
+                            ),
+                        'envelope' =>
+                            array(
+                                'transport' => 'smtp',
+                                'sender' => 'bob@acme.com',
+                                'sending-ip' => '209.61.154.250',
+                                'targets' => 'alice@example.com',
+                            ),
+                        'recipient-domain' => 'example.com',
+                        'event' => 'delivered',
+                        'campaigns' =>
+                            array(),
+                        'user-variables' =>
+                            array(
+                                'my_var_1' => 'Mailgun Variable #1',
+                                'my-var-2' => 'awesome',
+                            ),
+                        'flags' =>
+                            array('is-routed' => false, 'is-authenticated' => true, 'is-system-test' => false, 'is-test-mode' => false,
+                            ),
+                        'log-level' => 'info',
+                        'message' =>
+                            array(
+                                'headers' =>
+                                    array(
+                                        'to' => 'Alice <alice@example.com>',
+                                        'message-id' => '20130503182626.18666.16540@acme.com',
+                                        'from' => 'Bob <bob@acme.com>',
+                                        'subject' => 'Test delivered webhook',
+                                    ),
+                                'attachments' => array(),
+                                'size' => 111,
+                            ),
+                        'recipient' => 'alice@example.com',
+                        'id' => 'CPgfbmQMTCKtHW6uIWtuVe',
+                        'delivery-status' =>
+                            array(
+                                'tls' => true,
+                                'mx-host' => 'smtp-in.example.com',
+                                'attempt-no' => 1,
+                                'description' => '',
+                                'session-seconds' => 0.4331989288330078,
+                                'utf8' => true,
+                                'code' => 250,
+                                'message' => 'OK',
+                                'certificate-verified' => true,
+                            ),
+                    ),
+            );
+        } else {
+            $data = array(
                 'event' => 'delivered',
                 'domain' => 'acme',
                 'timestamp' => time(),
@@ -90,7 +160,19 @@ class TestHelper
                 'X-Mailgun-Sid' => 'irrelevant',
                 'attachment-count' => 'irrelevant',
                 'recipient' => 'someone@email.com',
-                'message-headers' => json_encode(array('some_json' => 'data', 'Subject' => "this mail was sent because it's important.")),
+                'message-headers' => json_encode(array(
+                    array('X-Mailgun-Sending-Ip', '198.62.234.37'),
+                    array('X-Mailgun-Sid', 'WyIwN2U4YyIsICJzdXBwb3J0QGF6aW5lLm1lIiwgIjA2MjkzIl0='),
+                    array('Received', 'from acme.test (b4.cme.test [194.140.238.63])'),
+                    array('Sender', 'sender-name@acme.test'),
+                    array('Message-Id', '<96eb9a44a61728bb77ac9073eb74cdc4@acme.test>'),
+                    array('Date', 'Mon, 07 Sep 2020 14:38:41 +0200'),
+                    array('Subject', 'Some email message subject'),
+                    array('From', '\'acme.test sender-name\' <sender-name@acme.test>'),
+                    array('To', '\'acme.test recipient-name\' <recipient-name@acme.test>'),
+                    array('Mime-Version', '1.0'),
+                    array('Content-Transfer-Encoding', '[\'quoted-printable\']')
+                )),
                 'Message-Id' => '<02be51b250915313fa5fc58a497f8d37@acme.com>',
                 'description' => 'some description',
                 'notification' => 'some notification',
@@ -116,6 +198,8 @@ class TestHelper
                 'some-custom-var1' => 'some data1',
                 'some-custom-var2' => 'some data2',
                 'some-custom-var3' => 'some data3',
-        );
+            );
+        }
+        return $data;
     }
 }

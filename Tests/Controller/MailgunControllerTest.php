@@ -31,11 +31,10 @@ class MailgunControllerTest extends WebTestCase
         $crawler = $this->loginUserIfRequired($client, $listUrl);
         $pageSize = 10;
         $this->assertSame($pageSize + 1, $crawler->filter('.eventsTable tr')->count(), "$pageSize Mailgun events (+1 header row) expected on this page ($listUrl)!");
-        $this->assertSame(1, $crawler->filter("li #eventCount:contains('EventList ($events)')")->count(), "'EventList ($events)' expected on page.");
-        $this->assertSame(1, $crawler->filter("li li a:contains('bounced ($bounced)')")->count(), "'bounced ($bounced)' expected on page.");
-        $this->assertSame(1, $crawler->filter("li li a:contains('dropped ($dropped)')")->count(), "'dropped ($dropped)' expected on page.");
-        $this->assertSame(1, $crawler->filter("li li a:contains('marked as spam by the user ($spam)')")->count(), "'marked as spam by the user ($spam)' expected on page.");
-        $this->assertSame(1, $crawler->filter("li li a:contains('unsubscribe requests by users ($unsubscribed)')")->count(), "'unsubscribe requests by users ($unsubscribed)' expected on page.");
+        $this->assertSame(1, $crawler->filter("li a:contains('bounced ($bounced)')")->count(), "'bounced ($bounced)' expected on page.");
+        $this->assertSame(1, $crawler->filter("li a:contains('dropped ($dropped)')")->count(), "'dropped ($dropped)' expected on page.");
+        $this->assertSame(1, $crawler->filter("li a:contains('marked as spam by the user ($spam)')")->count(), "'marked as spam by the user ($spam)' expected on page.");
+        $this->assertSame(1, $crawler->filter("li a:contains('unsubscribe requests by users ($unsubscribed)')")->count(), "'unsubscribe requests by users ($unsubscribed)' expected on page.");
     }
 
     /**
@@ -124,6 +123,7 @@ class MailgunControllerTest extends WebTestCase
     {
         try {
             static::$kernel = static::createKernel(array());
+            static::$kernel->boot();
         } catch (\RuntimeException $ex) {
             $this->markTestSkipped('There does not seem to be a full application available (e.g. running tests on travis.org). So this test is skipped.');
 
