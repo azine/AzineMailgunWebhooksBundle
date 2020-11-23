@@ -5,12 +5,12 @@ Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary:
     id:
         id:
             type: string
-            length: 255
+            length: 190
             id: true
     fields:
         fromAddress:
             type: string
-            length: 255
+            length: 190
         toAddress:
             type: text
         firstOpened:

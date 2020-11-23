@@ -5,119 +5,31 @@
 	{{ render(controller('AzineMailgunWebhooksBundle:Mailgun:cockpit')) }}
 	
     <h1>Mailgun Overview</h1>
-	<ul>
-	    <li>
-			<a id="eventCount" href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?clear=true">EventList ({{ events }})</a>
-	    </li>
-	    <li>
-	    	Show filtered events:
-	    	<ul>
-	    		<li>
-	    			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=bounced">bounced ({{ bounced }})</a>
-	    		</li>
-    	   		<li>
-	    			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=dropped">dropped ({{ dropped }})</a>
-    	   		</li>
-    	   		<li>
-    	   			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=complained">marked as spam by the user ({{ complained }})</a>
-	    		</li>
-    	   		<li>
-    	   			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=unsubscribed">unsubscribe requests by users ({{ unsubscribed }})</a>
-    	   		</li>
-    	   		<li>
-    	   			<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=unopened">un-opened emails({{ unopened }})</a>
-    	   		</li>
-	    	</ul>
-	    </li>
-	</ul>
-
+	<p>
+		<a class="backToOverview" href="{{ path('mailgunevent_list') }}" >Event List</a> |
+		<a class="backToOverview" href="{{ path('mailgun_message_summary_list') }}" >Message Summary List</a>
+	</p>
+	<p>
+		Show filtered events:
+		<ul>
+			<li>
+				<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=bounced">bounced ({{ bounced }})</a>
+			</li>
+			<li>
+				<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=dropped">dropped ({{ dropped }})</a>
+			</li>
+			<li>
+				<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=complained">marked as spam by the user ({{ complained }})</a>
+			</li>
+			<li>
+				<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=unsubscribed">unsubscribe requests by users ({{ unsubscribed }})</a>
+			</li>
+			<li>
+				<a href="{{ path('mailgunevent_list', {'page' : 1, 'pageSize' : 25 }) }}?eventType=unopened">un-opened emails({{ unopened }})</a>
+			</li>
+		</ul>
+	</p>
 	<h1>Most recent/important MailgunEvents</h1>
-	<table class="tablesorter-blue eventsTable">
-		<thead>
-			<tr>
-				<th>Event</th>
-				<th>Subject / Recipient</th>
-				<th>Description / Notification</th>
-				<th>Reason / Errorcode</th>
-				<th>Messageid / Messageheaders</th>
-				<th>Customvariables</th>
-			</tr>
-		</thead>
-		<tbody>
-		{% for eventEntry in importantEvents %}
-			<tr id="event{{ eventEntry.id }}" class="{{ cycle(['odd', 'even'], loop.index) }}">
-				<td>
-					<a href="{{ path('mailgunevent_show', { 'id': eventEntry.id }) }}">
-						{{ eventEntry.event }}<br />
-						{{ eventEntry.dateTime | date("Y-m-d H:i:m") }}
-					</a>
-					<br />
-					<a class="deleteLink" href="{{ path('mailgunevent_delete', {'eventId' : eventEntry.id }) }}"
-						eventId="{{ eventEntry.id }}"
-						eventType="{{ eventEntry.event }}"
-						eventTime="{{ eventEntry.dateTime | date("Y-m-d H:i:m") }}"
-						eventRecipient="{{ eventEntry.recipient }}"
-						>delete</a>
-				</td>
-				<td>
-					{{ eventEntry.eventTitle }}<br />
-					{{ eventEntry.recipient }}
-
-				</td>
-				<td>
-					{{ eventEntry.description }}
-				</td>
-				<td>
-					{{ eventEntry.reason }}<br />
-					{{ eventEntry.errorCode }}
-				</td>
-				<td>
-					MessageId: {{ eventEntry.messageId }}
-					{% if eventEntry.messageHeaders | length > 0 %}
-					<br />
-					MessageHeaders:
-						<ul  class="expandcollapse">
-						{% for key, value in eventEntry.messageHeaders %}
-							<li>
-								{% if value != "" %}
-									{{ key }} :
-								{% endif %}
-								{% if value is iterable %}
-									<pre>
-										{{ value | printArray }}
-									</pre>
-								{% else %}
-									{{ value }}
-								{% endif %}
-
-								{{ '' }}
-							</li>
-						{% endfor %}
-					{% endif %}
-					</ul>
-				</td>
-				<td>
-					{% if eventEntry.variables | length > 0 %}
-						<ul>
-							{% for item in eventEntry.variables %}
-								<li>{% if item.variableName != "" %} {{ item.variableName }} : {% endif %}
-									{% if item.content is iterable %}
-										<pre>
-										{{ item.content | printArray }}
-										</pre>
-									{% elseif emailWebViewToken == item.variableName %}
-										<a href="{{ path(emailWebViewRoute, {'sentEmail': {'token' : item.content}}) }}" target="_blank">{{ item.content }}</a>
-									{% else %}
-										{{ item.content }}
-									{% endif %}
-								</li>
-							{% endfor %}
-						</ul>
-					{% endif %}
-				</td>
-			</tr>
-		{% endfor %}
-		</tbody>
-	</table>
+	{{ include('AzineMailgunWebhooksBundle:MailgunEvent:eventList.html.twig', {events: importantEvents, emailWebViewRoute: emailWebViewRoute}) }}
 
 {% endblock body %}

@@ -44,10 +44,11 @@ class AzineMailgunService
      * delivered 		Mailgun sent the email and it was accepted by the recipient email server.
      * failed 			Mailgun could not deliver the email to the recipient email server.
      * opened 			The email recipient opened the email and enabled image viewing. Open tracking must be enabled in the Mailgun control panel, and the CNAME record must be pointing to mailgun.org.
-     * clicked 		The email recipient clicked on a link in the email. Click tracking must be enabled in the Mailgun control panel, and the CNAME record must be pointing to mailgun.org.
+     * clicked 			The email recipient clicked on a link in the email. Click tracking must be enabled in the Mailgun control panel, and the CNAME record must be pointing to mailgun.org.
      * unsubscribed 	The email recipient clicked on the unsubscribe link. Unsubscribe tracking must be enabled in the Mailgun control panel.
      * complained 		The email recipient clicked on the spam complaint button within their email client. Feedback loops enable the notification to be received by Mailgun.
      * stored 			Mailgun has stored an incoming message
+     * dropped			Mailgun has dropped the message due to some error.
      *
      * @param string|array of string|null $type
      * @param \DateTime                   $ageLimit

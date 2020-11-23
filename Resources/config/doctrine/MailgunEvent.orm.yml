@@ -28,7 +28,7 @@ Azine\MailgunWebhooksBundle\Entity\MailgunEvent:
         deviceType:      {type: string,     length: 255, nullable: true,    column: device_type         } # Mailgun Field-Description: Device type the email was opened on. Can be ‘desktop’, ‘mobile’, ‘tablet’, ‘other’ or ‘unknown’.
         mailingList:     {type: string,     length: 255, nullable: true,    column: mailing_list        } # Mailgun Field-Description: The address of mailing list the original message was sent to.
         messageHeaders:  {type: json_array,              nullable: true,    column: message_headers     } # Mailgun Field-Description: String list of all MIME headers dumped to a JSON string (order of headers preserved).
-        messageId:       {type: string,     length: 255, nullable: false,   column: message_id          } # Mailgun Field-Description: String id of the original message delivered to the recipient.
+        messageId:       {type: string,     length: 190, nullable: false,   column: message_id          } # Mailgun Field-Description: String id of the original message delivered to the recipient.
         tag:             {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: Message tag, if it was tagged. See Tagging.
         userAgent:       {type: text,                    nullable: true,    column: user_agent          } # Mailgun Field-Description: User agent string of the client triggered the event.
         url:             {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: The URL that was clicked.
@@ -55,6 +55,6 @@ Azine\MailgunWebhooksBundle\Entity\MailgunEvent:
             targetEntity: MailgunMessageSummary
             inversedBy: events
             joinColumn:
-                name: messageId
+                name: message_id
                 referencedColumnName: id
                 onDelete: CASCADE

@@ -1,0 +1,139 @@
+{% extends 'AzineMailgunWebhooksBundle::layout.html.twig' %}
+
+{% block body %}
+	{{ parent() }}
+	{{ render(controller('AzineMailgunWebhooksBundle:Mailgun:cockpit')) }}
+
+	<h1>Mailgun Message Summaries</h1>
+	<p>
+		<a class="backToOverview" href="{{ path('mailgun_overview') }}" >Event Overview</a> |
+		<a class="backToOverview" href="{{ path('mailgunevent_list') }}" >Event List</a>
+	</p>
+	<h3>Filter criteria</h3>
+	<form id="filter_event_form" action="{{ path('mailgun_message_summary_list', {'page' : 1, 'pageSize' : currentFilters.pageSize}) }}" method="post">
+		<table>
+			<tr>
+				<th>Sender :</th>
+				<td>
+					<input id="filter_sender" name="filter[fromAddress]" type="text" list="senderList" value="{{ currentFilters.fromAddress }}"/>
+					<datalist id="senderList">
+						{% for sender in filterOptions.fromAddress %}
+							<option value="{{ sender }}" />
+						{% endfor %}
+					</datalist>
+				</td>
+				<th>Recipient :</th>
+				<td>
+					<input id="filter_recipients" name="filter[toAddress]" type="text" list="recipientList" value="{{ currentFilters.toAddress }}"/>
+					<datalist id="recipientList">
+						{% for recipient in filterOptions.toAddress %}
+							<option value="{{ recipient }}" />
+						{% endfor %}
+					</datalist>
+				</td>
+			</tr>
+			<tr>
+				<th>Search :</th>
+				<td>
+					<input id="filter_search" name="filter[search]" type="text" value="{{ currentFilters.search }}"/>
+				</td>
+				<th>Order by :</th>
+				<td>
+					<select id="filter_orderBy" name="filter[orderBy]">
+						{% for field in filterOptions.orderBy %}
+							<option value="{{ field }}"  {% if (field == currentFilters.orderBy)  %}selected{% endif %}>{{ field }}</option>
+						{% endfor %}
+					</select>
+					<select id="filter_orderDirection" name="filter[orderDirection]">
+						<option value="asc"  {% if ('asc' == currentFilters.orderDirection)  %}selected{% endif %}>asc</option>
+						<option value="desc"  {% if ('desc' == currentFilters.orderDirection)  %}selected{% endif %}>desc</option>
+					</select>
+				</td>
+				<td colspan="2">
+					<button class="button" type="filter_submit">Filter</button>
+				</td>
+			</tr>
+		</table>
+	</form>
+	<hr/>
+
+	{{ include('AzineMailgunWebhooksBundle::paginator.html.twig', paginatorParams) }}
+
+	<table class="tablesorter-blue eventsTable">
+		<thead>
+		<tr>
+			<th>Sender</th>
+			<th>Recipient</th>
+			<th>Subject</th>
+			<th>First Opened</th>
+			<th>Last Opened<br/>
+				(Opened Count)</th>
+			<th>Sent Date</th>
+			<th>Delivery Status</th>
+			<th>Sender IP</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for summary in messageSummaries %}
+			<tr id="event{{ summary.id }}" class="{{ cycle(['odd', 'even'], loop.index) }}">
+				<td>
+					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
+						{{ summary.fromAddress }}
+					</a>
+				</td>
+				<td>
+					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
+						{{ summary.toAddress }}
+					</a>
+				</td>
+				<td>
+					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
+					{{ summary.subject }}
+					</a>
+				</td>
+				<td>
+					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
+						{{ summary.firstOpened | date("Y-m-d H:i:m") }}<br/>
+					</a>
+				</td>
+				<td>
+					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
+						{{ summary.lastOpened | date("Y-m-d H:i:m") }}<br/>
+						Opened {{ summary.openCount }} times
+					</a>
+				</td>
+				<td>
+					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
+						{{ summary.sendDate | date("Y-m-d H:i:m") }}
+					</a>
+				</td>
+				<td>
+					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
+						{{ summary.deliveryStatus }}
+					</a>
+				</td>
+				<td>
+					{{ summary.senderIp }}
+				</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+
+	{{ include('AzineMailgunWebhooksBundle::paginator.html.twig', paginatorParams) }}
+
+
+{% endblock %}
+
+{% block templateJQueryJS %}
+	{{ parent() }}
+
+	$(".pageSizeSelector").change(function(){
+
+	// reload the page with the new pagesize
+	var newSize = this.value;
+	var baseUrl = '{{ path('mailgun_message_summary_list', {'page' : 1, 'pageSize' : '-1'}) }}';
+	window.location.href = baseUrl.substring(0, baseUrl.length - 2) + newSize;
+
+	});
+{% endblock %}

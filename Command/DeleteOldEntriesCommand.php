@@ -59,7 +59,8 @@ opened 			The email recipient opened the email and enabled image viewing. Open t
 clicked 		The email recipient clicked on a link in the email. Click tracking must be enabled in the Mailgun control panel, and the CNAME record must be pointing to mailgun.org.
 unsubscribed 	The email recipient clicked on the unsubscribe link. Unsubscribe tracking must be enabled in the Mailgun control panel.
 complained 		The email recipient clicked on the spam complaint button within their email client. Feedback loops enable the notification to be received by Mailgun.
-stored 			Mailgun has stored an incoming message
+stored 			Mailgun has stored an incoming message.
+dropped			Mailgun has dropped the message due to some error.
 EOF
             )
             ;
@@ -73,7 +74,7 @@ EOF
         if (null == $type || '' == $type) {
             $output->write('deleting entries of any type.', true);
             $typeDesc = 'any type';
-        } elseif (array_search($type, array('accepted', 'rejected', 'delivered', 'failed', 'opened', 'clicked', 'unsubscribed', 'complained', 'stored'))) {
+        } elseif (array_search($type, array('accepted', 'rejected', 'delivered', 'failed', 'opened', 'clicked', 'unsubscribed', 'complained', 'stored', 'dropped'))) {
             $typeDesc = "type '$type'";
         } else {
             throw new InvalidArgumentException("Unknown type: $type");

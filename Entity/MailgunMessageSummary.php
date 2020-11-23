@@ -277,7 +277,9 @@ class MailgunMessageSummary
      */
     public function appendToToAddress($toAddress)
     {
-        $this->toAddress = trim($this->toAddress . ", " . $toAddress,", ");
+        if(stripos($this->toAddress, $toAddress) === false) {
+            $this->toAddress = trim($this->toAddress . ", " . $toAddress, ", ");
+        }
         return $this;
     }
 

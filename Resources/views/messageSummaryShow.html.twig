@@ -1,0 +1,28 @@
+{% extends 'AzineMailgunWebhooksBundle::layout.html.twig' %}
+
+{% block body %}
+	{{ parent() }}
+	{{ render(controller('AzineMailgunWebhooksBundle:Mailgun:cockpit')) }}
+
+	<h1>Mailgun Message Summary</h1>
+	<p>
+		<a class="backToOverview" href="{{ path('mailgun_overview') }}" >Event Overview</a> |
+		<a class="backToOverview" href="{{ path('mailgunevent_list') }}" >Event List</a> |
+		<a class="backToOverview" href="{{ path('mailgun_message_summary_list') }}" >Message Summary List</a>
+	</p>
+	<table>
+		<tr><th>Subject</th><td>{{ messageSummary.subject }}</td></tr>
+		<tr><th>From</th><td>{{ messageSummary.fromAddress }}</td></tr>
+		<tr><th>To</th><td>{{ messageSummary.toAddress }}</td></tr>
+		<tr><th>Sent</th><td>{{ messageSummary.sendDate | date("Y-m-d H:i:m") }}</td></tr>
+		<tr><th>Opened</th><td>
+				{%  if messageSummary.firstOpened %}First: {{ messageSummary.firstOpened | date("Y-m-d H:i:m")  }}<br/>{% endif %}
+				{%  if messageSummary.lastOpened %}Last: {{ messageSummary.lastOpened | date("Y-m-d H:i:m") }}<br/>{% endif %}
+				Opened {{ messageSummary.openCount }} times
+			</td></tr>
+	</table>
+
+	{{ include('AzineMailgunWebhooksBundle:MailgunEvent:eventList.html.twig', {events: messageSummary.events, emailWebViewRoute: emailWebViewRoute}) }}
+
+{% endblock %}
+

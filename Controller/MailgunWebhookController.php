@@ -19,131 +19,8 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * MailgunEvent controller.
  */
-class MailgunEventController extends AbstractController
+class MailgunWebhookController extends AbstractController
 {
-    /**
-     * Lists all MailgunEvent entities.
-     *
-     * @param Request $request
-     * @param int     $page
-     * @param int     $pageSize
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     */
-    public function indexAction(Request $request, $page, $pageSize)
-    {
-        $params = array();
-
-        // get general filter options
-        $params['filterOptions'] = array(
-            'orderBy' => $this->getRepository()->getFieldsToOrderBy(),
-            'eventTypes' => array_merge(array('all', 'unopened'), $this->getRepository()->getEventTypes()),
-            'domains' => $this->getRepository()->getDomains(),
-            'recipients' => $this->getRepository()->getRecipients(),
-        );
-
-        // get filter criteria from session
-        $session = $request->getSession();
-        $page = $session->get('page', $page);
-        $pageSize = $session->get('pageSize', $pageSize);
-        $domain = $session->get('domain', $params['filterOptions']['domains'][0]);
-        $eventType = $session->get('eventType', $params['filterOptions']['eventTypes'][0]);
-        $search = $session->get('search', '');
-        $recipient = $session->get('recipient', '');
-        $orderBy = $session->get('orderBy', 'timestamp');
-        $orderDirection = $session->get('orderDirection', 'desc');
-
-        // update filter criteria from get-request
-        $page = $request->get('page', $page);
-        $pageSize = $request->get('pageSize', $pageSize);
-        if ($session->get('pageSize') != $pageSize) {
-            $page = 1;
-        }
-        if ($request->get('clear')) {
-            $eventType = 'all';
-        } else {
-            $eventType = $request->get('eventType', $eventType);
-        }
-
-        // update filter criteria from post-request
-        $filter = $request->get('filter');
-        if (is_array($filter)) {
-            $domain = $filter['domain'];
-            $eventType = $filter['eventType'];
-            $search = trim($filter['search']);
-            $filter['search'] = $search;
-            $recipient = trim($filter['recipient']);
-            $filter['recipient'] = $recipient;
-            $orderBy = $filter['orderBy'];
-            $orderDirection = $filter['orderDirection'];
-        } else {
-            $filter = array();
-            $filter['domain'] = $domain;
-            $filter['eventType'] = $eventType;
-            $filter['search'] = $search;
-            $filter['recipient'] = $recipient;
-            $filter['orderBy'] = $orderBy;
-            $filter['orderDirection'] = $orderDirection;
-        }
-
-        // store filter criteria back to session
-        $session->set('page', $page);
-        $session->set('pageSize', $pageSize);
-        $session->set('domain', $domain);
-        $session->set('eventType', $eventType);
-        $session->set('search', $search);
-        $session->set('recipient', $recipient);
-        $session->set('orderBy', $orderBy);
-        $session->set('orderDirection', $orderDirection);
-
-        // set params for filter-form
-        $params['currentFilters'] = array(
-            'domain' => $domain,
-            'orderBy' => $orderBy,
-            'orderDirection' => $orderDirection,
-            'eventType' => $eventType,
-            'pageSize' => $pageSize,
-            'search' => $search,
-            'recipient' => $recipient,
-        );
-
-        $eventCount = $this->getRepository()->getEventCount($filter);
-        // validate the page/pageSize and with the total number of result entries
-        if ($eventCount > 0 && (($page - 1) * $pageSize >= $eventCount)) {
-            $maxPage = max(1, ceil($eventCount / $pageSize));
-
-            return $this->redirect($this->generateUrl('mailgunevent_list', array('page' => $maxPage, 'pageSize' => $pageSize)).'?'.$request->getQueryString());
-        }
-
-        // get the events
-        $params['events'] = $this->getRepository()->getEvents($filter, array($orderBy => $orderDirection), $pageSize, ($page - 1) * $pageSize);
-        $params['emailWebViewRoute'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_ROUTE);
-        $params['emailWebViewToken'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
-
-        // set the params for the pager
-        $params['paginatorParams'] = array(
-            'paginationPath' => 'mailgunevent_list',
-            'pageSize' => $pageSize,
-            'currentPage' => $page,
-            'currentFilters' => $params['currentFilters'],
-            'totalItems' => $eventCount,
-            'lastPage' => ceil($eventCount / $pageSize),
-            'showAlwaysFirstAndLast' => true,
-        );
-
-        return $this->render('AzineMailgunWebhooksBundle:MailgunEvent:index.html.twig', $params);
-    }
-
-    /**
-     * Get the MailgunEvent Repository.
-     *
-     * @return MailgunEventRepository
-     */
-    private function getRepository()
-    {
-        return $this->getDoctrine()->getManager()->getRepository('AzineMailgunWebhooksBundle:MailgunEvent');
-    }
-
     public function createFromWebhookAction(Request $request)
     {
         // old webhooks api
@@ -316,7 +193,6 @@ class MailgunEventController extends AbstractController
                     if (array_key_exists('message-id', $headers)) {
                         $trimmedMessageId = trim(trim($headers['message-id']), '<>');
                         $event->setMessageId($trimmedMessageId);
-                        unset($eventData['message']['headers']['message-id']);
 
                         // set message domain from message id
                         if (null == $event->getDomain()) {
@@ -361,7 +237,7 @@ class MailgunEventController extends AbstractController
 
             $manager = $this->container->get('doctrine.orm.entity_manager');
             $manager->persist($event);
-            $this->getDoctrine()->getRepository(MailgunMessageSummary::class)->createOrUpdateMessageSummary($event);
+            $eventSummary = $this->getDoctrine()->getRepository(MailgunMessageSummary::class)->createOrUpdateMessageSummary($event);
 
             $eventData = $this->removeEmptyArrayElements($eventData);
 
@@ -639,7 +515,7 @@ class MailgunEventController extends AbstractController
      *
      * @return array without empty elements (recursively)
      */
-    public function removeEmptyArrayElements($haystack)
+    private function removeEmptyArrayElements($haystack)
     {
         foreach ($haystack as $key => $value) {
             if (is_array($value)) {

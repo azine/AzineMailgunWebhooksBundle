@@ -208,7 +208,7 @@ HetrixTools.com has a free, limited plan that will allow ~3 checks per day. See 
   
 You can set the parameter `repeat_notification_after_days` in your `app/config/config.yml` to a non-zero integer to mute the notification email for a number of days if
 no change in the list of blacklistings has occured. You will only get the blacklist notification email again once either the mute-duration
-has passed or your ip has been been added to or removed from a blacklist.     
+has passed or your ip has been been added to or removed from a blacklist.
 
 # Contribute
 Contributions are very welcome. Please fork the repository and issue your pull-request against the master branch.
