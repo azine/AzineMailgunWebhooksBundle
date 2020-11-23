@@ -194,27 +194,16 @@ class MailgunWebhookControllerTest extends WebTestCase
         $eventId = substr($link->getUri(), $posOfIdStart, $posLastSlash - $posOfIdStart);
         $crawler = $client->click($link);
         $this->assertSame(200, $client->getResponse()->getStatusCode(), 'Status 200 expected.');
-        $this->assertSame($eventId, $crawler->filter('td')->first()->text(), "Content of first td should be the eventId ($eventId)");
+        $this->assertSame($eventId, $crawler->filter('.mailgunEvent td')->eq(1)->html(), "Content should be the eventId ($eventId)" . $client->getResponse()->getContent());
 
         // delete the event from show-page
-        $link = $crawler->selectLink('delete')->link();
+        $link = $crawler->selectLink('Delete')->link();
         $crawler = $client->click($link);
-
-        // check that it is gone from the list
-        $this->assertSame(0, $crawler->filter("#event$eventId")->count(), 'The deleted event should not be in the list anymore.');
-
-        // delete the event from list-page
         $crawler = $client->followRedirect();
-        $link = $crawler->filter('.eventsTable tr .deleteLink')->first()->link();
-        $delUri = $link->getUri();
-        $eventId = substr($delUri, strrpos($delUri, '/') + 1);
-        $crawler = $client->click($link);
-
         // check that it is gone from the list
         $this->assertSame(0, $crawler->filter("#event$eventId")->count(), 'The deleted event should not be in the list anymore.');
 
         // filter the list for something
-        $crawler = $client->followRedirect();
         $form = $crawler->selectButton('Filter')->form();
         $form['filter[eventType]']->select('delivered');
         $crawler = $client->submit($form);

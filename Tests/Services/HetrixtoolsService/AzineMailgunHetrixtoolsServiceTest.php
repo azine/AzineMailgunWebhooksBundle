@@ -4,7 +4,7 @@ namespace Azine\MailgunWebhooksBundle\Tests\Services\HetrixtoolsService;
 
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
-use Monolog\Logger;
+use Psr\Log\NullLogger;
 
 class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit\Framework\TestCase
 {
@@ -44,7 +44,7 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit\Framework\TestCase
         $url = 'blacklistIpCheckUr';
 
         $ip = '198.51.100.42';
-        $service = new AzineMailgunHetrixtoolsService(new Logger("Test-Logger Dummy"), $apiKey, $url);
+        $service = new AzineMailgunHetrixtoolsService(new NullLogger(), $apiKey, $url);
         $service->checkIpAddressInBlacklist($ip);
     }
 
@@ -57,7 +57,7 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit\Framework\TestCase
         $url = 'blacklistIpCheckUr';
         $ip = '';
 
-        $service = new AzineMailgunHetrixtoolsService(new Logger("Test-Logger Dummy"), $apiKey, $url);
+        $service = new AzineMailgunHetrixtoolsService(new NullLogger(), $apiKey, $url);
         $service->checkIpAddressInBlacklist($ip);
     }
 
@@ -70,7 +70,7 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit\Framework\TestCase
         $url = 'blacklistIpCheckUr';
         $ip = 'invalidIpAddress';
 
-        $service = new AzineMailgunHetrixtoolsService(new Logger("Test-Logger Dummy"), $apiKey, $url);
+        $service = new AzineMailgunHetrixtoolsService(new NullLogger(), $apiKey, $url);
         $service->checkIpAddressInBlacklist($ip);
     }
 
@@ -80,7 +80,7 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit\Framework\TestCase
         $url = 'https://api.example.com/v2/testkey/blacklist-check/ipv4/198.51.100.42/';
 
         $hetrixtoolsService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService")
-            ->setConstructorArgs(array(new Logger("Test-Logger Dummy"), $apiKey, $url))
+            ->setConstructorArgs(array(new NullLogger(), $apiKey, $url))
             ->setMethods(array('executeCheck'))->getMock();
         $hetrixtoolsService->expects($this->once())->method('executeCheck')->will($this->returnValue($this->responseJson));
 

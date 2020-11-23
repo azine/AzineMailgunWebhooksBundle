@@ -55,6 +55,6 @@ Azine\MailgunWebhooksBundle\Entity\MailgunEvent:
             targetEntity: MailgunMessageSummary
             inversedBy: events
             joinColumn:
-                name: messageId
+                name: message_id
                 referencedColumnName: id
                 onDelete: CASCADE

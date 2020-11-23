@@ -16,9 +16,7 @@ class MailgunEventRepository extends EntityRepository
 {
     public function getEventCount($criteria)
     {
-        $result = $this->getEventsQuery($criteria)->select('count(e.id)')->getQuery()->getSingleScalarResult();
-
-        return $result;
+        return $this->getEventsQuery($criteria)->select('count(e.id)')->getQuery()->getSingleScalarResult();
     }
 
     /**
@@ -104,6 +102,8 @@ class MailgunEventRepository extends EntityRepository
         foreach ($q->execute() as $next) {
             $result[] = $next['event'];
         }
+
+        $result[] = 'all';
 
         return $result;
     }

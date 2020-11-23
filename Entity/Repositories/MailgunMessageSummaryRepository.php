@@ -143,7 +143,9 @@ class MailgunMessageSummaryRepository extends \Doctrine\ORM\EntityRepository
         if ($messageSummary == null) {
             $ip = $event->getIp() != null ? $event->getIp() : "unknown";
             $messageSummary = new MailgunMessageSummary($event->getMessageId(), $event->getDateTime(), $event->getSender(), $event->getRecipient(), "no subject found yet", $ip);
+
         }
+        $event->setEventSummary($messageSummary);
         $messageSummary->updateDeliveryStatus($event->getEvent());
 
         if ($event->getEvent() == 'opened') {
@@ -184,6 +186,6 @@ class MailgunMessageSummaryRepository extends \Doctrine\ORM\EntityRepository
 
         $manager = $this->getEntityManager();
         $manager->persist($messageSummary);
-        $manager->flush($messageSummary);
+        return $messageSummary;
     }
 }

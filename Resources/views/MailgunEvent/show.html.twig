@@ -3,86 +3,91 @@
 {% block body -%}
     {{ parent() }}
     <h1>MailgunEvent: {% if entity.eventTitle != ''  %}{{ entity.eventTitle }} {% endif %} => {{ entity.recipient }} </h1>
-    <table class="record_properties">
+    <p>
+        <a class="backToOverview" href="{{ path('mailgun_overview') }}" >Event Overview</a> |
+        <a class="backToOverview" href="{{ path('mailgunevent_list') }}" >Event List</a> |
+        <a class="backToOverview" href="{{ path('mailgun_message_summary_list') }}" >Message Summary List</a>
+    </p>
+    <table class="mailgunEvent record_properties">
         <tbody>
             <tr>
-                <th>Id</th>
+                <td>Id</td>
                 <td>{{ entity.id }}</td>
             </tr>
             <tr>
-                <th>Event</th>
+                <td>Event</td>
                 <td>{{ entity.event }}</td>
             </tr>
             <tr>
-                <th>Domain</th>
+                <td>Domain</td>
                 <td>{{ entity.domain }}</td>
             </tr>
             <tr>
-                <th>Description</th>
+                <td>Description</td>
                 <td>{{ entity.description }}</td>
             </tr>
             <tr>
-                <th>Reason</th>
+                <td>Reason</td>
                 <td>{{ entity.reason }}</td>
             </tr>
             <tr>
-                <th>Recipient</th>
+                <td>Recipient</td>
                 <td>{{ entity.recipient }}</td>
             </tr>
             <tr>
-                <th>Errorcode</th>
+                <td>Errorcode</td>
                 <td>{{ entity.errorCode }}</td>
             </tr>
             <tr>
-                <th>Ip</th>
+                <td>Ip</td>
                 <td>{{ entity.ip }}</td>
             </tr>
             <tr>
-                <th>Country</th>
+                <td>Country</td>
                 <td>{{ entity.country }}</td>
             </tr>
             <tr>
-                <th>City</th>
+                <td>City</td>
                 <td>{{ entity.city }}</td>
             </tr>
             <tr>
-                <th>Region</th>
+                <td>Region</td>
                 <td>{{ entity.region }}</td>
             </tr>
             <tr>
-                <th>Campaignid</th>
+                <td>Campaignid</td>
                 <td>{{ entity.campaignId }}</td>
             </tr>
             <tr>
-                <th>Campaignname</th>
+                <td>Campaignname</td>
                 <td>{{ entity.campaignName }}</td>
             </tr>
             <tr>
-                <th>Clientname</th>
+                <td>Clientname</td>
                 <td>{{ entity.clientName }}</td>
             </tr>
             <tr>
-                <th>Clientos</th>
+                <td>Clientos</td>
                 <td>{{ entity.clientOs }}</td>
             </tr>
             <tr>
-                <th>Clienttype</th>
+                <td>Clienttype</td>
                 <td>{{ entity.clientType }}</td>
             </tr>
             <tr>
-                <th>Devicetype</th>
+                <td>Devicetype</td>
                 <td>{{ entity.deviceType }}</td>
             </tr>
             <tr>
-                <th>Mailinglist</th>
+                <td>Mailinglist</td>
                 <td>{{ entity.mailingList }}</td>
             </tr>
             <tr>
-                <th>Messageid</th>
+                <td>Messageid</td>
                 <td>{{ entity.messageId }}</td>
             </tr>
             <tr>
-                <th>Messageheaders</th>
+                <td>Messageheaders</td>
                 <td>
                     MessageId: {{ entity.messageId }}
                     {% if entity.messageHeaders | length > 0 %}
@@ -103,11 +108,11 @@
                 </td>
             </tr>
             <tr>
-                <th>Tag</th>
+                <td>Tag</td>
                 <td>{{ entity.tag }}</td>
             </tr>
             <tr>
-                <th>Customvariables</th>
+                <td>Customvariables</td>
                 <td>
 					{% if entity.variables | length > 0 %}
 						<ul class="expandcollapse">
@@ -130,29 +135,30 @@
                 </td>
             </tr>
             <tr>
-                <th>Useragent</th>
+                <td>Useragent</td>
                 <td>{{ entity.userAgent }}</td>
             </tr>
             <tr>
-                <th>Url</th>
+                <td>Url</td>
                 <td>{{ entity.url }}</td>
             </tr>
             <tr>
-                <th>Token</th>
+                <td>Token</td>
                 <td>{{ entity.token }}</td>
             </tr>
             <tr>
-                <th>Timestamp</th>
+                <td>Timestamp</td>
                 <td>{{ entity.timestamp }}</td>
             </tr>
             <tr>
-                <th>Signature</th>
+                <td>Signature</td>
                 <td>{{ entity.signature }}</td>
             </tr>
         </tbody>
     </table>
+    <div class="actions">
+        <a class="button delete" href="{{ path('mailgunevent_delete', {'eventId' : entity.id }) }}">Delete</a>
+        <a class="button" href="{{ path('mailgun_message_summary', {'id' : entity.messageId }) }}">Show Message Summary</a>
+    </div>
 
-<ul class="record_actions">
-    <li><a href="{{ path('mailgunevent_delete', {'eventId' : entity.id }) }}">delete</a></li>
-</ul>
 {% endblock %}
