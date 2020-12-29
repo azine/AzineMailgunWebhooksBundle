@@ -8,11 +8,8 @@ use Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable;
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary;
 use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
-use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -27,11 +24,12 @@ class MailgunWebhookController extends AbstractController
         $params = $request->request->all();
 
         if (is_array($params) && !empty($params)) {
-            $this->get("logger")->info("Creating MailgunEvent via old API.");
+            $this->get('logger')->info('Creating MailgunEvent via old API.');
+
             return $this->createEventOldApi($params);
         }
         // new webhooks api
-        $this->get("logger")->info("Creating MailgunEvent via new API.");
+        $this->get('logger')->info('Creating MailgunEvent via new API.');
         $params = json_decode($request->getContent(), true);
 
         return $this->createEventNewApi($params);
@@ -201,7 +199,7 @@ class MailgunWebhookController extends AbstractController
                     }
 
                     // sender
-                    if(array_key_exists('from', $headers)){
+                    if (array_key_exists('from', $headers)) {
                         $event->setSender($headers['from']);
                     }
 
@@ -415,7 +413,7 @@ class MailgunWebhookController extends AbstractController
                 $headers = json_decode($params['message-headers']);
                 foreach ($headers as $header) {
                     // sender
-                    if ($header[0] == 'Sender') {
+                    if ('Sender' == $header[0]) {
                         $event->setSender($header[1]);
                     }
                 }

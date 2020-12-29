@@ -812,7 +812,7 @@ class MailgunEvent
      *
      * @return MailgunEvent
      */
-    public function addVariable(\Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $variables)
+    public function addVariable(MailgunCustomVariable $variables)
     {
         $this->variables[] = $variables;
 
@@ -824,7 +824,7 @@ class MailgunEvent
      *
      * @param \Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $variables
      */
-    public function removeVariable(\Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable $variables)
+    public function removeVariable(MailgunCustomVariable $variables)
     {
         $this->variables->removeElement($variables);
     }
@@ -846,7 +846,7 @@ class MailgunEvent
      *
      * @return MailgunEvent
      */
-    public function addAttachment(\Azine\MailgunWebhooksBundle\Entity\MailgunAttachment $attachments)
+    public function addAttachment(MailgunAttachment $attachments)
     {
         $this->attachments[] = $attachments;
 
@@ -858,7 +858,7 @@ class MailgunEvent
      *
      * @param \Azine\MailgunWebhooksBundle\Entity\MailgunAttachment $attachments
      */
-    public function removeAttachment(\Azine\MailgunWebhooksBundle\Entity\MailgunAttachment $attachments)
+    public function removeAttachment(MailgunAttachment $attachments)
     {
         $this->attachments->removeElement($attachments);
     }
@@ -872,20 +872,20 @@ class MailgunEvent
     {
         return $this->attachments;
     }
+
     /**
      * @var \Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary
      */
     private $eventSummary;
 
-
     /**
-     * Set eventSummary
+     * Set eventSummary.
      *
      * @param \Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary $eventSummary
      *
      * @return MailgunEvent
      */
-    public function setEventSummary(\Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary $eventSummary = null)
+    public function setEventSummary(MailgunMessageSummary $eventSummary = null)
     {
         $this->eventSummary = $eventSummary;
 
@@ -893,7 +893,7 @@ class MailgunEvent
     }
 
     /**
-     * Get eventSummary
+     * Get eventSummary.
      *
      * @return \Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary
      */
@@ -901,14 +901,14 @@ class MailgunEvent
     {
         return $this->eventSummary;
     }
+
     /**
      * @var string
      */
     private $sender;
 
-
     /**
-     * Set sender
+     * Set sender.
      *
      * @param string $sender
      *
@@ -922,7 +922,7 @@ class MailgunEvent
     }
 
     /**
-     * Get sender
+     * Get sender.
      *
      * @return string
      */

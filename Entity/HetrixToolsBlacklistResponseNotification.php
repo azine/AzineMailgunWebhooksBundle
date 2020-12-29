@@ -3,7 +3,7 @@
 namespace Azine\MailgunWebhooksBundle\Entity;
 
 /**
- * HetrixToolsBlacklistResponseNotification
+ * HetrixToolsBlacklistResponseNotification.
  */
 class HetrixToolsBlacklistResponseNotification
 {
@@ -32,9 +32,8 @@ class HetrixToolsBlacklistResponseNotification
      */
     private $ignoreUntil;
 
-
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -44,7 +43,7 @@ class HetrixToolsBlacklistResponseNotification
     }
 
     /**
-     * Set data
+     * Set data.
      *
      * @param array $data
      *
@@ -58,7 +57,7 @@ class HetrixToolsBlacklistResponseNotification
     }
 
     /**
-     * Get data
+     * Get data.
      *
      * @return array
      */
@@ -68,7 +67,7 @@ class HetrixToolsBlacklistResponseNotification
     }
 
     /**
-     * Set date
+     * Set date.
      *
      * @param \DateTime $date
      *
@@ -82,7 +81,7 @@ class HetrixToolsBlacklistResponseNotification
     }
 
     /**
-     * Get date
+     * Get date.
      *
      * @return \DateTime
      */
@@ -92,7 +91,7 @@ class HetrixToolsBlacklistResponseNotification
     }
 
     /**
-     * Set ip
+     * Set ip.
      *
      * @param string $ip
      *
@@ -106,7 +105,7 @@ class HetrixToolsBlacklistResponseNotification
     }
 
     /**
-     * Get ip
+     * Get ip.
      *
      * @return string
      */
@@ -116,7 +115,7 @@ class HetrixToolsBlacklistResponseNotification
     }
 
     /**
-     * Set ignoreUntil
+     * Set ignoreUntil.
      *
      * @param \DateTime $ignoreUntil
      *
@@ -130,7 +129,7 @@ class HetrixToolsBlacklistResponseNotification
     }
 
     /**
-     * Get ignoreUntil
+     * Get ignoreUntil.
      *
      * @return \DateTime
      */

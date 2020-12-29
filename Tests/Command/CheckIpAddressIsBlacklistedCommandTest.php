@@ -44,10 +44,8 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
             'whitelabel_report_link' => '',
             'api_report_link' => 'https://api.example.com/v1/token/blacklist/report/198.51.100.42/',
             'api_blacklist_check_link' => 'https://api.example.com/v2/token/blacklist-check/ipv4/198.51.100.42/',
-        )
+        ),
     );
-
-
 
     public function setUp()
     {
@@ -74,7 +72,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
             'api_blacklist_check_link' => 'https://api.example.com/v2/token/blacklist-check/ipv4/198.51.100.42/',
         );
 
-        $this->entityRepository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')->disableOriginalConstructor()->setMethods(array('getLastKnownSenderIpData','findBy'))->getMock();
+        $this->entityRepository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')->disableOriginalConstructor()->setMethods(array('getLastKnownSenderIpData', 'findBy'))->getMock();
         $this->entityRepository->expects($this->any())->method('getLastKnownSenderIpData')->will($this->returnValue(array('ip' => '198.51.100.42', 'timestamp' => '1552971782')));
 
         $this->entityManager = $this->getMockBuilder(EntityRepository::class)->disableOriginalConstructor()->setMethods(array('getRepository'))->getMock();
@@ -91,14 +89,14 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $this->blackListNotificationRepository = $this->getMockBuilder(HetrixToolsBlacklistResponseNotificationRepository::class)->disableOriginalConstructor()->getMock();
     }
 
-    public function testSendingBlackListReport_FirstTime_sent()
+    public function testSendingBlackListReportFirstTimeSent()
     {
         $tester = $this->getTester(28);
 
         //test if response status is 'SUCCESS' and ip is blacklisted
         $this->hetrixtoolsService->expects($this->any())->method('checkIpAddressInBlacklist')->will($this->returnValue($this->hetrixtoolsRespose));
 
-        $this->entityRepository->expects($this->any())->method("findBy")->will($this->returnValue(array()));
+        $this->entityRepository->expects($this->any())->method('findBy')->will($this->returnValue(array()));
 
         $tester->execute(array(''));
 
@@ -106,7 +104,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertContains(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_WAS_SENT, $display);
     }
 
-    public function testSendingBlackListReport_NotMuted_sent()
+    public function testSendingBlackListReportNotMutedSent()
     {
         $tester = $this->getTester(0);
 
@@ -119,7 +117,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertContains(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_WAS_SENT, $display);
     }
 
-    public function testSendingBlackListReport_LastNotificationIsLongSinceAndListsAreTheSame_sent()
+    public function testSendingBlackListReportLastNotificationIsLongSinceAndListsAreTheSameSent()
     {
         $tester = $this->getTester(10);
 
@@ -127,9 +125,9 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $this->hetrixtoolsService->expects($this->any())->method('checkIpAddressInBlacklist')->will($this->returnValue($this->hetrixtoolsRespose));
 
         $lastNotification = new HetrixToolsBlacklistResponseNotification();
-        $lastNotification->setIgnoreUntil(new \DateTime("1 hour ago"));
+        $lastNotification->setIgnoreUntil(new \DateTime('1 hour ago'));
         $lastNotification->setData($this->hetrixtoolsResposeData);
-        $this->entityRepository->expects($this->any())->method("findBy")->will($this->returnValue(array($lastNotification)));
+        $this->entityRepository->expects($this->any())->method('findBy')->will($this->returnValue(array($lastNotification)));
 
         $tester->execute(array(''));
 
@@ -137,7 +135,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertContains(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_WAS_SENT, $display);
     }
 
-    public function testSendingBlackListReport_LastNotificationIsRecentButListsAreNotTheSame_sent()
+    public function testSendingBlackListReportLastNotificationIsRecentButListsAreNotTheSameSent()
     {
         $tester = $this->getTester(10);
 
@@ -145,7 +143,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $this->hetrixtoolsService->expects($this->any())->method('checkIpAddressInBlacklist')->will($this->returnValue($this->hetrixtoolsRespose));
 
         $lastNotification = new HetrixToolsBlacklistResponseNotification();
-        $lastNotification->setIgnoreUntil(new \DateTime("1 hour"));
+        $lastNotification->setIgnoreUntil(new \DateTime('1 hour'));
         $hetrixtoolsResposeData = array(
             'status' => HetrixtoolsServiceResponse::RESPONSE_STATUS_SUCCESS,
             'api_calls_left' => 5,
@@ -155,17 +153,17 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
                 array(
                     'rbl' => 'pbl.spamhaus.org',
                     'delist' => 'https://www.example.org/query/ip/198.51.100.42',
-                )
+                ),
             ),
             'links' => array(
                 'report_link' => 'https://example.com/report/blacklist/token/',
                 'whitelabel_report_link' => '',
                 'api_report_link' => 'https://api.example.com/v1/token/blacklist/report/198.51.100.42/',
                 'api_blacklist_check_link' => 'https://api.example.com/v2/token/blacklist-check/ipv4/198.51.100.42/',
-            )
+            ),
         );
         $lastNotification->setData($hetrixtoolsResposeData);
-        $this->entityRepository->expects($this->any())->method("findBy")->will($this->returnValue(array($lastNotification)));
+        $this->entityRepository->expects($this->any())->method('findBy')->will($this->returnValue(array($lastNotification)));
 
         $tester->execute(array(''));
 
@@ -173,7 +171,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertContains(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_WAS_SENT, $display);
     }
 
-    public function testSendingBlackListReport_LastNotificationIsRecentButListsNotChanged_muted()
+    public function testSendingBlackListReportLastNotificationIsRecentButListsNotChangedMuted()
     {
         $tester = $this->getTester(10);
 
@@ -181,17 +179,17 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $this->hetrixtoolsService->expects($this->any())->method('checkIpAddressInBlacklist')->will($this->returnValue($this->hetrixtoolsRespose));
 
         $lastNotification = new HetrixToolsBlacklistResponseNotification();
-        $lastNotification->setIgnoreUntil(new \DateTime("1 hour"));
+        $lastNotification->setIgnoreUntil(new \DateTime('1 hour'));
         $lastNotification->setData($this->hetrixtoolsResposeData);
-        $this->entityRepository->expects($this->any())->method("findBy")->will($this->returnValue(array($lastNotification)));
+        $this->entityRepository->expects($this->any())->method('findBy')->will($this->returnValue(array($lastNotification)));
 
         $tester->execute(array(''));
 
         $display = $tester->getDisplay();
-        $this->assertContains(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_IS_SAME_AS_PREVIOUS, $display);    }
+        $this->assertContains(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_IS_SAME_AS_PREVIOUS, $display);
+    }
 
-
-    public function testSendingBlackListReport_notListed_notSent()
+    public function testSendingBlackListReportNotListedNotSent()
     {
         $tester = $this->getTester();
 
@@ -207,7 +205,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertContains(CheckIpAddressIsBlacklistedCommand::IP_IS_NOT_BLACKLISTED, $display);
     }
 
-    public function testSendingBlackListReport_NoResponse_showError()
+    public function testSendingBlackListReportNoResponseShowError()
     {
         $tester = $this->getTester();
         $this->hetrixtoolsService->expects($this->once())->method('checkIpAddressInBlacklist')->will($this->throwException(new \InvalidArgumentException('no parseable response received.')));
