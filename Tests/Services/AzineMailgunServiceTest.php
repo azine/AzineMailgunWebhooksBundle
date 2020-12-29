@@ -34,7 +34,7 @@ class AzineMailgunServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($count, $deleteCount, "Expected that $count entries are reported as deleted.");
     }
 
-    public function testRemoveOldEventEntriesByType_with_string()
+    public function testRemoveOldEventEntriesByTypeWithString()
     {
         $ageLimit = new \DateTime('5 days ago');
         $type = 'bounced';
@@ -60,7 +60,7 @@ class AzineMailgunServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($count, $deleteCount, "Expected that $count entries are reported as deleted.");
     }
 
-    public function testRemoveOldEventEntriesByType_with_array()
+    public function testRemoveOldEventEntriesByTypeWithArray()
     {
         $ageLimit = new \DateTime('5 days ago');
         $type = array('bounced', 'dropped');

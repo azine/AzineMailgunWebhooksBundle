@@ -6,7 +6,6 @@ use Azine\MailgunWebhooksBundle\Entity\MailgunAttachment;
 use Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable;
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary;
-use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunMessageSummaryRepository;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -25,13 +24,13 @@ class TestHelper
             $messageSummary = $manager->getRepository(MailgunMessageSummary::class)->createOrUpdateMessageSummary($event);
 
             // for delivered messages, add some open events
-            if($eventType == 'delivered'){
-                $openCount = random_int(0,10);
-                while($openCount > 0) {
+            if ('delivered' == $eventType) {
+                $openCount = random_int(0, 10);
+                while ($openCount > 0) {
                     $openEvent = self::addMailgunEvent($manager, $mailgunApiKey, 'open', $messageId, $openCount);
                     $openEvent->setEventSummary($messageSummary);
 
-                    $openCount--;
+                    --$openCount;
                 }
             }
             $manager->flush();
@@ -44,9 +43,11 @@ class TestHelper
      * @param $mailgunApiKey
      * @param $eventType
      * @param $messageId
+     *
      * @throws \Exception
      */
-    private static function addMailgunEvent(EntityManager $manager, $mailgunApiKey, $eventType, $messageId, $count){
+    private static function addMailgunEvent(EntityManager $manager, $mailgunApiKey, $eventType, $messageId, $count)
+    {
         $mailgunEvent = new MailgunEvent();
         $mailgunEvent->setEvent($eventType);
         $mailgunEvent->setDomain('acme');
@@ -111,28 +112,24 @@ class TestHelper
 
     public static function getPostDataWithoutSignature($newApi)
     {
-        if($newApi){
+        if ($newApi) {
             $timestamp = time();
             $data = array(
-                'signature' => array (
+                'signature' => array(
                     'timestamp' => $timestamp,
                     'token' => '50dcec4a2d0ef27036c44ebd9ce9324736fc98ef9405428803',
                 ),
-                'event-data' =>
-                    array(
-                        'tags' =>
-                            array(
+                'event-data' => array(
+                        'tags' => array(
                                 0 => 'my_tag_1',
-                                1 => 'my_tag_2'
+                                1 => 'my_tag_2',
                             ),
                         'timestamp' => $timestamp,
-                        'storage' =>
-                            array(
+                        'storage' => array(
                                 'url' => 'https://se.api.mailgun.net/v3/domains/acme.com/messages/message_key',
                                 'key' => 'message_key',
                             ),
-                        'envelope' =>
-                            array(
+                        'envelope' => array(
                                 'transport' => 'smtp',
                                 'sender' => 'bob@acme.com',
                                 'sending-ip' => '209.61.154.250',
@@ -140,21 +137,16 @@ class TestHelper
                             ),
                         'recipient-domain' => 'example.com',
                         'event' => 'delivered',
-                        'campaigns' =>
-                            array(),
-                        'user-variables' =>
-                            array(
+                        'campaigns' => array(),
+                        'user-variables' => array(
                                 'my_var_1' => 'Mailgun Variable #1',
                                 'my-var-2' => 'awesome',
                             ),
-                        'flags' =>
-                            array('is-routed' => false, 'is-authenticated' => true, 'is-system-test' => false, 'is-test-mode' => false,
+                        'flags' => array('is-routed' => false, 'is-authenticated' => true, 'is-system-test' => false, 'is-test-mode' => false,
                             ),
                         'log-level' => 'info',
-                        'message' =>
-                            array(
-                                'headers' =>
-                                    array(
+                        'message' => array(
+                                'headers' => array(
                                         'to' => 'Alice <alice@example.com>',
                                         'message-id' => '20130503182626.18666.16540@acme.com',
                                         'from' => 'Bob <bob@acme.com>',
@@ -165,8 +157,7 @@ class TestHelper
                             ),
                         'recipient' => 'alice@example.com',
                         'id' => 'CPgfbmQMTCKtHW6uIWtuVe',
-                        'delivery-status' =>
-                            array(
+                        'delivery-status' => array(
                                 'tls' => true,
                                 'mx-host' => 'smtp-in.example.com',
                                 'attempt-no' => 1,
@@ -199,7 +190,7 @@ class TestHelper
                     array('From', '\'acme.test sender-name\' <sender-name@acme.test>'),
                     array('To', '\'acme.test recipient-name\' <recipient-name@acme.test>'),
                     array('Mime-Version', '1.0'),
-                    array('Content-Transfer-Encoding', '[\'quoted-printable\']')
+                    array('Content-Transfer-Encoding', '[\'quoted-printable\']'),
                 )),
                 'Message-Id' => '<02be51b250915313fa5fc58a497f8d37@acme.com>',
                 'description' => 'some description',
@@ -228,6 +219,7 @@ class TestHelper
                 'some-custom-var3' => 'some data3',
             );
         }
+
         return $data;
     }
 }

@@ -221,7 +221,7 @@ class MailgunAttachment
      *
      * @return MailgunAttachment
      */
-    public function setEvent(\Azine\MailgunWebhooksBundle\Entity\MailgunEvent $event = null)
+    public function setEvent(MailgunEvent $event = null)
     {
         $this->event = $event;
 
