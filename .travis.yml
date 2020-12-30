@@ -33,9 +33,9 @@ before_install:
 before_script:
   - phpenv config-add travis.php.ini
   - travis_wait composer require symfony/${SYMFONY_VERSION} --prefer-source --no-update -v
-  - travis_wait composer install --prefer-source
   - mv ~/xdebug.ini /home/travis/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
   - if [ "$dependencies" = "lowest" ]; then travis_wait composer update --prefer-lowest --prefer-stable -n; fi;
+  - if [ "$dependencies" != "lowest" ]; then travis_wait composer install --prefer-source; fi;
 
 script:
   - travis_wait vendor/phpunit/phpunit/phpunit --coverage-text --coverage-clover=coverage.clover Tests/

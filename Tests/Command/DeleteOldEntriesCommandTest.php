@@ -27,7 +27,7 @@ class DeleteOldEntriesCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertContains('Mailgun accepted the request to send/forward the email and the message has been placed in queue.', $display);
     }
 
-    public function testDeleteOldEntries_WithoutParams()
+    public function testDeleteOldEntriesWithoutParams()
     {
         $application = new Application();
         $application->add(new DeleteOldEntriesCommand($this->mailgunServiceMock));
@@ -71,7 +71,7 @@ class DeleteOldEntriesCommandTest extends \PHPUnit\Framework\TestCase
         return $application->find('mailgun:delete-events');
     }
 
-    public function testDeleteOldEntries_WithDate()
+    public function testDeleteOldEntriesWithDate()
     {
         $application = new Application();
         $application->add(new DeleteOldEntriesCommand($this->mailgunServiceMock));
@@ -91,7 +91,7 @@ class DeleteOldEntriesCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertContains('of any type have been deleted (11).', $display);
     }
 
-    public function testDeleteOldEntries_WithDateAndType()
+    public function testDeleteOldEntriesWithDateAndType()
     {
         $application = new Application();
         $application->add(new DeleteOldEntriesCommand($this->mailgunServiceMock));
@@ -112,7 +112,7 @@ class DeleteOldEntriesCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testDeleteOldEntries_WithInvalidType()
+    public function testDeleteOldEntriesWithInvalidType()
     {
         $application = new Application();
         $application->add(new DeleteOldEntriesCommand($this->mailgunServiceMock));

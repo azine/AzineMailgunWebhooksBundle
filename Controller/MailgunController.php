@@ -70,7 +70,7 @@ class MailgunController extends AbstractController
             'search' => '',
             'recipient' => '',
             'orderBy' => 'timestamp',
-            'orderDirection' =>'desc',
+            'orderDirection' => 'desc',
         ));
 
         $page = $sessionParams['page'];
@@ -83,7 +83,7 @@ class MailgunController extends AbstractController
         $orderDirection = $sessionParams['orderDirection'];
 
         // update filter criteria from get-request
-        if($request->isMethod('GET')){
+        if ($request->isMethod('GET')) {
             $page = $request->get('page', $sessionParams['page']);
             $pageSize = $request->get('pageSize', $sessionParams['pageSize']);
             if ($sessionParams['pageSize'] != $pageSize) {
@@ -92,7 +92,7 @@ class MailgunController extends AbstractController
             $eventType = $request->get('eventType', 'all');
 
         // update filter criteria from post-request
-        } else if ($request->isMethod('POST') && is_array($request->get('filter'))){
+        } elseif ($request->isMethod('POST') && is_array($request->get('filter'))) {
             $filter = $request->get('filter');
             $eventType = $filter['eventType'];
             $domain = $filter['domain'];
@@ -101,7 +101,6 @@ class MailgunController extends AbstractController
             $orderBy = $filter['orderBy'];
             $orderDirection = $filter['orderDirection'];
         }
-
 
         // set params for filter-form
         $currentFilter = array(
@@ -112,10 +111,10 @@ class MailgunController extends AbstractController
                 'search' => $search,
                 'recipient' => $recipient,
                 'orderBy' => $orderBy,
-                'orderDirection' =>$orderDirection,
+                'orderDirection' => $orderDirection,
             );
         // store filter criteria back to session & to params
-        $request->getSession()->set('mailgunEventIndexParams',$currentFilter);
+        $request->getSession()->set('mailgunEventIndexParams', $currentFilter);
         $params['currentFilters'] = $currentFilter;
 
         $eventCount = $eventRepository->getEventCount($currentFilter);
@@ -195,9 +194,11 @@ class MailgunController extends AbstractController
      * @param Request $request
      * @param $page
      * @param $pageSize
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response|null
      */
-    public function messageSummaryIndexAction(Request $request, $page, $pageSize){
+    public function messageSummaryIndexAction(Request $request, $page, $pageSize)
+    {
         $params = array();
 
         $messageSummaryRepository = $this->getMessageSummaryRepository();
@@ -221,7 +222,7 @@ class MailgunController extends AbstractController
             'toAddress' => '',
             'fromAddress' => '',
             'orderBy' => 'sendDate',
-            'orderDirection' =>'desc',
+            'orderDirection' => 'desc',
         ));
 
         $page = $sessionParams['page'];
@@ -233,7 +234,7 @@ class MailgunController extends AbstractController
         $orderDirection = $sessionParams['orderDirection'];
 
         // update filter criteria from get-request
-        if($request->isMethod('GET')){
+        if ($request->isMethod('GET')) {
             $page = $request->get('page', $sessionParams['page']);
             $pageSize = $request->get('pageSize', $sessionParams['pageSize']);
             if ($sessionParams['pageSize'] != $pageSize) {
@@ -241,7 +242,7 @@ class MailgunController extends AbstractController
             }
 
             // update filter criteria from post-request
-        } else if ($request->isMethod('POST') && is_array($request->get('filter'))){
+        } elseif ($request->isMethod('POST') && is_array($request->get('filter'))) {
             $filter = $request->get('filter');
             $search = trim($filter['search']);
             $toAddress = trim($filter['toAddress']);
@@ -249,7 +250,6 @@ class MailgunController extends AbstractController
             $orderBy = $filter['orderBy'];
             $orderDirection = $filter['orderDirection'];
         }
-
 
         // set params for filter-form
         $currentFilter = array(
@@ -259,10 +259,10 @@ class MailgunController extends AbstractController
             'toAddress' => $toAddress,
             'fromAddress' => $fromAddress,
             'orderBy' => $orderBy,
-            'orderDirection' =>$orderDirection,
+            'orderDirection' => $orderDirection,
         );
         // store filter criteria back to session & to params
-        $request->getSession()->set('mailgunMessageIndexParams',$currentFilter);
+        $request->getSession()->set('mailgunMessageIndexParams', $currentFilter);
         $params['currentFilters'] = $currentFilter;
 
         $messageSummaryCount = $messageSummaryRepository->getMessageSummaryCount($currentFilter);
@@ -290,11 +290,10 @@ class MailgunController extends AbstractController
         );
 
         return $this->render('AzineMailgunWebhooksBundle::messageSummaryIndex.html.twig', $params);
-
     }
 
-
-    public function messageSummaryShowAction(Request $request, MailgunMessageSummary $messageSummary){
+    public function messageSummaryShowAction(Request $request, MailgunMessageSummary $messageSummary)
+    {
         $params = array('messageSummary' => $messageSummary);
         $params['emailWebViewRoute'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_ROUTE);
         $params['emailWebViewToken'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
@@ -327,12 +326,14 @@ class MailgunController extends AbstractController
         return $this->getDoctrine()->getManager()->getRepository(MailgunEvent::class);
     }
 
-    public function getMessageSummaryAction(Request $request){
-        $fromAddress = "";
-        $toAddress ="";
-        $sendTime = "";
-        $subject = "";
+    public function getMessageSummaryAction(Request $request)
+    {
+        $fromAddress = '';
+        $toAddress = '';
+        $sendTime = '';
+        $subject = '';
         $summary = $this->getMessageSummaryRepository()->findSummary($fromAddress, $toAddress, $sendTime, $subject);
+
         return new JsonResponse($summary);
     }
 }

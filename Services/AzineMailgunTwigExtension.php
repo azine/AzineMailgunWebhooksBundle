@@ -16,7 +16,7 @@ class AzineMailgunTwigExtension extends AbstractExtension
     public function getFilters()
     {
         return array(
-            'printArray' => new  \Twig_SimpleFilter('printArray', array($this, 'printArray'), array('is_safe' => array('html'))),
+            'printArray' => new \Twig_SimpleFilter('printArray', array($this, 'printArray'), array('is_safe' => array('html'))),
         );
     }
 

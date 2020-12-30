@@ -115,9 +115,9 @@ class CheckIpAddressIsBlacklistedCommand extends Command
         }
 
         if (HetrixtoolsServiceResponse::RESPONSE_STATUS_SUCCESS == $response->status) {
-            if ($response->blacklisted_count == 0) {
+            if (0 == $response->blacklisted_count) {
                 $output->write(self::IP_IS_NOT_BLACKLISTED." ($ipAddress)");
-            } else if($this->muteNotification($response)) {
+            } elseif ($this->muteNotification($response)) {
                 $output->write(self::BLACKLIST_REPORT_IS_SAME_AS_PREVIOUS." ($ipAddress)");
             } else {
                 try {
@@ -126,12 +126,12 @@ class CheckIpAddressIsBlacklistedCommand extends Command
                     if ($messagesSent > 0) {
                         $output->write(self::BLACKLIST_REPORT_WAS_SENT." ($ipAddress)");
                     }
-                    if($this->muteDays > 0) {
+                    if ($this->muteDays > 0) {
                         $blacklistResponseNotification = new HetrixToolsBlacklistResponseNotification();
                         $blacklistResponseNotification->setData($response);
                         $blacklistResponseNotification->setIp($ipAddress);
                         $blacklistResponseNotification->setDate($sendDateTime);
-                        $blacklistResponseNotification->setIgnoreUntil(new \DateTime("+" . $this->muteDays . " days"));
+                        $blacklistResponseNotification->setIgnoreUntil(new \DateTime('+'.$this->muteDays.' days'));
                         $manager = $this->managerRegistry->getManager();
                         $manager->persist($blacklistResponseNotification);
                         $manager->flush();
@@ -140,7 +140,7 @@ class CheckIpAddressIsBlacklistedCommand extends Command
                     $output->write($e->getMessage(), true);
                 }
             }
-        } else if (HetrixtoolsServiceResponse::RESPONSE_STATUS_ERROR == $response->status) {
+        } elseif (HetrixtoolsServiceResponse::RESPONSE_STATUS_ERROR == $response->status) {
             $output->write($response->error_message);
 
             if (null != $numberOfAttempts && $numberOfAttempts > 0 && HetrixtoolsServiceResponse::BLACKLIST_CHECK_IN_PROGRESS == $response->error_message) {
@@ -169,23 +169,24 @@ class CheckIpAddressIsBlacklistedCommand extends Command
         $process->start();
     }
 
-    private function muteNotification($response){
-        if($this->muteDays == 0){
+    private function muteNotification($response)
+    {
+        if (0 == $this->muteDays) {
             // don't mute if feature is disabled
             return false;
         }
 
-        $ip = substr($response->links['api_report_link'], strrpos($response->links['api_report_link'],"/", -3) + 1, -1);
+        $ip = substr($response->links['api_report_link'], strrpos($response->links['api_report_link'], '/', -3) + 1, -1);
         $responseRepository = $this->managerRegistry->getManager()->getRepository(HetrixToolsBlacklistResponseNotification::class);
         /** @var HetrixToolsBlacklistResponseNotification $lastNotifiedResponse */
         $lastNotifiedResponses = $responseRepository->findBy(array('ip' => $ip), array('ignoreUntil' => 'desc'));
 
-        if(sizeof($lastNotifiedResponses) == 0) {
+        if (0 == sizeof($lastNotifiedResponses)) {
             // don't mute if this is the first check for this ip
             return false;
         }
 
-        if($lastNotifiedResponses[0]->getIgnoreUntil() < new \DateTime()) {
+        if ($lastNotifiedResponses[0]->getIgnoreUntil() < new \DateTime()) {
             // don't mute if the last notification it too long ago
             return false;
         }

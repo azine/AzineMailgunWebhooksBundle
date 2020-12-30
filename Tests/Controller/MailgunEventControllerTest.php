@@ -17,27 +17,30 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class MailgunWebhookControllerTest extends WebTestCase
 {
     private $testStartTime;
+
     protected function setUp()
     {
         $this->testStartTime = new \DateTime();
     }
 
-    protected function tearDown(){
+    protected function tearDown()
+    {
         $manager = $this->getEntityManager();
-        $queryBuilder = $manager->getRepository(EmailTrafficStatistics::class)->createQueryBuilder("e");
+        $queryBuilder = $manager->getRepository(EmailTrafficStatistics::class)->createQueryBuilder('e');
         $ets = $queryBuilder->where('e.created >= :testStartTime')
             ->setParameter('testStartTime', $this->testStartTime)
             ->getQuery()->execute();
 
-        if($ets != null && sizeof($ets) > 0){
-            foreach ($ets as $next){
+        if (null != $ets && sizeof($ets) > 0) {
+            foreach ($ets as $next) {
                 $manager->remove($next);
             }
             $manager->flush();
         }
     }
 
-    public function testWebHookCreateAndEventDispatching_oldAPI(){
+    public function testWebHookCreateAndEventDispatchingOldAPI()
+    {
         $this->checkApplication();
 
         $validPostData = $this->getValidPostData(false);
@@ -45,8 +48,8 @@ class MailgunWebhookControllerTest extends WebTestCase
         $this->internalWebHookCreateAndEventDispatching($validPostData, $invalidPostData, false);
     }
 
-
-    public function testWebHookCreateAndEventDispatching_newAPI(){
+    public function testWebHookCreateAndEventDispatchingNewAPI()
+    {
         $this->checkApplication();
 
         $validPostData = $this->getValidPostData(true);
@@ -54,8 +57,8 @@ class MailgunWebhookControllerTest extends WebTestCase
         $this->internalWebHookCreateAndEventDispatching($validPostData, $invalidPostData, true);
     }
 
-    private function internalWebHookCreateAndEventDispatching($validPostData, $invalidPostData, $newApi){
-
+    private function internalWebHookCreateAndEventDispatching($validPostData, $invalidPostData, $newApi)
+    {
         $client = static::createClient();
         $client->request('GET', '/');
         $client->enableProfiler();
@@ -75,7 +78,7 @@ class MailgunWebhookControllerTest extends WebTestCase
 
         // post invalid data to the webhook-url and check the response & database
         $webhookdata = json_encode($invalidPostData);
-        if($newApi){
+        if ($newApi) {
             $crawler = $client->request('POST', $url, array(), $attachments, array(), $webhookdata);
         } else {
             $crawler = $client->request('POST', $url, $invalidPostData, $attachments);
@@ -87,7 +90,7 @@ class MailgunWebhookControllerTest extends WebTestCase
 
         // post valid data to the webhook-url and check the response
         $webhookdata = json_encode($validPostData);
-        if($newApi){
+        if ($newApi) {
             $crawler = $client->request('POST', $url, array(), $attachments, array(), $webhookdata);
         } else {
             $crawler = $client->request('POST', $url, $validPostData, $attachments);
@@ -96,10 +99,8 @@ class MailgunWebhookControllerTest extends WebTestCase
         $this->assertContains('Thanx, for the info.', $crawler->text(), 'Response expected.');
         $this->assertSame($count + 1, sizeof($eventReop->findAll()), 'One new db entry for the webhook expected!');
 
-
-
         // post valid data to the webhook-url and check the response
-        if($newApi){
+        if ($newApi) {
             $validPostData['event-data']['event'] = 'opened';
             $webhookdata = json_encode($validPostData);
             $crawler = $client->request('POST', $url, array(), $attachments, array(), $webhookdata);
@@ -112,11 +113,9 @@ class MailgunWebhookControllerTest extends WebTestCase
         }
         $this->assertSame(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata\n\n\n".$client->getResponse()->getContent());
         $this->assertContains('Thanx, for the info.', $crawler->text(), 'Response expected.');
-        
-
 
         // post a complaint event to check if mail is triggered.
-        if($newApi){
+        if ($newApi) {
             $validPostData['event-data']['event'] = 'complained';
             $webhookdata = json_encode($validPostData);
             $crawler = $client->request('POST', $url, array(), $attachments, array(), $webhookdata);
@@ -139,13 +138,14 @@ class MailgunWebhookControllerTest extends WebTestCase
     {
         $postData = TestHelper::getPostDataWithoutSignature($newApi);
 
-        $key = 'fake_api_key';//$this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
+        $key = 'fake_api_key'; //$this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
 
-        if($newApi) {
+        if ($newApi) {
             $postData['signature']['signature'] = hash_hmac('SHA256', $postData['signature']['timestamp'].$postData['signature']['token'], $key);
         } else {
             $postData['signature'] = hash_hmac('SHA256', $postData['timestamp'].$postData['token'], $key);
         }
+
         return $postData;
     }
 
@@ -153,7 +153,7 @@ class MailgunWebhookControllerTest extends WebTestCase
     {
         $postData = TestHelper::getPostDataWithoutSignature($newApi);
 
-        if($newApi) {
+        if ($newApi) {
             $postData['signature']['signature'] = 'invalid-signature';
         } else {
             $postData['signature'] = 'invalid-signature';
@@ -194,7 +194,7 @@ class MailgunWebhookControllerTest extends WebTestCase
         $eventId = substr($link->getUri(), $posOfIdStart, $posLastSlash - $posOfIdStart);
         $crawler = $client->click($link);
         $this->assertSame(200, $client->getResponse()->getStatusCode(), 'Status 200 expected.');
-        $this->assertSame($eventId, $crawler->filter('.mailgunEvent td')->eq(1)->html(), "Content should be the eventId ($eventId)" . $client->getResponse()->getContent());
+        $this->assertSame($eventId, $crawler->filter('.mailgunEvent td')->eq(1)->html(), "Content should be the eventId ($eventId)".$client->getResponse()->getContent());
 
         // delete the event from show-page
         $link = $crawler->selectLink('Delete')->link();

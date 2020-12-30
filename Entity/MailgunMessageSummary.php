@@ -3,7 +3,7 @@
 namespace Azine\MailgunWebhooksBundle\Entity;
 
 /**
- * MailgunMessageSummary
+ * MailgunMessageSummary.
  */
 class MailgunMessageSummary
 {
@@ -33,7 +33,7 @@ class MailgunMessageSummary
     private $lastOpened;
 
     /**
-     * @var integer
+     * @var int
      */
     private $openCount;
 
@@ -63,7 +63,7 @@ class MailgunMessageSummary
     private $events;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct($id, \DateTime $sendDate, $fromAddress, $toAddress, $subject, $senderIp)
     {
@@ -78,18 +78,19 @@ class MailgunMessageSummary
     }
 
     /**
-     * Append the latest event to the delivery status
+     * Append the latest event to the delivery status.
      *
      * @param $eventType
      */
-    public function updateDeliveryStatus($eventType){
-        if(stripos($this->deliveryStatus, $eventType) === false){
+    public function updateDeliveryStatus($eventType)
+    {
+        if (false === stripos($this->deliveryStatus, $eventType)) {
             $this->deliveryStatus = $this->deliveryStatus."$eventType, ";
         }
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return string
      */
@@ -99,7 +100,7 @@ class MailgunMessageSummary
     }
 
     /**
-     * Get fromAddress
+     * Get fromAddress.
      *
      * @return string
      */
@@ -109,7 +110,7 @@ class MailgunMessageSummary
     }
 
     /**
-     * Get toAddress
+     * Get toAddress.
      *
      * @return string
      */
@@ -119,7 +120,7 @@ class MailgunMessageSummary
     }
 
     /**
-     * Set firstOpened
+     * Set firstOpened.
      *
      * @param \DateTime $firstOpened
      *
@@ -133,7 +134,7 @@ class MailgunMessageSummary
     }
 
     /**
-     * Get firstOpened
+     * Get firstOpened.
      *
      * @return \DateTime
      */
@@ -143,7 +144,7 @@ class MailgunMessageSummary
     }
 
     /**
-     * Set lastOpened
+     * Set lastOpened.
      *
      * @param \DateTime $lastOpened
      *
@@ -157,7 +158,7 @@ class MailgunMessageSummary
     }
 
     /**
-     * Get lastOpened
+     * Get lastOpened.
      *
      * @return \DateTime
      */
@@ -167,20 +168,21 @@ class MailgunMessageSummary
     }
 
     /**
-     * Increase openCount by 1
+     * Increase openCount by 1.
      *
      * @return MailgunMessageSummary
      */
     public function increaseOpenCount()
     {
-        $this->openCount++;
+        ++$this->openCount;
+
         return $this;
     }
 
     /**
-     * Get openCount
+     * Get openCount.
      *
-     * @return integer
+     * @return int
      */
     public function getOpenCount()
     {
@@ -188,7 +190,7 @@ class MailgunMessageSummary
     }
 
     /**
-     * Get sendDate
+     * Get sendDate.
      *
      * @return \DateTime
      */
@@ -198,17 +200,17 @@ class MailgunMessageSummary
     }
 
     /**
-     * Get deliveryStatus
+     * Get deliveryStatus.
      *
      * @return string
      */
     public function getDeliveryStatus()
     {
-        return trim($this->deliveryStatus, ", ");
+        return trim($this->deliveryStatus, ', ');
     }
 
     /**
-     * Get senderIp
+     * Get senderIp.
      *
      * @return string
      */
@@ -218,7 +220,7 @@ class MailgunMessageSummary
     }
 
     /**
-     * Set senderIp
+     * Set senderIp.
      *
      * @return MailgunMessageSummary
      */
@@ -228,8 +230,9 @@ class MailgunMessageSummary
 
         return $this;
     }
+
     /**
-     * Get events
+     * Get events.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -239,7 +242,7 @@ class MailgunMessageSummary
     }
 
     /**
-     * Get subject
+     * Get subject.
      *
      * @return string
      */
@@ -249,38 +252,40 @@ class MailgunMessageSummary
     }
 
     /**
-     * Set subject
+     * Set subject.
      *
      * @return MailgunMessageSummary
      */
     public function setSubject($subject)
     {
         $this->subject = $subject;
+
         return $this;
     }
 
     /**
-     * Set fromAddress
+     * Set fromAddress.
      *
      * @return MailgunMessageSummary
      */
     public function setFromAddress($fromAddress)
     {
         $this->fromAddress = $fromAddress;
+
         return $this;
     }
 
     /**
-     * Set toAddress
+     * Set toAddress.
      *
      * @return MailgunMessageSummary
      */
     public function appendToToAddress($toAddress)
     {
-        if(stripos($this->toAddress, $toAddress) === false) {
-            $this->toAddress = trim($this->toAddress . ", " . $toAddress, ", ");
+        if (false === stripos($this->toAddress, $toAddress)) {
+            $this->toAddress = trim($this->toAddress.', '.$toAddress, ', ');
         }
+
         return $this;
     }
-
 }

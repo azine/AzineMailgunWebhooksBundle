@@ -21,7 +21,6 @@
         "symfony/symfony": "^3.3|^4.0",
         "twig/twig": ">=1.34",
         "twig/extensions": "~1.0",
-        "twig/twig": ">=1.34",
         "doctrine/orm": "~2.2,>=2.2.3"
     },
     "require-dev": {
