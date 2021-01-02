@@ -5,9 +5,9 @@ php:
   - 7.2
 
 env:
-  - SYMFONY_VERSION=lts:^3
-  - SYMFONY_VERSION=lts:^4
-  - SYMFONY_VERSION=flex:^1
+    - SYMFONY_VERSION=lts:^3
+    - SYMFONY_VERSION=lts:^4
+    - SYMFONY_VERSION=flex:^1
 
 matrix:
   fast_finish: true
@@ -20,6 +20,8 @@ matrix:
         - SYMFONY_VERSION=lts:^3
         - cs_fixer=cs_dry_run
 
+  allow_failures:
+    - env: SYMFONY_VERSION=lts:^4
 
 sudo: false
 
@@ -35,8 +37,8 @@ before_script:
   - phpenv config-add travis.php.ini
   - travis_wait composer require symfony/${SYMFONY_VERSION} --prefer-source --no-update -v
   - mv ~/xdebug.ini /home/travis/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
+  - if [ "$dependencies" != "lowest" ]; then travis_wait composer update --prefer-source; fi;
   - if [ "$dependencies" = "lowest" ]; then travis_wait composer update --prefer-lowest --prefer-stable -n; fi;
-  - if [ "$dependencies" != "lowest" ]; then travis_wait composer install --prefer-source; fi;
 
 script:
   - travis_wait vendor/phpunit/phpunit/phpunit --coverage-text --coverage-clover=coverage.clover Tests/
