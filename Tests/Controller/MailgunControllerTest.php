@@ -27,7 +27,7 @@ class MailgunControllerTest extends WebTestCase
         $unsubscribed = sizeof($eventReop->findBy(array('event' => 'unsubscribed')));
 
         // view the list of events
-        $listUrl = substr($this->getRouter()->generate('mailgun_overview', array('_locale' => 'en')), 13);
+        $listUrl = $this->makeAbsolutPath($this->getRouter()->generate('mailgun_overview', array('_locale' => 'en')), 'en');
         $crawler = $this->loginUserIfRequired($client, $listUrl);
         $pageSize = 10;
         $this->assertSame($pageSize + 1, $crawler->filter('.eventsTable tr')->count(), "$pageSize Mailgun events (+1 header row) expected on this page ($listUrl)!");
@@ -129,5 +129,14 @@ class MailgunControllerTest extends WebTestCase
 
             return;
         }
+    }
+    
+    private function makeAbsolutPath($url, $locale){
+        $indexOfLocale = strpos($url, "/$locale/");
+        if($indexOfLocale!==false){
+            return substr($url, $indexOfLocale);
+        }
+        $indexOfLocalhost = strpos($url, "localhost");
+        return substr($url, $indexOfLocalhost + 9);
     }
 }

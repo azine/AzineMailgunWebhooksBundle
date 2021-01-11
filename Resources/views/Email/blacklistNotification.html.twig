@@ -1,4 +1,97 @@
-<h3>{{ 'notification.blacklist_received.%ipAddress%' | trans({"%ipAddress%" : ipAddress, '%sendDateTime%': sendDateTime}) }}</h3>
+{% extends 'AzineMailgunWebhooksBundle:Email:email.base.layout.html.twig' %}
+{% block cssstyles %}
+    <style type="text/css">
+    table {
+    border-collapse:collapse;
+    width:100%;
+    margin-bottom:1rem;
+    border-radius:0
+    }
+    thead,
+    tbody,
+    tfoot {
+    border:1px solid #f1f1f1;
+    background-color:#fefefe
+    }
+    caption {
+    padding:.5rem .625rem .625rem;
+    font-weight:bold
+    }
+    thead {
+    background:#f8f8f8;
+    color:#0a0a0a
+    }
+    tfoot {
+    background:#f1f1f1;
+    color:#0a0a0a
+    }
+    thead tr,
+    tfoot tr {
+    background:transparent
+    }
+    thead th,
+    thead td,
+    tfoot th,
+    tfoot td {
+    padding:.5rem .625rem .625rem;
+    font-weight:bold;
+    text-align:left
+    }
+    tbody th,
+    tbody td {
+    padding:.5rem .625rem .625rem
+    }
+    tbody tr:nth-child(even) {
+    border-bottom:0;
+    background-color:#f1f1f1
+    }
+    table.unstriped tbody {
+    background-color:#fefefe
+    }
+    table.unstriped tbody tr {
+    border-bottom:0;
+    border-bottom:1px solid #f1f1f1;
+    background-color:#fefefe
+    }
+    table.stack thead {
+    display:none
+    }
+    table.stack tfoot {
+    display:none
+    }
+    table.stack tr,
+    table.stack th,
+    table.stack td {
+    display:block
+    }
+    table.stack td {
+    border-top:0
+    }
+    table.scroll {
+    display:block;
+    width:100%;
+    overflow-x:auto
+    }
+    table.hover thead tr:hover {
+    background-color:#f3f3f3
+    }
+    table.hover tfoot tr:hover {
+    background-color:#ececec
+    }
+    table.hover tbody tr:hover {
+    background-color:#f9f9f9
+    }
+    table.hover:not(.unstriped) tr:nth-of-type(even):hover {
+    background-color:#ececec
+    }
+    .table-scroll {
+    overflow-x:auto
+    }
+    </style>
+{% endblock cssstyles %}
+{% block content %}
+
+<h3>{{ 'notification.blacklist_received.%ipAddress%' | trans({"%ipAddress%" : ipAddress}) }}</h3>
 
 
 {% for blacklist in response.blacklisted_on %}
@@ -13,6 +106,7 @@
 <h3>{{ 'notification.blacklist_report_links' | trans }}</h3>
 {% for key,value in response.links %}
 
-    <p>{{ key }} : {{ value }}</p>
+    <p>{{ key }} : <a href="{{ value }}" target="{{ key }}">{{ value }}</a> </p>
 
 {% endfor %}
+{% endblock content %}

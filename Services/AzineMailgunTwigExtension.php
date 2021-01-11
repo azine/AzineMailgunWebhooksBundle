@@ -21,13 +21,43 @@ class AzineMailgunTwigExtension extends AbstractExtension
     }
 
     /**
-     * @param array $var
-     *
-     * @return mixed
+     * @param $vars
+     * @param false $allDetails
+     * @param string $indent
+     * @param int $maxRecursionDepth
+     * @return string
      */
-    public static function printArray(array $var)
+    public static function printArray($vars, $allDetails = false, $indent = '', $maxRecursionDepth = 3)
     {
-        return var_dump($var);
+        $output = '';
+        $defaultIndent = '    ';
+        if(is_object($vars)) {
+            $className = get_class($vars);
+            $vars = (array) $vars;
+            $object = array();
+            foreach ($vars as $key => $value){
+                $key = substr($key, strlen($className)+2);
+                $object[$key] = $value;
+            }
+            $vars = array($className => $object);
+        }
+        ksort($vars);
+        foreach ($vars as $key => $value) {
+            if ($maxRecursionDepth > 0 && $allDetails && (is_array($value) || is_object($value)) && $value !== $vars) { // avoid infinite recursion
+                $value = "\n".self::printArray((array) $value, $allDetails, $indent.$defaultIndent, $maxRecursionDepth - 1);
+            } else {
+                if (is_array($value)) {
+                    $value = 'array('.sizeof($value).')';
+                } elseif (is_object($value)) {
+                    $value = 'object('.get_class($value).')';
+                } else {
+                    $value = htmlentities($value);
+                }
+            }
+            $output .= $indent."$key: $value\n";
+        }
+
+        return $output;
     }
 
     /**

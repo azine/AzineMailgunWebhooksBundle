@@ -108,7 +108,7 @@ class MailgunMessageSummaryRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if (array_key_exists('search', $criteria) && '' != $criteria['search']) {
-            $qb->andWhere('(m.toAddress like :search OR m.subject like :search OR m.fromAddress like :search )')
+            $qb->andWhere('(m.toAddress like :search OR m.subject like :search OR m.fromAddress like :search OR m.deliveryStatus like :search)')
                 ->setParameter('search', '%'.$criteria['search'].'%');
         }
 
@@ -162,19 +162,21 @@ class MailgunMessageSummaryRepository extends \Doctrine\ORM\EntityRepository
             $messageSummary->increaseOpenCount();
         }
 
-        foreach ($event->getMessageHeaders() as $header) {
-            if ('X-Mailgun-Sending-Ip' == $header[0]) {
-                $messageSummary->setSenderIp($header[1]);
-            } elseif ('Subject' == $header[0]) {
-                $messageSummary->setSubject($header[1]);
-            } elseif ('Sender' == $header[0]) {
-                $messageSummary->setFromAddress($header[1]);
-            } elseif ('To' == $header[0]) {
-                $messageSummary->appendToToAddress($header[1]);
-            } elseif ('Cc' == $header[0]) {
-                $messageSummary->appendToToAddress($header[1]);
-            } elseif ('Bcc' == $header[0]) {
-                $messageSummary->appendToToAddress($header[1]);
+        if($messageSummary->getSenderIp() == 'unknown' && $event->getIp() != null){
+            $messageSummary->setSenderIp($event->getIp());
+        }
+
+        foreach ($event->getMessageHeaders() as $key => $value) {
+            if ('subject' == strtolower($key)) {
+                $messageSummary->setSubject($value);
+            } elseif ('sender' == strtolower($key)) {
+                $messageSummary->setFromAddress($value);
+            } elseif ('to' == strtolower($key)) {
+                $messageSummary->appendToToAddress($value);
+            } elseif ('cc' == strtolower($key)) {
+                $messageSummary->appendToToAddress($value);
+            } elseif ('bcc' == strtolower($key)) {
+                $messageSummary->appendToToAddress($value);
             }
         }
 

@@ -64,7 +64,7 @@ class MailgunWebhookControllerTest extends WebTestCase
         $client->enableProfiler();
 
         // get webhook url
-        $url = $this->getRouter()->generate('mailgunevent_webhook', array('_locale', 'en'), UrlGeneratorInterface::ABSOLUTE_URL);
+        $url = $this->makeAbsolutPath($this->getRouter()->generate('mailgunevent_webhook', array('_locale', 'en'), UrlGeneratorInterface::ABSOLUTE_URL), 'en');
 
         $manager = $this->getEntityManager();
         $eventReop = $manager->getRepository("Azine\MailgunWebhooksBundle\Entity\MailgunEvent");
@@ -183,7 +183,7 @@ class MailgunWebhookControllerTest extends WebTestCase
 
         // view the list of events
         $pageSize = 25;
-        $listUrl = substr($this->getRouter()->generate('mailgunevent_list', array('_locale' => 'en', 'page' => 1, 'pageSize' => $pageSize, 'clear' => true)), 13);
+        $listUrl = $this->makeAbsolutPath($this->getRouter()->generate('mailgunevent_list', array('_locale' => 'en', 'page' => 1, 'pageSize' => $pageSize, 'clear' => true)), 'en');
         $crawler = $this->loginUserIfRequired($client, $listUrl);
         $this->assertSame($pageSize + 1, $crawler->filter('.eventsTable tr')->count(), "$pageSize Mailgun events (+1 header row) expected on this page ($listUrl)!");
 
@@ -217,11 +217,11 @@ class MailgunWebhookControllerTest extends WebTestCase
 
         // show/delete inexistent log entry
         $inexistentEventId = md5('123invalid');
-        $url = substr($this->getRouter()->generate('mailgunevent_delete', array('_locale' => 'en', 'eventId' => $inexistentEventId)), 13);
+        $url = $this->makeAbsolutPath($this->getRouter()->generate('mailgunevent_delete', array('_locale' => 'en', 'eventId' => $inexistentEventId)), 'en');
         $client->request('GET', $url);
         $this->assertSame(404, $client->getResponse()->getStatusCode(), "404 expected for invalid eventId ($inexistentEventId).");
 
-        $url = substr($this->getRouter()->generate('mailgunevent_show', array('_locale' => 'en', 'id' => $inexistentEventId)), 13);
+        $url = $this->makeAbsolutPath($this->getRouter()->generate('mailgunevent_show', array('_locale' => 'en', 'id' => $inexistentEventId)), 'en');
         $client->request('GET', $url);
         $this->assertSame(404, $client->getResponse()->getStatusCode(), '404 expected.');
 
@@ -264,7 +264,7 @@ class MailgunWebhookControllerTest extends WebTestCase
         $events = $eventReop->findAll();
         $pageSize = count($events);
 
-        $listUrl = substr($this->getRouter()->generate('mailgunevent_list', array('_locale' => 'en', 'page' => 1, 'pageSize' => $pageSize, 'clear' => true)), 13);
+        $listUrl = $this->makeAbsolutPath($this->getRouter()->generate('mailgunevent_list', array('_locale' => 'en', 'page' => 1, 'pageSize' => $pageSize, 'clear' => true)), 'en');
         $crawler = $this->loginUserIfRequired($client, $listUrl);
 
         $this->assertSame(1, $crawler->filter("ul:contains('$webViewTokenName')")->count(), 'There should be events with the webView headers in the list');
@@ -371,5 +371,14 @@ class MailgunWebhookControllerTest extends WebTestCase
 
             return;
         }
+    }
+
+    private function makeAbsolutPath($url, $locale){
+        $indexOfLocale = strpos($url, "/$locale/");
+        if($indexOfLocale!==false){
+            return substr($url, $indexOfLocale);
+        }
+        $indexOfLocalhost = strpos($url, "localhost");
+        return substr($url, $indexOfLocalhost + 9);
     }
 }

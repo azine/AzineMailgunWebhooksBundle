@@ -94,6 +94,7 @@ class MailgunWebhookController extends AbstractController
             if (array_key_exists('envelope', $eventData)) {
                 $envelope = $eventData['envelope'];
                 $sender = $envelope['sender'];
+                $event->setSender($sender);
                 $event->setDomain(substr($sender, strrpos($sender, '@') + 1));
 
                 // ip

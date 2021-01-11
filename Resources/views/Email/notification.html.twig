@@ -1,10 +1,13 @@
+{% extends 'AzineMailgunWebhooksBundle:Email:email.base.layout.html.twig' %}
+{% block content %}
 <h3>{{ 'notification.spam_complaint_received' | trans }}</h3>
 
 {{ 'notification.mailgun_spam_received' | trans }}: <a href="{{ url('mailgunevent_show', {'id': eventId}) }}">{{ url('mailgunevent_show', {'id': eventId}) }}</a>. <br/>
 
-{{ 'notification.spam_complaint_received' | trans }}:
+<h3>{{ 'notification.spam_complaint_received.support.ticket' | trans }}</h3>
 {% if ticketId is defined and ticketId != '' %}
-<a href="https://app.mailgun.com/app/support/{{ ticketId }}">https://app.mailgun.com/app/support/{{ ticketId }}</a>
+    {{ 'notification.spam_complaint_received.update.support.ticket' | trans }}: <a href="https://app.mailgun.com/app/support/view/{{ ticketId }}">https://app.mailgun.com/app/support/view/{{ ticketId }}</a>
 {% else %}
-<a href="https://app.mailgun.com/app/support/new">https://app.mailgun.com/app/support/new</a>
+    {{ 'notification.spam_complaint_received.create.support.ticket' | trans }}: <a href="https://app.mailgun.com/app/support/new">https://app.mailgun.com/app/support/create</a>
 {% endif %}
+{% endblock content %}

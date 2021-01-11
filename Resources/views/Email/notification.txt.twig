@@ -1,0 +1,15 @@
+{% extends 'AzineMailgunWebhooksBundle:Email:email.base.layout.txt.twig' %}
+{% block content %}
+{{ 'notification.spam_complaint_received' | trans }}
+---------------------------------------------------
+
+{{ 'notification.mailgun_spam_received' | trans }}: {{ url('mailgunevent_show', {'id': eventId}) }}
+
+{{ 'notification.spam_complaint_received.support.ticket' | trans }}
+---------------------------------------------------
+{% if ticketId is defined and ticketId != '' %}
+{{ 'notification.spam_complaint_received.update.support.ticket' | trans }}: https://app.mailgun.com/app/support/view/{{ ticketId }}
+{% else %}
+{{ 'notification.spam_complaint_received.create.support.ticket' | trans }}: https://app.mailgun.com/app/support/create
+{% endif %}
+{% endblock content %}

@@ -40,7 +40,7 @@ services:
             - '@mailer'
             - '@twig'
             - '@translator'
-            - '%mailer_user%'
+            - '%azine_mailgun_webhooks_no_reply_email%'
             - '%azine_mailgun_webhooks_spam_alerts_ticket_id%'
             - '%azine_mailgun_webhooks_spam_alerts_ticket_subject%'
             - '%azine_mailgun_webhooks_spam_alerts_ticket_message%'

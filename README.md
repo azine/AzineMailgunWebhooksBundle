@@ -86,6 +86,18 @@ azine_mailgun_webhooks:
 
     # Your public-api-key for mailgun => see https://mailgun.com/cp
     public_api_key:       ''
+
+    # Your domain as configured on mailgun.com
+    email_domain:     ''
+    
+    # in case you also use the AzineEmailBundle, you can configure what to link to the web-view
+    web_view_token: "azineemailwebviewtoken"
+    
+    # reply-email-address for delivery-error-notifications  
+    no_reply_email: "no-reply@mubuproperties.co.uk"
+    
+    # reply-name for delivery-error-notifications
+    no_reply_name:  "MuBu Properties Mailer"
     
     spam_alerts:
     

@@ -31,6 +31,8 @@ class AzineMailgunWebhooksExtension extends Extension
     const BLACKLIST_CHECK_IP_REPEAT_NOTIFICATION_DURATION = 'repeat_notification_after_days';
     const WEB_VIEW_ROUTE = 'web_view_route';
     const WEB_VIEW_TOKEN = 'web_view_token';
+    const NO_REPLY_EMAIL = 'no_reply_email';
+    const NO_REPLY_NAME = 'no_reply_name';
 
     /**
      * {@inheritdoc}
@@ -49,6 +51,7 @@ class AzineMailgunWebhooksExtension extends Extension
         }
 
         $container->setParameter(self::PREFIX.'_'.self::EMAIL_DOMAIN, $config[self::EMAIL_DOMAIN]);
+        $container->setParameter(self::PREFIX.'_'.self::NO_REPLY_EMAIL, array($config[self::NO_REPLY_EMAIL] => $config[self::NO_REPLY_NAME]));
 
         $container->setParameter(self::PREFIX.'_'.self::SPAM_ALERTS_PREFIX.'_'.self::SEND_ENABLED, $config[self::SPAM_ALERTS_PREFIX][self::SEND_ENABLED]);
         $container->setParameter(self::PREFIX.'_'.self::SPAM_ALERTS_PREFIX.'_'.self::SEND_INTERVAL, $config[self::SPAM_ALERTS_PREFIX][self::SEND_INTERVAL] * 60);

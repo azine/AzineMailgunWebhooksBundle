@@ -3,6 +3,7 @@
 namespace Azine\MailgunWebhooksBundle\Services;
 
 use Azine\MailgunWebhooksBundle\Entity\EmailTrafficStatistics;
+use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -25,7 +26,7 @@ class AzineMailgunMailerService
     private $translator;
 
     /**
-     * @var string
+     * @var mixed either string email or array(email => displayName)
      */
     private $fromEmail;
 
@@ -62,16 +63,16 @@ class AzineMailgunMailerService
     /**
      * AzineMailgunMailerService constructor.
      *
-     * @param \Swift_Mailer       $mailer
-     * @param \Twig_Environment   $twig
+     * @param \Swift_Mailer $mailer
+     * @param \Twig_Environment $twig
      * @param TranslatorInterface $translator
-     * @param string              $fromEmail
-     * @param string              $ticketId
-     * @param string              $ticketSubject
-     * @param string              $ticketMessage
-     * @param string              $spamAlertsRecipientEmail
-     * @param ManagerRegistry     $managerRegistry
-     * @param int                 $sendNotificationsInterval in Seconds
+     * @param string $fromEmail
+     * @param string $ticketId
+     * @param string $ticketSubject
+     * @param string $ticketMessage
+     * @param string $spamAlertsRecipientEmail
+     * @param ManagerRegistry $managerRegistry
+     * @param int $sendNotificationsInterval in Seconds
      */
     public function __construct(
         \Swift_Mailer $mailer,
@@ -84,7 +85,8 @@ class AzineMailgunMailerService
         $spamAlertsRecipientEmail,
         ManagerRegistry $managerRegistry,
         $sendNotificationsInterval
-    ) {
+    )
+    {
         $this->mailer = $mailer;
         $this->twig = $twig;
         $this->translator = $translator;
@@ -100,24 +102,27 @@ class AzineMailgunMailerService
     /**
      * @param string $eventId
      *
+     * @return int $messagesSent
      * @throws \Exception
      *
-     * @return int $messagesSent
      */
     public function sendSpamComplaintNotification($eventId)
     {
         $messagesSent = 0;
         $failedRecipients = array();
 
+        $templateVars = array();
+        $templateVars['eventId'] = $eventId;
+        $templateVars['ticketId'] = $this->ticketId;
+
+
         /** @var \Swift_Message $message */
         $message = $this->mailer->createMessage();
         $message->setTo($this->spamAlertsRecipientEmail)
             ->setFrom($this->fromEmail)
             ->setSubject($this->translator->trans('notification.spam_complaint_received'))
-            ->setBody(
-                $this->twig->render('@AzineMailgunWebhooks/Email/notification.html.twig', array('eventId' => $eventId, 'ticketId' => $this->ticketId)),
-                'text/html'
-            );
+            ->setBody($this->twig->render('@AzineMailgunWebhooks/Email/notification.html.twig', $templateVars), 'text/html')
+            ->setBody($this->twig->render('@AzineMailgunWebhooks/Email/notification.txt.twig', $templateVars), 'text/plain');
 
         $lastSpamReport = $this->managerRegistry->getManager()->getRepository(EmailTrafficStatistics::class)
             ->getLastByAction(EmailTrafficStatistics::SPAM_ALERT_SENT);
@@ -151,7 +156,7 @@ class AzineMailgunMailerService
 
     /**
      * @param HetrixtoolsServiceResponse $response
-     * @param string                     $ipAddress
+     * @param string $ipAddress
      * @param \DateTime
      *
      * @return int
@@ -160,20 +165,21 @@ class AzineMailgunMailerService
      */
     public function sendBlacklistNotification(HetrixtoolsServiceResponse $response, $ipAddress, \DateTime $sendDateTime)
     {
-        $sendDateTime = $sendDateTime->format('Y-m-d H:i:s');
+        $sendDateTime = (new \DateTime())->format('Y-m-d H:i:s');
         $failedRecipients = array();
+
+        $templateVars = array();
+        $templateVars['response'] = $response;
+        $templateVars['ipAddress'] = $ipAddress;
+        $templateVars['sendDateTime'] = $sendDateTime;
 
         /** @var \Swift_Message $message */
         $message = $this->mailer->createMessage();
         $message->setTo($this->spamAlertsRecipientEmail)
             ->setFrom($this->fromEmail)
             ->setSubject($this->translator->trans('notification.blacklist_received'))
-            ->setBody(
-                $this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.html.twig', array('response' => $response, 'ipAddress' => $ipAddress, 'sendDateTime' => $sendDateTime)),
-                'text/html'
-            )
-            ->addPart($this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.txt.twig', array('response' => $response, 'ipAddress' => $ipAddress, 'sendDateTime' => $sendDateTime),
-                'text/plain'));
+            ->setBody($this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.html.twig', $templateVars), 'text/html')
+            ->addPart($this->twig->render('@AzineMailgunWebhooks/Email/blacklistNotification.txt.twig', $templateVars), 'text/plain');
 
         $messagesSent = $this->mailer->send($message, $failedRecipients);
 
@@ -183,4 +189,45 @@ class AzineMailgunMailerService
 
         return $messagesSent;
     }
+
+    public function sendErrorNotification(MailgunEvent $event) {
+        $sendDateTime = (new \DateTime())->format('Y-m-d H:i:s');
+        $originalSender = $this->extractValidEmail($event->getEventSummary()->getFromAddress());
+        $eventRecipient = $this->extractValidEmail($event->getRecipient());
+
+        $templateVars = array();
+        $templateVars['mailgunEvent'] = $event;
+        $templateVars['mailgunMessageSummary'] = $event->getEventSummary();
+        $templateVars['recipient'] = array('displayName' => mailparse_rfc822_parse_addresses($event->getEventSummary()->getFromAddress())[0]['display']);
+
+        /** @var \Swift_Message $message */
+        $message = $this->mailer->createMessage();
+        $message->setTo($originalSender)
+            ->setFrom($this->fromEmail)
+            ->setSubject($this->translator->trans('notification.email.delivery.to.%originalRecipient%.failed', ['%originalRecipient%' => $event->getRecipient()]))
+            ->setBody($this->twig->render('@AzineMailgunWebhooks/Email/deliveryErrorNotification.html.twig', $templateVars), 'text/html')
+            ->addPart($this->twig->render('@AzineMailgunWebhooks/Email/deliveryErrorNotification.txt.twig', $templateVars), 'text/plain');
+
+        $messagesSent = $this->mailer->send($message, $failedRecipients);
+
+        if (0 == $messagesSent && !empty($failedRecipients)) {
+            throw new \Exception('Tried to send notification about email delivery error but no messages were sent');
+        }
+
+        return $messagesSent;
+    }
+
+    /**
+     * @param $address
+     * @return string RFC 2822, 3.6.2. compliant email address-array array('receiver@domain.org', 'other@domain.org' => 'A name')
+     */
+    private function extractValidEmail($address){
+        $addressParts = mailparse_rfc822_parse_addresses($address);
+        $emails = array();
+        foreach ($addressParts as $next){
+            $emails[$next['address']] = $next['display'];
+        }
+        return $emails;
+    }
+
 }

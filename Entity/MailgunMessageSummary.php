@@ -270,8 +270,7 @@ class MailgunMessageSummary
      */
     public function setFromAddress($fromAddress)
     {
-        $this->fromAddress = $fromAddress;
-
+        $this->fromAddress = mailparse_rfc822_parse_addresses($fromAddress)[0]['address'];
         return $this;
     }
 
@@ -282,8 +281,12 @@ class MailgunMessageSummary
      */
     public function appendToToAddress($toAddress)
     {
-        if (false === stripos($this->toAddress, $toAddress)) {
-            $this->toAddress = trim($this->toAddress.', '.$toAddress, ', ');
+        $emailDetails = mailparse_rfc822_parse_addresses($toAddress);
+        foreach ($emailDetails as $nextEmailDetail) {
+            $email = $nextEmailDetail['address'];
+            if (false === stripos($this->toAddress, $email)) {
+                $this->toAddress = trim($this->toAddress.', '.$email, ', ');
+            }
         }
 
         return $this;

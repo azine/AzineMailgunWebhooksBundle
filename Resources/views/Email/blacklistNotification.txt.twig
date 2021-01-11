@@ -1,12 +1,18 @@
-{{ 'notification.blacklist_received.%ipAddress%' | trans({"%ipAddress%" : ipAddress, '%sendDateTime%': sendDateTime}) }}
+{% extends 'AzineMailgunWebhooksBundle:Email:email.base.layout.txt.twig' %}
+{% block content %}
 
+{{ 'notification.blacklist_received.%ipAddress%' | trans({"%ipAddress%" : ipAddress}) }}
+===================================
 {% for blacklist in response.blacklisted_on %}{% for val in blacklist %}
 
     {{ val }}
 {% endfor %}{% endfor %}
 
 {{ 'notification.blacklist_report_links' | trans }}
+===================================
 {% for key,value in response.links %}
 
     {{ key }} : {{ value }}
 {% endfor %}
+
+{% endblock content %}

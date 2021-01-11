@@ -1,0 +1,18 @@
+{% extends 'AzineMailgunWebhooksBundle:Email:email.base.layout.txt.twig' %}
+{% block content %}
+
+{{ 'delivery.error.notification.received.title' | trans }}
+=============================================================
+
+
+{{ 'delivery.error.notification.mail.with.%subject%.sent.to.%recipient%.failed' | trans({'%subject%' : mailgunMessageSummary.subject, '%recipient%' : mailgunMessageSummary.toAddress}) }}
+
+{{ 'delivery.error.notification.mail.sent.from.%ipAddress%.at.%sendDate%'| trans({"%ipAddress%" : mailgunMessageSummary.senderIp, '%sendDate%': mailgunMessageSummary.sendDate | date }) }}
+
+{{ 'delivery.error.notification.error.reason' | trans }}: {{ mailgunEvent.reason }}
+
+{{ 'delivery.error.notification.error.description' | trans }}: {{ mailgunEvent.description }}
+
+{{ 'delivery.error.notification.link.to.messageSummay' | trans }}: {{ url('mailgun_message_summary', {'id' : mailgunMessageSummary.id }) }}
+
+{% endblock content %}
