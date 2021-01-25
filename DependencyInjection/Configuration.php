@@ -25,7 +25,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode(AzineMailgunWebhooksExtension::API_KEY)->isRequired()->cannotBeEmpty()->info('Your api-key for mailgun => see https://mailgun.com/cp')->end()
                 ->scalarNode(AzineMailgunWebhooksExtension::PUBLIC_API_KEY)->defaultValue('')->info('Your public-api-key for mailgun => see https://mailgun.com/cp')->end()
-                ->scalarNode(AzineMailgunWebhooksExtension::EMAIL_DOMAIN)->defaultValue('')->info('Your email domain configured on Mailgun')->end()
+                ->scalarNode(AzineMailgunWebhooksExtension::EMAIL_DOMAIN)->defaultValue('example.com')->info('Your email domain configured on Mailgun')->end()
                 ->scalarNode(AzineMailgunWebhooksExtension::NO_REPLY_EMAIL)->info('The mail-address to use when sending out delivery error notifications etc.')->end()
                 ->scalarNode(AzineMailgunWebhooksExtension::NO_REPLY_NAME)->info('The name to use when sending out delivery error notifications etc.')->end()
                 ->scalarNode(AzineMailgunWebhooksExtension::WEB_VIEW_ROUTE)->defaultValue('azine_admin_email_dashboard')->info('Route name to use to generate a WebView link in the Mailgun Event List.')->end()

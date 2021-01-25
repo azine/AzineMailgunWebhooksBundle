@@ -51,7 +51,15 @@ class AzineMailgunWebhooksExtension extends Extension
         }
 
         $container->setParameter(self::PREFIX.'_'.self::EMAIL_DOMAIN, $config[self::EMAIL_DOMAIN]);
-        $container->setParameter(self::PREFIX.'_'.self::NO_REPLY_EMAIL, array($config[self::NO_REPLY_EMAIL] => $config[self::NO_REPLY_NAME]));
+        if (array_key_exists(self::NO_REPLY_EMAIL, $config)) {
+            if (array_key_exists(self::NO_REPLY_NAME, $config)) {
+                $container->setParameter(self::PREFIX . '_' . self::NO_REPLY_EMAIL, array($config[self::NO_REPLY_EMAIL] => $config[self::NO_REPLY_NAME]));
+            } else {
+                $container->setParameter(self::PREFIX . '_' . self::NO_REPLY_EMAIL, $config[self::NO_REPLY_EMAIL]);
+            }
+        } else {
+            $container->setParameter(self::PREFIX . '_' . self::NO_REPLY_EMAIL, 'no-reply@'.$config[self::EMAIL_DOMAIN]);
+        }
 
         $container->setParameter(self::PREFIX.'_'.self::SPAM_ALERTS_PREFIX.'_'.self::SEND_ENABLED, $config[self::SPAM_ALERTS_PREFIX][self::SEND_ENABLED]);
         $container->setParameter(self::PREFIX.'_'.self::SPAM_ALERTS_PREFIX.'_'.self::SEND_INTERVAL, $config[self::SPAM_ALERTS_PREFIX][self::SEND_INTERVAL] * 60);
