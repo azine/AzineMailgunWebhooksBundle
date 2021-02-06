@@ -138,17 +138,31 @@ class MailgunEventRepository extends EntityRepository
     public function getRecipients()
     {
         $q = $this->getEntityManager()->createQueryBuilder()
-            ->select('e.recipient as recipient')
+            ->select('e.recipient as address')
             ->from($this->getEntityName(), 'e')
             ->distinct()
             ->orderBy('e.recipient ', 'asc')
             ->getQuery();
+        $result = $this->processEmailLists($q->execute());
 
+        return $result;
+    }
+
+    /**
+     * @param $emailLists array of array['address']
+     * @return array of unique email addresses
+     */
+    private function processEmailLists($emailLists){
         $result = array();
-        foreach ($q->execute() as $next) {
-            $result[] = $next['recipient'];
+        foreach ($emailLists as $next) {
+            foreach (mailparse_rfc822_parse_addresses($next['address']) as $recipient ){
+                $email = strtolower($recipient['address']);
+                if(array_search($email,$result) === false){
+                    $result[] = $email;
+                }
+            }
         }
-
+        sort($result);
         return $result;
     }
 

@@ -36,16 +36,13 @@ class MailgunMessageSummaryRepository extends \Doctrine\ORM\EntityRepository
     public function getRecipients()
     {
         $q = $this->getEntityManager()->createQueryBuilder()
-            ->select('m.toAddress as recipient')
+            ->select('m.toAddress as address')
             ->from($this->getEntityName(), 'm')
             ->distinct()
             ->orderBy('m.toAddress ', 'asc')
             ->getQuery();
 
-        $result = array();
-        foreach ($q->execute() as $next) {
-            $result[] = $next['recipient'];
-        }
+        $result = $this->processEmailLists($q->execute());
 
         return $result;
     }
@@ -58,17 +55,32 @@ class MailgunMessageSummaryRepository extends \Doctrine\ORM\EntityRepository
     public function getSenders()
     {
         $q = $this->getEntityManager()->createQueryBuilder()
-            ->select('m.fromAddress as sender')
+            ->select('m.fromAddress as address')
             ->from($this->getEntityName(), 'm')
             ->distinct()
             ->orderBy('m.fromAddress ', 'asc')
             ->getQuery();
 
-        $result = array();
-        foreach ($q->execute() as $next) {
-            $result[] = $next['sender'];
-        }
+        $result = $this->processEmailLists($q->execute());
 
+        return $result;
+    }
+
+    /**
+     * @param $emailLists array of array['address']
+     * @return array of unique email addresses
+     */
+    private function processEmailLists($emailLists){
+        $result = array();
+        foreach ($emailLists as $next) {
+            foreach (mailparse_rfc822_parse_addresses($next['address']) as $recipient ){
+                $email = strtolower($recipient['address']);
+                if(array_search($email,$result) === false){
+                    $result[] = $email;
+                }
+            }
+        }
+        sort($result);
         return $result;
     }
 
