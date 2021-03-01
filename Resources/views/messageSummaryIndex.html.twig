@@ -93,12 +93,12 @@
 				</td>
 				<td>
 					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
-						{{ summary.firstOpened | date("Y-m-d H:i:m") }}<br/>
+						{{ summary.firstOpened is empty ? "" : summary.firstOpened | date("Y-m-d H:i:m") }}<br/>
 					</a>
 				</td>
 				<td>
 					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
-						{{ summary.lastOpened | date("Y-m-d H:i:m") }}<br/>
+						{{ summary.lastOpened is empty ? "" : summary.lastOpened | date("Y-m-d H:i:m") }}<br/>
 						Opened {{ summary.openCount }} times
 					</a>
 				</td>
