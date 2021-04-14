@@ -11,6 +11,7 @@ Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary:
         fromAddress:
             type: string
             length: 190
+            nullable: true
         toAddress:
             type: text
         firstOpened:
