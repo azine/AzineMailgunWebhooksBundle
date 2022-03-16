@@ -138,7 +138,7 @@ class MailgunWebhookControllerTest extends WebTestCase
     {
         $postData = TestHelper::getPostDataWithoutSignature($newApi);
 
-        $key = 'fake_api_key'; //$this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
+        $key = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
 
         if ($newApi) {
             $postData['signature']['signature'] = hash_hmac('SHA256', $postData['signature']['timestamp'].$postData['signature']['token'], $key);
@@ -378,7 +378,8 @@ class MailgunWebhookControllerTest extends WebTestCase
         if($indexOfLocale!==false){
             return substr($url, $indexOfLocale);
         }
-        $indexOfLocalhost = strpos($url, "localhost");
-        return substr($url, $indexOfLocalhost + 9);
+        $hostStartIndex = strpos($url, "http") !== false ? strpos($url, "//") + 2 : 0;
+        $appEndIndex = strpos($url, ".php/", $hostStartIndex ) + 4;
+        return substr($url, $appEndIndex);
     }
 }
