@@ -96,8 +96,7 @@ class CheckIpAddressIsBlacklistedCommand extends Command
 
         if (isset($ipAddressData['ip'])) {
             $ipAddress = $ipAddressData['ip'];
-            $sendDateTime = new \DateTime();
-            $sendDateTime->setTimestamp($ipAddressData['timestamp']);
+            $sendDateTime = new \DateTime('@'.$ipAddressData['timestamp']);
         }
         $numberOfAttempts = $input->getArgument('numberOfAttempts');
 
