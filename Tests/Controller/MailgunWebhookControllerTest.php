@@ -60,6 +60,7 @@ class MailgunWebhookControllerTest extends WebTestCase
     private function internalWebHookCreateAndEventDispatching($validPostData, $invalidPostData, $newApi)
     {
         $client = static::createClient();
+        $client->followRedirects();
         $client->request('GET', '/');
         $client->enableProfiler();
 
