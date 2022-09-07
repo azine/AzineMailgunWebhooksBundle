@@ -192,6 +192,10 @@ class MailgunMessageSummaryRepository extends \Doctrine\ORM\EntityRepository
             }
         }
 
+        if($event->getRecipient() != null){
+            $messageSummary->appendToToAddress($event->getRecipient());
+        }
+
         $manager = $this->getEntityManager();
         $manager->persist($messageSummary);
 
