@@ -148,7 +148,7 @@
             </tr>
             <tr>
                 <td>Timestamp</td>
-                <td>{{ entity.timestamp }}</td>
+                <td>{{ entity.timestamp | date("Y-m-d H:i:m", false) }} UTC</td>
             </tr>
             <tr>
                 <td>Signature</td>

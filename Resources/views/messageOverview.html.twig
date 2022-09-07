@@ -88,13 +88,13 @@
 				<td>
 					<a href="{{ path('mailgunevent_show', { 'id': eventEntry.id }) }}">
 						{{ eventEntry.event }}<br />
-						{{ eventEntry.dateTime | date("Y-m-d H:i:m") }}
+						{{ eventEntry.dateTime | date("Y-m-d H:i:m", false) }} UTC
 					</a>
 					<br />
 					<a class="deleteLink" href="{{ path('mailgunevent_delete', {'eventId' : eventEntry.id }) }}"
 					   eventId="{{ eventEntry.id }}"
 					   eventType="{{ eventEntry.event }}"
-					   eventTime="{{ eventEntry.dateTime | date("Y-m-d H:i:m") }}"
+					   eventTime="{{ eventEntry.dateTime | date("Y-m-d H:i:m") }} UTC"
 					   eventRecipient="{{ eventEntry.recipient }}"
 					>delete</a>
 				</td>

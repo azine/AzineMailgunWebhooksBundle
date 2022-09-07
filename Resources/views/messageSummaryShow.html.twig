@@ -14,10 +14,10 @@
 		<tr><th>Subject</th><td>{{ messageSummary.subject }}</td></tr>
 		<tr><th>From</th><td>{{ messageSummary.fromAddress }}</td></tr>
 		<tr><th>To</th><td>{{ messageSummary.toAddress }}</td></tr>
-		<tr><th>Sent</th><td>{{ messageSummary.sendDate | date("Y-m-d H:i:m") }}</td></tr>
+		<tr><th>Sent</th><td>{{ messageSummary.sendDate | date("Y-m-d H:i:m", false) }} UTC</td></tr>
 		<tr><th>Opened</th><td>
-				{%  if messageSummary.firstOpened %}First: {{ messageSummary.firstOpened | date("Y-m-d H:i:m")  }}<br/>{% endif %}
-				{%  if messageSummary.lastOpened %}Last: {{ messageSummary.lastOpened | date("Y-m-d H:i:m") }}<br/>{% endif %}
+				{%  if messageSummary.firstOpened %}First: {{ messageSummary.firstOpened | date("Y-m-d H:i:m")  }} UTC<br/>{% endif %}
+				{%  if messageSummary.lastOpened %}Last: {{ messageSummary.lastOpened | date("Y-m-d H:i:m") }} UTC<br/>{% endif %}
 				Opened {{ messageSummary.openCount }} times
 			</td></tr>
 	</table>

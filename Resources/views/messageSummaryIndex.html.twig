@@ -65,10 +65,10 @@
 			<th>Sender</th>
 			<th>Recipient</th>
 			<th>Subject</th>
+			<th>Sent Date</th>
 			<th>First Opened</th>
 			<th>Last Opened<br/>
 				(Opened Count)</th>
-			<th>Sent Date</th>
 			<th>Delivery Status</th>
 			<th>Sender IP</th>
 		</tr>
@@ -93,18 +93,18 @@
 				</td>
 				<td>
 					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
-						{{ summary.firstOpened is empty ? "" : summary.firstOpened | date("Y-m-d H:i:m") }}<br/>
+						{{ summary.sendDate | date("Y-m-d H:i:m") }} UTC
 					</a>
 				</td>
 				<td>
 					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
-						{{ summary.lastOpened is empty ? "" : summary.lastOpened | date("Y-m-d H:i:m") }}<br/>
+						{{ summary.firstOpened is empty ? "" : summary.firstOpened | date("Y-m-d H:i:m") }} UTC<br/>
+					</a>
+				</td>
+				<td>
+					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
+						{{ summary.lastOpened is empty ? "" : summary.lastOpened | date("Y-m-d H:i:m") }} UTC<br/>
 						Opened {{ summary.openCount }} times
-					</a>
-				</td>
-				<td>
-					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
-						{{ summary.sendDate | date("Y-m-d H:i:m") }}
 					</a>
 				</td>
 				<td>
