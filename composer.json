@@ -19,19 +19,19 @@
     "require": {
         "php": ">=7.0",
         "ext-mailparse": "*",
-        "symfony/framework-bundle": "^4.0|^5.4",
-        "symfony/config": "^4.0|^5.4",
-        "symfony/console": "^4.0|^5.4",
-        "symfony/dependency-injection": "^4.0|^5.4",
-        "symfony/dom-crawler": "^4.0|^5.4",
-        "symfony/event-dispatcher": "^4.0|^5.4",
-        "symfony/http-foundation": "^4.0|^5.4",
-        "symfony/http-kernel": ">=4.4.50|^5.4",
-        "symfony/yaml": "^4.0|^5.4",
-        "symfony/process": "^4.0|^5.4",
-        "symfony/routing": "^4.0|^5.4",
-        "symfony/translation": "^4.0|^5.4",
-        "twig/twig": ">=1.34",
+        "symfony/framework-bundle": "^4.0|^5.4|^6.3",
+        "symfony/config": "^4.0|^5.4|^6.3",
+        "symfony/console": "^4.0|^5.4|^6.3",
+        "symfony/dependency-injection": "^4.0|^5.4|^6.3",
+        "symfony/dom-crawler": "^4.0|^5.4|^6.3",
+        "symfony/event-dispatcher": "^4.0|^5.4|^6.3",
+        "symfony/http-foundation": "^4.0|^5.4|^6.3",
+        "symfony/http-kernel": ">=4.4.50,^4.0|^5.4",
+        "symfony/yaml": "^4.0|^5.4|^6.3",
+        "symfony/process": "^4.0|^5.4|^6.3",
+        "symfony/routing": "^4.0|^5.4|^6.3",
+        "symfony/translation": "^4.0|^5.4|^6.3",
+        "twig/twig": ">=1.34,^1.0|^2.0|^3.0 ",
         "doctrine/orm": "~2.2,>=2.2.3",
         "doctrine/common": "~2.2,>=2.2.3"
     },
@@ -41,6 +41,5 @@
     "autoload": {
         "psr-4": { "Azine\\MailgunWebhooksBundle\\": "src/" }
     },
-    "minimum-stability": "dev",
-    "target-dir": "Azine/MailgunWebhooksBundle"
+    "minimum-stability": "dev"
 }
