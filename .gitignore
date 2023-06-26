@@ -4,3 +4,5 @@
 composer.lock
 vendor/
 .idea
+/bin/composer.phar
+/.phpunit.result.cache
