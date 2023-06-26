@@ -75,7 +75,7 @@ class AzineMailgunWebhooksExtension extends Extension
         $container->setParameter(self::PREFIX.'_'.self::WEB_VIEW_ROUTE, $config[self::WEB_VIEW_ROUTE]);
         $container->setParameter(self::PREFIX.'_'.self::WEB_VIEW_TOKEN, $config[self::WEB_VIEW_TOKEN]);
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
     }
 }

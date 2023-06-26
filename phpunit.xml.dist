@@ -25,11 +25,11 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true"
                    addUncoveredFilesFromWhitelist="false">
-            <directory suffix=".php">./Command</directory>
-            <directory suffix=".php">./Controller</directory>
-            <directory suffix=".php">./DependencyInjection</directory>
-            <directory suffix=".php">./Entity</directory>
-            <directory suffix=".php">./Services</directory>
+            <directory suffix=".php">src/Command</directory>
+            <directory suffix=".php">src/Controller</directory>
+            <directory suffix=".php">src/DependencyInjection</directory>
+            <directory suffix=".php">src/Entity</directory>
+            <directory suffix=".php">src/Services</directory>
             <!-- <exclude>
             </exclude> -->
         </whitelist>

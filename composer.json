@@ -7,7 +7,7 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Azine IT Services AG",
+            "name": "Azine IT src/Services AG",
             "email": "github@azine-it.ch"
         }
     ],
@@ -39,7 +39,7 @@
         "phpunit/phpunit":  "^6.0|^7.0|^8.0"
     },
     "autoload": {
-        "psr-0": { "Azine\\MailgunWebhooksBundle": "" }
+        "psr-4": { "Azine\\MailgunWebhooksBundle\\": "src/" }
     },
     "minimum-stability": "dev",
     "target-dir": "Azine/MailgunWebhooksBundle"
