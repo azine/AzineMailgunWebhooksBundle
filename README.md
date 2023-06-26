@@ -1,7 +1,7 @@
 AzineMailgunWebhooksBundle
 ==========================
 
-Symfony2 Bundle to capture event data from the Mailgun.com transactional mail service.
+Symfony Bundle to capture event data from the Mailgun.com transactional mail service.
 
 If you are using a free mailgun.com account (less than 10'000 email per month), then
 mailgun.com deletes log-entries about events after about 48 hours. 

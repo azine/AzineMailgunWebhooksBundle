@@ -1,6 +1,6 @@
 #Upgrade instructions
 
-To upgrade from 2.0.0 to master, you'll need to migrate the your database structure & content.
+To upgrade from 2.0.0 to master, you'll need to migrate your database structure & content.
 
 You can create an auto-generated migration file with the command:
 

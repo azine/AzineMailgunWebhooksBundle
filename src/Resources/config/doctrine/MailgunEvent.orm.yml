@@ -17,9 +17,9 @@ Azine\MailgunWebhooksBundle\Entity\MailgunEvent:
         sender:          {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: Sender of the message
         errorCode:       {type: string,     length: 255, nullable: true,    column: error_code          } # Mailgun Field-Description: SMTP bounce error code in form (X.X.X).
         ip:              {type: string,     length:  15, nullable: true                                 } # Mailgun Field-Description: IP address the event originated from.
-        country:         {type: string,     length:   2, nullable: true                                 } # Mailgun Field-Description: Two-letter country code (as specified by ISO3166) the event came from or ‘unknown’ if it couldn’t be determined.
+        country:         {type: string,     length:   7, nullable: true                                 } # Mailgun Field-Description: Two-letter country code (as specified by ISO3166) the event came from or ‘unknown’ if it couldn’t be determined.
         city:            {type: string,     length: 255, nullable: true                                 } # Mailgun Field-Description: Name of the city the event came from or ‘unknown’ if it couldn’t be determined.
-        region:          {type: string,     length:   4, nullable: true                                 } # Mailgun Field-Description: Two-letter or two-digit region code or ‘unknown’ if it couldn’t be determined.
+        region:          {type: string,     length:  31, nullable: true                                 } # Mailgun Field-Description: Two-letter or two-digit region code or ‘unknown’ if it couldn’t be determined.
         campaignId:      {type: string,     length: 255, nullable: true,    column: campaign_id         } # Mailgun Field-Description: The id of campaign triggering the event.
         campaignName:    {type: string,     length: 255, nullable: true,    column: campaign_name       } # Mailgun Field-Description: The name of campaign triggering the event.
         clientName:      {type: string,     length: 255, nullable: true,    column: client_name         } # Mailgun Field-Description: Name of the client sofware, e.g. ‘Thunderbird’, ‘Chrome’, ‘Firefox’.
