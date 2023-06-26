@@ -10,7 +10,7 @@ class DeleteOldEntriesCommandTest extends \PHPUnit\Framework\TestCase
 {
     private $mailgunServiceMock;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->mailgunServiceMock = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\AzineMailgunService")
             ->disableOriginalConstructor()

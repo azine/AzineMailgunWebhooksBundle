@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  apache_mailgunwebhooksbundle:
+    build: .
+    container_name: apache_mailgunwebhooksbundle
+    volumes:
+      - ./:/var/www/html
+      - ~/.ssh:/root/ssh-config-from-host:ro
+      - ~/.gitconfig:/root/.gitconfig:ro
+      - ~/.composer/:/root/.config/composer/
+    command: ./docker-image-start-script.sh
+
+volumes:
+  root_home:

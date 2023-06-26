@@ -18,12 +18,12 @@ class MailgunWebhookControllerTest extends WebTestCase
 {
     private $testStartTime;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->testStartTime = new \DateTime();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $manager = $this->getEntityManager();
         $queryBuilder = $manager->getRepository(EmailTrafficStatistics::class)->createQueryBuilder('e');

@@ -47,7 +47,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         ),
     );
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->hetrixtoolsRespose = new HetrixtoolsServiceResponse();
         $this->hetrixtoolsRespose->status = HetrixtoolsServiceResponse::RESPONSE_STATUS_SUCCESS;
