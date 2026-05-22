@@ -99,3 +99,16 @@ class Version20201228090100 extends AbstractMigration implements ContainerAwareI
 }
 
 ```
+
+
+## Upgrade to PHP 8.5 / Symfony 7.4
+
+### Breaking changes
+- Minimum PHP is now `^8.5`.
+- Symfony components are now `^7.4`.
+- Doctrine Common persistence namespace is no longer supported; use `Doctrine\Persistence\ManagerRegistry`.
+- PHPUnit is now `^12.0` for local/CI test runs.
+
+### CI changes
+- Travis CI has been removed in favor of GitHub Actions.
+- The test workflow now runs on every `push` and `pull_request`.

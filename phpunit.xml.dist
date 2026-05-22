@@ -1,37 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.0/phpunit.xsd"
          bootstrap="Tests/bootstrap.php"
-	>
-
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         beStrictAboutTestsThatDoNotTestAnything="false"
+         failOnRisky="true"
+         failOnWarning="true">
     <php>
-        <env name="KERNEL_CLASS" value="AppKernel" />
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
+        <env name="KERNEL_CLASS" value="AppKernel"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
     </php>
 
     <testsuites>
-        <testsuite name="Azine/MailgunWebhooksBundle Test Suite">
-            <directory>./Tests</directory>
+        <testsuite name="AzineMailgunWebhooksBundle Test Suite">
+            <directory>Tests</directory>
         </testsuite>
     </testsuites>
 
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true"
-                   addUncoveredFilesFromWhitelist="false">
+    <source>
+        <include>
             <directory suffix=".php">src/Command</directory>
             <directory suffix=".php">src/Controller</directory>
             <directory suffix=".php">src/DependencyInjection</directory>
             <directory suffix=".php">src/Entity</directory>
             <directory suffix=".php">src/Services</directory>
-            <!-- <exclude>
-            </exclude> -->
-        </whitelist>
-    </filter>
+        </include>
+    </source>
 </phpunit>

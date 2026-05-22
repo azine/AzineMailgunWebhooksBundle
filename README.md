@@ -16,6 +16,23 @@ delete them when you don't need them anymore (or when you need to save some disk
 
 
 ## Features
+
+## Requirements
+
+- PHP `^8.5`
+- Symfony components `^7.4`
+- Doctrine ORM `^3.3` and Doctrine Persistence `^4.1`
+- Twig `^3.0`
+
+## Run tests locally
+
+```bash
+composer update
+vendor/bin/phpunit
+```
+
+CI runs the same checks on every push and pull request via GitHub Actions (`.github/workflows/ci.yml`).
+
 - capture all data that mailgun.com can post via the "webhooks" provided by mailgun.com => http://documentation.mailgun.com/user_manual.html#webhooks
 - display lists of event entries with search and filter functionality
 - show all details of a singel event

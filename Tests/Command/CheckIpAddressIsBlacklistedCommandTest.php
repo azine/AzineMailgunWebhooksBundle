@@ -72,19 +72,19 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
             'api_blacklist_check_link' => 'https://api.example.com/v2/token/blacklist-check/ipv4/198.51.100.42/',
         );
 
-        $this->entityRepository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')->disableOriginalConstructor()->setMethods(array('getLastKnownSenderIpData', 'findBy'))->getMock();
+        $this->entityRepository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')->disableOriginalConstructor()->onlyMethods(array('getLastKnownSenderIpData', 'findBy'))->getMock();
         $this->entityRepository->expects($this->any())->method('getLastKnownSenderIpData')->will($this->returnValue(array('ip' => '198.51.100.42', 'timestamp' => '1552971782')));
 
-        $this->entityManager = $this->getMockBuilder(EntityRepository::class)->disableOriginalConstructor()->setMethods(array('getRepository'))->getMock();
+        $this->entityManager = $this->getMockBuilder(EntityRepository::class)->disableOriginalConstructor()->onlyMethods(array('getRepository'))->getMock();
         $this->entityManager->expects($this->any())->method('getRepository')->will($this->returnValue($this->entityRepository));
 
-        $this->registry = $this->getMockBuilder("Doctrine\Common\Persistence\ManagerRegistry")->disableOriginalConstructor()->getMock();
+        $this->registry = $this->getMockBuilder("Doctrine\Persistence\ManagerRegistry")->disableOriginalConstructor()->getMock();
         $this->registry->expects($this->any())->method('getManager')->will($this->returnValue($this->entityManager));
 
-        $this->hetrixtoolsService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService")->disableOriginalConstructor()->setMethods(array('checkIpAddressInBlacklist'))->getMock();
+        $this->hetrixtoolsService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService")->disableOriginalConstructor()->onlyMethods(array('checkIpAddressInBlacklist'))->getMock();
 
-        $this->azineMailgunService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService")->disableOriginalConstructor()->setMethods(array('sendBlacklistNotification'))->getMock();
-        $this->azineMailgunService->expects($this->any())->method('sendBlacklistNotification')->will($this->returnvalue(1));
+        $this->azineMailgunService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService")->disableOriginalConstructor()->onlyMethods(array('sendBlacklistNotification'))->getMock();
+        $this->azineMailgunService->expects($this->any())->method('sendBlacklistNotification')->will($this->returnValue(1));
 
         $this->blackListNotificationRepository = $this->getMockBuilder(HetrixToolsBlacklistResponseNotificationRepository::class)->disableOriginalConstructor()->getMock();
     }

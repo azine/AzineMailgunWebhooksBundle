@@ -81,7 +81,7 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit\Framework\TestCase
 
         $hetrixtoolsService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService")
             ->setConstructorArgs(array(new NullLogger(), $apiKey, $url))
-            ->setMethods(array('executeCheck'))->getMock();
+            ->onlyMethods(array('executeCheck'))->getMock();
         $hetrixtoolsService->expects($this->once())->method('executeCheck')->will($this->returnValue($this->responseJson));
 
         /** @var AzineMailgunHetrixtoolsService $hetrixtoolsService */
