@@ -99,3 +99,23 @@ class Version20201228090100 extends AbstractMigration implements ContainerAwareI
 }
 
 ```
+
+
+## Upgrade to PHP 8.5 and Symfony 7.4
+
+### Breaking/runtime requirements
+- Minimum PHP version is now **8.5**.
+- Symfony components now require **7.4**.
+- Twig is constrained to **3.x**.
+- Doctrine ORM is constrained to **3.3+** and legacy `doctrine/common` was removed.
+
+### Testing/tooling changes
+- PHPUnit configuration was migrated to a modern schema (`phpunit.xml.dist`).
+- GitHub Actions is configured to run PHPUnit on every push/pull request for:
+  - preferred stable dependencies
+  - lowest supported dependencies
+
+### Manual follow-up checklist for consumers
+1. Run `composer update` in your host application.
+2. Review Doctrine ORM 3 migration notes if your application depends on removed Doctrine APIs.
+3. Run your application test suite and smoke-test webhook ingestion paths.

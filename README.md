@@ -15,6 +15,32 @@ This bundle captures this data. You can search for, filter and display log-entri
 delete them when you don't need them anymore (or when you need to save some disk-space).  
 
 
+
+## Requirements (current)
+- PHP **8.5+**
+- Symfony **7.4** components
+- Twig **3.x**
+- Doctrine ORM **3.3+**
+- PHP extension: **mailparse**
+
+## Local test execution
+1. Install dependencies:
+   ```bash
+   composer update
+   ```
+2. Run tests:
+   ```bash
+   vendor/bin/phpunit -c phpunit.xml.dist
+   ```
+3. (Optional) Validate Composer metadata:
+   ```bash
+   composer validate --strict
+   ```
+
+## CI
+GitHub Actions is the primary CI and runs on every push and pull request via `.github/workflows/phpunit.yml`.
+It tests stable and lowest dependency installs on PHP 8.5.
+
 ## Features
 - capture all data that mailgun.com can post via the "webhooks" provided by mailgun.com => http://documentation.mailgun.com/user_manual.html#webhooks
 - display lists of event entries with search and filter functionality
