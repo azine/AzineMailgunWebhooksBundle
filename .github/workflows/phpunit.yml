@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    name: PHPUnit (PHP ${{ matrix.php-version }}, deps: ${{ matrix.dependency-mode }})
+    name: "PHPUnit (PHP ${{ matrix.php-version }}, deps: ${{ matrix.dependency-mode }})"
     runs-on: ubuntu-latest
 
     strategy:
