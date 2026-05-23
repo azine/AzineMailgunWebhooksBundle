@@ -139,7 +139,7 @@ class MailgunWebhookControllerTest extends WebTestCase
     {
         $postData = TestHelper::getPostDataWithoutSignature($newApi);
 
-        $key = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
+        $key = $this->getAppContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
 
         if ($newApi) {
             $postData['signature']['signature'] = hash_hmac('SHA256', $postData['signature']['timestamp'].$postData['signature']['token'], $key);
@@ -174,7 +174,7 @@ class MailgunWebhookControllerTest extends WebTestCase
         $manager = $this->getEntityManager();
         $eventReop = $manager->getRepository("Azine\MailgunWebhooksBundle\Entity\MailgunEvent");
 
-        $apiKey = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
+        $apiKey = $this->getAppContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
 
         // make sure there is plenty of data in the application to be able to verify paging
         if (sizeof($eventReop->findAll()) < 102) {
@@ -245,7 +245,7 @@ class MailgunWebhookControllerTest extends WebTestCase
         $manager = $this->getEntityManager();
         $eventReop = $manager->getRepository("Azine\MailgunWebhooksBundle\Entity\MailgunEvent");
 
-        $apiKey = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
+        $apiKey = $this->getAppContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
 
         // make sure there is data in the application
         $events = $eventReop->findAll();
@@ -254,7 +254,7 @@ class MailgunWebhookControllerTest extends WebTestCase
             $events = $eventReop->findAll();
         }
 
-        $webViewTokenName = $this->getContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
+        $webViewTokenName = $this->getAppContainer()->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
 
         $testTokenValue = 'testValue';
         $messageHeader = array($webViewTokenName => $testTokenValue);
@@ -292,12 +292,12 @@ class MailgunWebhookControllerTest extends WebTestCase
         // if redirected to a login-page, login as admin-user
         if (5 == $crawler->filter('input')->count() && 1 == $crawler->filter('#username')->count() && 1 == $crawler->filter('#password')->count()) {
             // set the password of the admin
-            $userProvider = $this->getContainer()->get('fos_user.user_provider.username_email');
+            $userProvider = $this->getAppContainer()->get('fos_user.user_provider.username_email');
             $user = $userProvider->loadUserByUsername($username);
             $user->setPlainPassword($password);
             $user->addRole('ROLE_ADMIN');
 
-            $userManager = $this->getContainer()->get('fos_user.user_manager');
+            $userManager = $this->getAppContainer()->get('fos_user.user_manager');
             $userManager->updateUser($user);
 
             $crawler = $crawler->filter("input[type='submit']");
@@ -325,7 +325,7 @@ class MailgunWebhookControllerTest extends WebTestCase
      *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface
      */
-    private function getContainer()
+    private function getAppContainer()
     {
         if (null == $this->appContainer) {
             $this->appContainer = static::$kernel->getContainer();
@@ -339,7 +339,7 @@ class MailgunWebhookControllerTest extends WebTestCase
      */
     private function getRouter()
     {
-        return $this->getContainer()->get('router');
+        return $this->getAppContainer()->get('router');
     }
 
     /**
@@ -347,7 +347,7 @@ class MailgunWebhookControllerTest extends WebTestCase
      */
     private function getEntityManager()
     {
-        return $this->getContainer()->get('doctrine.orm.entity_manager');
+        return $this->getAppContainer()->get('doctrine.orm.entity_manager');
     }
 
     /**
@@ -355,7 +355,7 @@ class MailgunWebhookControllerTest extends WebTestCase
      */
     private function getEventDispatcher()
     {
-        return $this->getContainer()->get('event_dispatcher');
+        return $this->getAppContainer()->get('event_dispatcher');
     }
 
     /**

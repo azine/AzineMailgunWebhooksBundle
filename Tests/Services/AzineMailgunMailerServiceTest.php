@@ -20,18 +20,18 @@ class AzineMailgunMailerServiceTest extends WebTestCase
         $client->followRedirects();
 
         /** @var \Swift_Mailer $mailer */
-        $mailer = $this->getContainer()->get('mailer');
+        $mailer = $this->getAppContainer()->get('mailer');
         /** @var \Twig_Environment $twig */
-        $twig = $this->getContainer()->get('twig');
+        $twig = $this->getAppContainer()->get('twig');
         /** @var Translator $translator */
-        $translator = $this->getContainer()->get('translator');
+        $translator = $this->getAppContainer()->get('translator');
         $fromEmail = 'sender@mail.com';
         $ticketId = '123';
         $ticketSubject = 'test';
         $ticketMessage = 'testMessage';
         $spamAlertsRecipientEmail = 'reciever@mail.com';
         /** @var ManagerRegistry $managerRegistry */
-        $managerRegistry = $this->getContainer()->get('doctrine');
+        $managerRegistry = $this->getAppContainer()->get('doctrine');
         $sendIntervalSeconds = 1;
 
         $mailgunMailerService = new AzineMailgunMailerService($mailer, $twig, $translator,$fromEmail, $ticketId,
@@ -65,7 +65,7 @@ class AzineMailgunMailerServiceTest extends WebTestCase
      *
      * @return \Symfony\Component\DependencyInjection\ContainerInterface
      */
-    private function getContainer()
+    private function getAppContainer()
     {
         if (null == $this->appContainer) {
             $this->appContainer = static::$kernel->getContainer();
