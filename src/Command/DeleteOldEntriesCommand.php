@@ -30,7 +30,7 @@ class DeleteOldEntriesCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName(static::$defaultName)
             ->setDescription('Delete old mailgun events from the database')
@@ -66,22 +66,22 @@ EOF
             ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $type = $input->getArgument('type');
         $ageLimit = $input->getArgument('date');
 
         if (null == $type || '' == $type) {
-            $output->write('deleting entries of any type.', true);
+            $output->writeln('deleting entries of any type.');
             $typeDesc = 'any type';
-        } elseif (array_search($type, array('accepted', 'rejected', 'delivered', 'failed', 'opened', 'clicked', 'unsubscribed', 'complained', 'stored', 'dropped'))) {
+        } elseif (in_array($type, array('accepted', 'rejected', 'delivered', 'failed', 'opened', 'clicked', 'unsubscribed', 'complained', 'stored', 'dropped'), true)) {
             $typeDesc = "type '$type'";
         } else {
             throw new InvalidArgumentException("Unknown type: $type");
         }
 
         if (null == $ageLimit || '' == $ageLimit) {
-            $output->write("using default age-limit of '60 days ago'.", true);
+            $output->writeln("using default age-limit of '60 days ago'.");
             $ageLimit = '60 days ago';
         }
 
@@ -89,7 +89,7 @@ EOF
 
         $result = $this->mailgunService->removeEvents($type, $date);
 
-        $output->write('All MailgunEvents (& their CustomVariables & Attachments) older than '.$date->format('Y-m-d H:i:s')." of $typeDesc have been deleted ($result).", true);
+        $output->writeln('All MailgunEvents (& their CustomVariables & Attachments) older than '.$date->format('Y-m-d H:i:s')." of $typeDesc have been deleted ($result).");
 
         return 0;
     }

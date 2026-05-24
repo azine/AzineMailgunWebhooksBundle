@@ -72,18 +72,18 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
             'api_blacklist_check_link' => 'https://api.example.com/v2/token/blacklist-check/ipv4/198.51.100.42/',
         );
 
-        $this->entityRepository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')->disableOriginalConstructor()->setMethods(array('getLastKnownSenderIpData', 'findBy'))->getMock();
+        $this->entityRepository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')->disableOriginalConstructor()->onlyMethods(array('getLastKnownSenderIpData', 'findBy'))->getMock();
         $this->entityRepository->expects($this->any())->method('getLastKnownSenderIpData')->will($this->returnValue(array('ip' => '198.51.100.42', 'timestamp' => '1552971782')));
 
-        $this->entityManager = $this->getMockBuilder(EntityRepository::class)->disableOriginalConstructor()->setMethods(array('getRepository'))->getMock();
+        $this->entityManager = $this->getMockBuilder(EntityRepository::class)->disableOriginalConstructor()->onlyMethods(array('getRepository'))->getMock();
         $this->entityManager->expects($this->any())->method('getRepository')->will($this->returnValue($this->entityRepository));
 
-        $this->registry = $this->getMockBuilder("Doctrine\Common\Persistence\ManagerRegistry")->disableOriginalConstructor()->getMock();
+        $this->registry = $this->getMockBuilder("Doctrine\Persistence\ManagerRegistry")->disableOriginalConstructor()->getMock();
         $this->registry->expects($this->any())->method('getManager')->will($this->returnValue($this->entityManager));
 
-        $this->hetrixtoolsService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService")->disableOriginalConstructor()->setMethods(array('checkIpAddressInBlacklist'))->getMock();
+        $this->hetrixtoolsService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService")->disableOriginalConstructor()->onlyMethods(array('checkIpAddressInBlacklist'))->getMock();
 
-        $this->azineMailgunService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService")->disableOriginalConstructor()->setMethods(array('sendBlacklistNotification'))->getMock();
+        $this->azineMailgunService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService")->disableOriginalConstructor()->onlyMethods(array('sendBlacklistNotification'))->getMock();
         $this->azineMailgunService->expects($this->any())->method('sendBlacklistNotification')->will($this->returnvalue(1));
 
         $this->blackListNotificationRepository = $this->getMockBuilder(HetrixToolsBlacklistResponseNotificationRepository::class)->disableOriginalConstructor()->getMock();
@@ -101,7 +101,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $tester->execute(array(''));
 
         $display = $tester->getDisplay();
-        $this->assertContains(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_WAS_SENT, $display);
+        $this->assertStringContainsString(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_WAS_SENT, $display);
     }
 
     public function testSendingBlackListReportNotMutedSent()
@@ -114,7 +114,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $tester->execute(array(''));
 
         $display = $tester->getDisplay();
-        $this->assertContains(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_WAS_SENT, $display);
+        $this->assertStringContainsString(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_WAS_SENT, $display);
     }
 
     public function testSendingBlackListReportLastNotificationIsLongSinceAndListsAreTheSameSent()
@@ -132,7 +132,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $tester->execute(array(''));
 
         $display = $tester->getDisplay();
-        $this->assertContains(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_WAS_SENT, $display);
+        $this->assertStringContainsString(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_WAS_SENT, $display);
     }
 
     public function testSendingBlackListReportLastNotificationIsRecentButListsAreNotTheSameSent()
@@ -168,7 +168,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $tester->execute(array(''));
 
         $display = $tester->getDisplay();
-        $this->assertContains(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_WAS_SENT, $display);
+        $this->assertStringContainsString(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_WAS_SENT, $display);
     }
 
     public function testSendingBlackListReportLastNotificationIsRecentButListsNotChangedMuted()
@@ -186,7 +186,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $tester->execute(array(''));
 
         $display = $tester->getDisplay();
-        $this->assertContains(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_IS_SAME_AS_PREVIOUS, $display);
+        $this->assertStringContainsString(CheckIpAddressIsBlacklistedCommand::BLACKLIST_REPORT_IS_SAME_AS_PREVIOUS, $display);
     }
 
     public function testSendingBlackListReportNotListedNotSent()
@@ -202,7 +202,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $tester->execute(array(''));
 
         $display = $tester->getDisplay();
-        $this->assertContains(CheckIpAddressIsBlacklistedCommand::IP_IS_NOT_BLACKLISTED, $display);
+        $this->assertStringContainsString(CheckIpAddressIsBlacklistedCommand::IP_IS_NOT_BLACKLISTED, $display);
     }
 
     public function testSendingBlackListReportNoResponseShowError()
@@ -213,7 +213,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
         $tester->execute(array(''));
 
         $display = $tester->getDisplay();
-        $this->assertContains(CheckIpAddressIsBlacklistedCommand::NO_VALID_RESPONSE_FROM_HETRIX, $display);
+        $this->assertStringContainsString(CheckIpAddressIsBlacklistedCommand::NO_VALID_RESPONSE_FROM_HETRIX, $display);
     }
 
     /**
@@ -222,7 +222,7 @@ class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
     private function getTester($muteDays = 0)
     {
         $application = new Application();
-        $application->add(new CheckIpAddressIsBlacklistedCommand($this->registry, $this->hetrixtoolsService, $this->azineMailgunService, 'test', $muteDays));
+        $application->addCommand(new CheckIpAddressIsBlacklistedCommand($this->registry, $this->hetrixtoolsService, $this->azineMailgunService, 'test', $muteDays));
         $command = $this->getCheckIpAddressIsBlacklistedCommand($application);
         $tester = new CommandTester($command);
 

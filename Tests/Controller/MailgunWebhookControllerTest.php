@@ -86,7 +86,7 @@ class MailgunWebhookControllerTest extends WebTestCase
         }
 
         $this->assertSame(401, $client->getResponse()->getStatusCode(), "Response-Code 401 expected for post-data with invalid signature: \n\n$webhookdata\n\n\n");
-        $this->assertContains('Signature verification failed.', $crawler->text(), 'Response expected.');
+        $this->assertStringContainsString('Signature verification failed.', $crawler->text(), 'Response expected.');
         $this->assertSame($count, sizeof($eventReop->findAll()), 'No new db entry for the webhook expected!');
 
         // post valid data to the webhook-url and check the response
@@ -97,7 +97,7 @@ class MailgunWebhookControllerTest extends WebTestCase
             $crawler = $client->request('POST', $url, $validPostData, $attachments);
         }
         $this->assertSame(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata\n\n\n".$client->getResponse()->getContent());
-        $this->assertContains('Thanx, for the info.', $crawler->text(), 'Response expected.');
+        $this->assertStringContainsString('Thanx, for the info.', $crawler->text(), 'Response expected.');
         $this->assertSame($count + 1, sizeof($eventReop->findAll()), 'One new db entry for the webhook expected!');
 
         // post valid data to the webhook-url and check the response
@@ -113,7 +113,7 @@ class MailgunWebhookControllerTest extends WebTestCase
             $crawler = $client->request('POST', $url, $validPostData, $attachments);
         }
         $this->assertSame(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata\n\n\n".$client->getResponse()->getContent());
-        $this->assertContains('Thanx, for the info.', $crawler->text(), 'Response expected.');
+        $this->assertStringContainsString('Thanx, for the info.', $crawler->text(), 'Response expected.');
 
         // post a complaint event to check if mail is triggered.
         if ($newApi) {
@@ -126,7 +126,7 @@ class MailgunWebhookControllerTest extends WebTestCase
             $crawler = $client->request('POST', $url, $validPostData, $attachments);
         }
         $this->assertSame(200, $client->getResponse()->getStatusCode(), "Response-Code 200 expected for '$url'.\n\n$webhookdata\n\n\n".$client->getResponse()->getContent());
-        $this->assertContains('Thanx, for the info.', $crawler->text(), 'Response expected.');
+        $this->assertStringContainsString('Thanx, for the info.', $crawler->text(), 'Response expected.');
         $this->assertSame($count + 4, sizeof($eventReop->findAll()), 'One new db entry for the webhook expected!');
 
         $mailCollector = $client->getProfile()->getCollector('swiftmailer');

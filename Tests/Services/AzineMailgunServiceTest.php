@@ -26,7 +26,7 @@ class AzineMailgunServiceTest extends \PHPUnit\Framework\TestCase
         $em = $this->getMockBuilder("Doctrine\ORM\EntityManager")->disableOriginalConstructor()->getMock();
         $em->expects($this->once())->method('createQueryBuilder')->will($this->returnValue($qb));
 
-        $registry = $this->getMockBuilder("Doctrine\Common\Persistence\ManagerRegistry")->disableOriginalConstructor()->getMock();
+        $registry = $this->getMockBuilder("Doctrine\Persistence\ManagerRegistry")->disableOriginalConstructor()->getMock();
         $registry->expects($this->once())->method('getManager')->will($this->returnValue($em));
 
         $amgs = new AzineMailgunService($registry);
@@ -52,7 +52,7 @@ class AzineMailgunServiceTest extends \PHPUnit\Framework\TestCase
         $em = $this->getMockBuilder("Doctrine\ORM\EntityManager")->disableOriginalConstructor()->getMock();
         $em->expects($this->once())->method('createQueryBuilder')->will($this->returnValue($qb));
 
-        $registry = $this->getMockBuilder("Doctrine\Common\Persistence\ManagerRegistry")->disableOriginalConstructor()->getMock();
+        $registry = $this->getMockBuilder("Doctrine\Persistence\ManagerRegistry")->disableOriginalConstructor()->getMock();
         $registry->expects($this->once())->method('getManager')->will($this->returnValue($em));
 
         $amgs = new AzineMailgunService($registry);
@@ -78,7 +78,7 @@ class AzineMailgunServiceTest extends \PHPUnit\Framework\TestCase
         $em = $this->getMockBuilder("Doctrine\ORM\EntityManager")->disableOriginalConstructor()->getMock();
         $em->expects($this->once())->method('createQueryBuilder')->will($this->returnValue($qb));
 
-        $registry = $this->getMockBuilder("Doctrine\Common\Persistence\ManagerRegistry")->disableOriginalConstructor()->getMock();
+        $registry = $this->getMockBuilder("Doctrine\Persistence\ManagerRegistry")->disableOriginalConstructor()->getMock();
         $registry->expects($this->once())->method('getManager')->will($this->returnValue($em));
 
         $amgs = new AzineMailgunService($registry);

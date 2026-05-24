@@ -55,7 +55,7 @@ class AzineMailgunService
      *
      * @return int number of deleted records
      */
-    public function removeEvents($type = null, \DateTime $ageLimit)
+    public function removeEvents($type, \DateTime $ageLimit)
     {
         $qb = $this->getManager()->createQueryBuilder()->delete("Azine\MailgunWebhooksBundle\Entity\MailgunEvent", 'e')->andWhere('e.timestamp < :age')
                 ->setParameter('age', $ageLimit->getTimestamp());
