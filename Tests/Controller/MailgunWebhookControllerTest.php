@@ -25,6 +25,10 @@ class MailgunWebhookControllerTest extends WebTestCase
 
     protected function tearDown(): void
     {
+        if (null === static::$kernel) {
+            return;
+        }
+
         $manager = $this->getEntityManager();
         $queryBuilder = $manager->getRepository(EmailTrafficStatistics::class)->createQueryBuilder('e');
         $ets = $queryBuilder->where('e.created >= :testStartTime')
@@ -367,7 +371,7 @@ class MailgunWebhookControllerTest extends WebTestCase
         try {
             static::$kernel = static::createKernel(array());
             static::$kernel->boot();
-        } catch (\RuntimeException $ex) {
+        } catch (\Throwable $ex) {
             $this->markTestSkipped('There does not seem to be a full application available (e.g. running tests on travis.org). So this test is skipped.');
 
             return;

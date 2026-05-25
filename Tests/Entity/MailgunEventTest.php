@@ -4,6 +4,8 @@ namespace Azine\MailgunWebhooksBundle\Tests\Entity;
 
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class MailgunEventTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -22,12 +24,9 @@ class MailgunEventTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test decoding of Json into messageHeaders property.
-     *
-     * @dataProvider messageHeadersJsonString
-     *
-     * @param string $jsonStringHeaders
      */
-    public function testSetMessageHeaders($jsonStringHeaders)
+    #[DataProvider('messageHeadersJsonString')]
+    public function testSetMessageHeaders(string $jsonStringHeaders): void
     {
         // force strict error-checking. PHPunit will convert to exceptions
         $oldErrorlevel = error_reporting(-1);
@@ -44,7 +43,7 @@ class MailgunEventTest extends \PHPUnit\Framework\TestCase
      *
      * @return array one or more strings of JSON to parse
      */
-    public function messageHeadersJsonString()
+    public static function messageHeadersJsonString(): array
     {
         $tests[0][] = <<<'EOT'
 {"geolocation":{"country":"Unknown","region":"Unknown","city":"Unknown"},

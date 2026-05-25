@@ -2,7 +2,7 @@
 
 namespace Azine\MailgunWebhooksBundle\Services;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManager;
 
 /**
