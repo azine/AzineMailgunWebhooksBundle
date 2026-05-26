@@ -5,7 +5,7 @@ namespace Azine\MailgunWebhooksBundle\Services;
 use Azine\MailgunWebhooksBundle\Entity\EmailTrafficStatistics;
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class AzineMailgunMailerService

@@ -35,11 +35,10 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit\Framework\TestCase
             }
         }';
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testIfApiKeyisNotSet()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $apiKey = '';
         $url = 'blacklistIpCheckUr';
 
@@ -48,11 +47,10 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit\Framework\TestCase
         $service->checkIpAddressInBlacklist($ip);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testIfEmptyIpIsGiven()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $apiKey = 'testApiKey';
         $url = 'blacklistIpCheckUr';
         $ip = '';
@@ -61,11 +59,10 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit\Framework\TestCase
         $service->checkIpAddressInBlacklist($ip);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testIfInvalidIpIsGiven()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $apiKey = 'testApiKey';
         $url = 'blacklistIpCheckUr';
         $ip = 'invalidIpAddress';
@@ -82,7 +79,7 @@ class AzineMailgunHetrixtoolsServiceTest extends \PHPUnit\Framework\TestCase
         $hetrixtoolsService = $this->getMockBuilder("Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixtoolsService")
             ->setConstructorArgs(array(new NullLogger(), $apiKey, $url))
             ->onlyMethods(array('executeCheck'))->getMock();
-        $hetrixtoolsService->expects($this->once())->method('executeCheck')->will($this->returnValue($this->responseJson));
+        $hetrixtoolsService->expects($this->once())->method('executeCheck')->willReturn($this->responseJson);
 
         /** @var AzineMailgunHetrixtoolsService $hetrixtoolsService */
         $response = $hetrixtoolsService->checkIpAddressInBlacklist('198.51.100.42');
