@@ -1,36 +1,29 @@
 {
     "name": "azine/mailgunwebhooks-bundle",
     "type": "symfony-bundle",
-    "description": "Symfony Bundle to capture feedback from mailgun.com via their provided webhooks",
+    "description": "Symfony bundle to capture Mailgun webhook events and send delivery-health notifications.",
     "keywords": [
-        "Mailgun",
-        "mailgun.com",
-        "transactional email",
         "email",
+        "mailgun",
+        "symfony",
         "webhooks"
     ],
-    "homepage": "https://github.com/azine/AzineMailgunWebhooksBundle.git",
+    "homepage": "https://github.com/azine/AzineMailgunWebhooksBundle",
     "license": "MIT",
     "authors": [
         {
-            "name": "Azine IT src/Services AG",
+            "name": "Azine IT Services AG",
             "email": "github@azine-it.ch"
         }
     ],
-    "config": {
-        "process-timeout": 590,
-        "sort-packages": true,
-        "preferred-install": {
-            "*": "dist"
-        },
-        "allow-plugins": {
-            "symfony/flex": true
-        }
-    },
     "require": {
         "php": "^8.5",
+        "ext-curl": "*",
+        "ext-json": "*",
         "ext-mailparse": "*",
-        "doctrine/orm": "^3.3",
+        "doctrine/orm": "^3.6",
+        "doctrine/persistence": "^3.3 || ^4.0",
+        "psr/log": "^3.0",
         "symfony/config": "^7.4",
         "symfony/console": "^7.4",
         "symfony/dependency-injection": "^7.4",
@@ -39,11 +32,12 @@
         "symfony/framework-bundle": "^7.4",
         "symfony/http-foundation": "^7.4",
         "symfony/http-kernel": "^7.4",
-        "symfony/process": "^7.4",
+        "symfony/mailer": "^7.4",
+        "symfony/mime": "^7.4",
         "symfony/routing": "^7.4",
         "symfony/translation": "^7.4",
         "symfony/yaml": "^7.4",
-        "twig/twig": "^3.0"
+        "twig/twig": "^3.14"
     },
     "require-dev": {
         "phpunit/phpunit": "^12.0"
@@ -57,6 +51,16 @@
         "psr-4": {
             "Azine\\MailgunWebhooksBundle\\Tests\\": "Tests/"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "symfony/flex": true
+        },
+        "preferred-install": {
+            "*": "dist"
+        },
+        "process-timeout": 590,
+        "sort-packages": true
     },
     "minimum-stability": "stable",
     "prefer-stable": true
