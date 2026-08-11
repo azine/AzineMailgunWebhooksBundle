@@ -4,10 +4,14 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: "PHPUnit (PHP ${{ matrix.php-version }}, deps: ${{ matrix.dependency-mode }})"
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     strategy:
       fail-fast: false
@@ -17,20 +21,21 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: mailparse
+          extensions: curl, json, mailparse
           coverage: none
+          tools: composer:v2
 
       - name: Validate composer.json
-        run: composer validate --strict
+        run: composer validate --strict --no-check-publish
 
       - name: Cache Composer
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.composer/cache/files
