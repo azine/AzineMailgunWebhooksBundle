@@ -1,0 +1,100 @@
+name: Apply final Symfony 7.4 modernization
+
+on:
+  push:
+    branches:
+      - upgrade/php-8.5-symfony-7.4-final
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: upgrade/php-8.5-symfony-7.4-final
+
+      - name: Modernize controllers and PHP 8.5 compatibility
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace(path, old, new, count=1):
+              p = Path(path)
+              text = p.read_text()
+              if old not in text:
+                  raise SystemExit(f'Expected pattern not found in {path}: {old[:100]!r}')
+              p.write_text(text.replace(old, new, count))
+
+          # MailgunWebhookController: explicit dependencies; no service-container access.
+          path = 'src/Controller/MailgunWebhookController.php'
+          p = Path(path)
+          text = p.read_text()
+          text = text.replace('use Azine\\MailgunWebhooksBundle\\DependencyInjection\\AzineMailgunWebhooksExtension;\n', '')
+          text = text.replace('use Symfony\\Bundle\\FrameworkBundle\\Controller\\AbstractController;\n', '')
+          text = text.replace('use Symfony\\Component\\HttpFoundation\\Response;\n', 'use Symfony\\Component\\HttpFoundation\\Response;\nuse Doctrine\\Persistence\\ManagerRegistry;\nuse Psr\\Log\\LoggerInterface;\nuse Symfony\\Component\\EventDispatcher\\EventDispatcherInterface;\n')
+          text = text.replace('class MailgunWebhookController extends AbstractController\n{\n', '''final class MailgunWebhookController\n{\n    public function __construct(\n        private readonly ManagerRegistry $doctrine,\n        private readonly EventDispatcherInterface $eventDispatcher,\n        private readonly LoggerInterface $logger,\n        private readonly string $apiKey,\n    ) {\n    }\n\n''', 1)
+          text = text.replace("$this->get('logger')->info", '$this->logger->info')
+          text = text.replace("$this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY)", '$this->apiKey')
+          text = text.replace("$this->container->get('doctrine.orm.entity_manager')", '$this->doctrine->getManager()')
+          text = text.replace("$this->getDoctrine()->getRepository(MailgunMessageSummary::class)", '$manager->getRepository(MailgunMessageSummary::class)')
+          text = text.replace("$this->get('event_dispatcher')->dispatch(MailgunEvent::CREATE_EVENT, new MailgunWebhookEvent($event));", "$this->eventDispatcher->dispatch(new MailgunWebhookEvent($event), MailgunEvent::CREATE_EVENT);")
+          text = text.replace("$this->container->get('logger')->warning", '$this->logger->warning')
+          p.write_text(text)
+
+          # MailgunController: explicit persistence/cockpit/config dependencies.
+          path = 'src/Controller/MailgunController.php'
+          p = Path(path)
+          text = p.read_text()
+          text = text.replace('use Azine\\MailgunWebhooksBundle\\DependencyInjection\\AzineMailgunWebhooksExtension;\n', '')
+          text = text.replace('use Azine\\MailgunWebhooksBundle\\Entity\\Repositories\\MailgunMessageSummaryRepository;\n', 'use Azine\\MailgunWebhooksBundle\\Entity\\Repositories\\MailgunMessageSummaryRepository;\nuse Azine\\MailgunWebhooksBundle\\Services\\AzineMailgunCockpitService;\nuse Doctrine\\Persistence\\ManagerRegistry;\n')
+          text = text.replace('class MailgunController extends AbstractController\n{\n', '''final class MailgunController extends AbstractController\n{\n    public function __construct(\n        private readonly ManagerRegistry $doctrine,\n        private readonly AzineMailgunCockpitService $cockpitService,\n        private readonly string $emailWebViewRoute,\n        private readonly string $emailWebViewToken,\n    ) {\n    }\n\n''', 1)
+          route_expr = "$this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_ROUTE)"
+          token_expr = "$this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN)"
+          text = text.replace(route_expr, '$this->emailWebViewRoute')
+          text = text.replace(token_expr, '$this->emailWebViewToken')
+          text = text.replace('$this->getDoctrine()->getManager()', '$this->doctrine->getManager()')
+          text = text.replace("$this->get('azine_mailgun.cockpit_service')->getCockpitDataAsArray()", '$this->cockpitService->getCockpitDataAsArray()')
+          text = text.replace("'AzineMailgunWebhooksBundle::overview.html.twig'", "'@AzineMailgunWebhooks/overview.html.twig'")
+          text = text.replace("'AzineMailgunWebhooksBundle:MailgunEvent:index.html.twig'", "'@AzineMailgunWebhooks/MailgunEvent/index.html.twig'")
+          text = text.replace("'AzineMailgunWebhooksBundle:MailgunEvent:show.html.twig'", "'@AzineMailgunWebhooks/MailgunEvent/show.html.twig'")
+          text = text.replace("'AzineMailgunWebhooksBundle::messageSummaryIndex.html.twig'", "'@AzineMailgunWebhooks/messageSummaryIndex.html.twig'")
+          text = text.replace("'AzineMailgunWebhooksBundle::messageSummaryShow.html.twig'", "'@AzineMailgunWebhooks/messageSummaryShow.html.twig'")
+          p.write_text(text)
+
+          # PHP 8.5 deprecations.
+          replace('src/Entity/MailgunEvent.php', 'public function setEventSummary(MailgunMessageSummary $eventSummary = null)', 'public function setEventSummary(?MailgunMessageSummary $eventSummary = null)')
+          path = 'src/Services/HetrixtoolsService/HetrixtoolsServiceResponse.php'
+          p = Path(path)
+          text = p.read_text().replace('json_decode($json, true)', "json_decode($json ?? '', true)")
+          p.write_text(text)
+
+          # PHPUnit 12: these command tests intentionally use collaborators as passive doubles.
+          for path in [
+              'Tests/Command/CheckIpAddressIsBlacklistedCommandTest.php',
+              'Tests/Command/CheckIpAddressRetryTest.php',
+              'Tests/Command/DeleteOldEntriesCommandTest.php',
+              'Tests/Services/AzineMailgunSymfonyMailerTest.php',
+          ]:
+              p = Path(path)
+              text = p.read_text()
+              if 'AllowMockObjectsWithoutExpectations' not in text:
+                  text = text.replace('use PHPUnit\\Framework\\TestCase;\n', 'use PHPUnit\\Framework\\Attributes\\AllowMockObjectsWithoutExpectations;\nuse PHPUnit\\Framework\\TestCase;\n')
+                  text = text.replace('class ', '#[AllowMockObjectsWithoutExpectations]\nclass ', 1)
+              p.write_text(text)
+          PY
+
+      - name: Commit modernization
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src Tests
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'Modernization already applied.'
+            exit 0
+          fi
+          git commit -m 'Complete Symfony 7.4 controller modernization'
+          git push origin HEAD:upgrade/php-8.5-symfony-7.4-final
