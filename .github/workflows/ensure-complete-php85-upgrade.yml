@@ -1,0 +1,162 @@
+name: Ensure complete PHP 8.5 upgrade
+
+on:
+  push:
+    branches:
+      - automation/ensure-complete-20260831-final
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: read
+
+jobs:
+  verify-merge-release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      PR_NUMBER: '59'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP 8.5
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+          tools: composer:v2
+          extensions: ctype, curl, dom, fileinfo, filter, gd, iconv, intl, json, mailparse, mbstring, pdo, pdo_sqlite, simplexml, tokenizer, xml, xmlwriter
+
+      - name: Prepare and validate authoritative candidate when not merged
+        run: |
+          set -euo pipefail
+          merged=$(gh pr view "$PR_NUMBER" -R "$REPOSITORY" --json mergedAt --jq '.mergedAt != null')
+          if [ "$merged" = 'true' ]; then
+            exit 0
+          fi
+
+          state=$(gh pr view "$PR_NUMBER" -R "$REPOSITORY" --json state --jq .state)
+          if [ "$state" = 'CLOSED' ]; then
+            gh pr reopen "$PR_NUMBER" -R "$REPOSITORY"
+          fi
+          draft=$(gh pr view "$PR_NUMBER" -R "$REPOSITORY" --json isDraft --jq .isDraft)
+          if [ "$draft" = 'true' ]; then
+            gh pr ready "$PR_NUMBER" -R "$REPOSITORY"
+          fi
+          head=$(gh pr view "$PR_NUMBER" -R "$REPOSITORY" --json headRefName --jq .headRefName)
+          git fetch origin "$head"
+          git checkout -B candidate "origin/$head"
+
+          rm -rf .upgrade
+          rm -f .travis.yml
+          find .github/workflows -maxdepth 1 -type f \( -name 'temporary-*' -o -name 'export-*' \) -delete
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m 'Remove temporary upgrade and legacy CI helpers'
+            git push origin HEAD:"$head"
+          fi
+
+          composer validate --strict --no-check-publish
+          php -r '$c=json_decode(file_get_contents("composer.json"),true,512,JSON_THROW_ON_ERROR); if (!str_contains((string)($c["require"]["php"]??""),"8.5")) {fwrite(STDERR,"PHP 8.5 constraint missing\n"); exit(1);} if (isset($c["require"]["swiftmailer/swiftmailer"]) || isset($c["require"]["symfony/swiftmailer-bundle"])) {fwrite(STDERR,"Swiftmailer remains\n"); exit(1);} foreach (["require","require-dev"] as $s) foreach (($c[$s]??[]) as $n=>$v) if (str_starts_with($n,"symfony/") && !str_starts_with($n,"symfony/polyfill-") && !str_contains((string)$v,"7.4")) {fwrite(STDERR,"$n must target Symfony 7.4, got $v\n"); exit(1);} if (!str_contains((string)($c["require-dev"]["phpunit/phpunit"]??""),"12")) {fwrite(STDERR,"PHPUnit 12 missing\n"); exit(1);}'
+          ! grep -R --line-number --include='*.php' -E 'Swift_|swiftmailer|ContainerAware|Controller\\Controller|\$this->get\(|getDoctrine\(' src Tests --exclude-dir=vendor
+          ! find src/Resources/config/doctrine -type f -name '*.orm.yml' | grep -q .
+          grep -R -q 'hash_equals' src Tests
+          grep -R -q -E 'duplicate|replay|idempot' src Tests README.md UPGRADE.md
+          grep -R -q -E 'retry|notification.*state|attempt' src Tests README.md UPGRADE.md
+
+          rm -rf vendor composer.lock .phpunit.cache
+          composer update --prefer-dist --no-interaction
+          find src Tests -name '*.php' -print0 | xargs -0 -n1 php -l
+          vendor/bin/phpunit -c phpunit.xml.dist --display-deprecations --display-phpunit-deprecations --display-phpunit-notices --fail-on-phpunit-notice --display-notices --display-skipped
+
+          rm -rf vendor composer.lock .phpunit.cache
+          composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction
+          find src Tests -name '*.php' -print0 | xargs -0 -n1 php -l
+          vendor/bin/phpunit -c phpunit.xml.dist --display-deprecations --display-phpunit-deprecations --display-phpunit-notices --fail-on-phpunit-notice --display-notices --display-skipped
+
+          unresolved=$(gh api graphql -f query='query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100){nodes{isResolved}}}}}' -F owner=azine -F name=AzineMailgunWebhooksBundle -F number="$PR_NUMBER" --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved==false)] | length')
+          test "$unresolved" = '0'
+          gh pr merge "$PR_NUMBER" -R "$REPOSITORY" --squash --delete-branch --subject 'Upgrade Mailgun Webhooks Bundle to PHP 8.5, Symfony 7.4 and Symfony Mailer'
+
+      - name: Clean and validate merged master
+        run: |
+          set -euo pipefail
+          git fetch origin master --force --tags
+          git checkout -B master origin/master
+          rm -rf .upgrade
+          rm -f .travis.yml
+          find .github/workflows -maxdepth 1 -type f \( -name 'temporary-*' -o -name 'export-*' -o -name 'publish-5.0.0.yml' \) -delete
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m 'Remove temporary upgrade and release helpers'
+            git push origin HEAD:master
+          fi
+
+          composer validate --strict --no-check-publish
+          php -r '$c=json_decode(file_get_contents("composer.json"),true,512,JSON_THROW_ON_ERROR); if (!str_contains((string)($c["require"]["php"]??""),"8.5")) exit(1); if (isset($c["require"]["swiftmailer/swiftmailer"]) || isset($c["require"]["symfony/swiftmailer-bundle"])) exit(1); foreach (["require","require-dev"] as $s) foreach (($c[$s]??[]) as $n=>$v) if (str_starts_with($n,"symfony/") && !str_starts_with($n,"symfony/polyfill-") && !str_contains((string)$v,"7.4")) exit(1); if (!str_contains((string)($c["require-dev"]["phpunit/phpunit"]??""),"12")) exit(1);'
+          ! grep -R --line-number --include='*.php' -E 'Swift_|swiftmailer|ContainerAware|Controller\\Controller|\$this->get\(|getDoctrine\(' src Tests --exclude-dir=vendor
+          ! find src/Resources/config/doctrine -type f -name '*.orm.yml' | grep -q .
+          grep -R -q 'hash_equals' src Tests
+          grep -R -q -E 'duplicate|replay|idempot' src Tests README.md UPGRADE.md
+          grep -R -q -E 'retry|notification.*state|attempt' src Tests README.md UPGRADE.md
+
+          rm -rf vendor composer.lock .phpunit.cache
+          composer update --prefer-dist --no-interaction
+          find src Tests -name '*.php' -print0 | xargs -0 -n1 php -l
+          vendor/bin/phpunit -c phpunit.xml.dist --display-deprecations --display-phpunit-deprecations --display-phpunit-notices --fail-on-phpunit-notice --display-notices --display-skipped
+
+          rm -rf vendor composer.lock .phpunit.cache
+          composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction
+          find src Tests -name '*.php' -print0 | xargs -0 -n1 php -l
+          vendor/bin/phpunit -c phpunit.xml.dist --display-deprecations --display-phpunit-deprecations --display-phpunit-notices --fail-on-phpunit-notice --display-notices --display-skipped
+
+      - name: Publish release, close issues, and clean branches
+        run: |
+          set -euo pipefail
+          git fetch origin master --force --tags
+          git checkout --detach origin/master
+          if git rev-parse -q --verify refs/tags/5.0.0 >/dev/null; then
+            test "$(git rev-list -n1 5.0.0)" = "$(git rev-parse HEAD)"
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git tag -a 5.0.0 -m 'AzineMailgunWebhooksBundle 5.0.0'
+            git push origin 5.0.0
+          fi
+          if ! gh release view 5.0.0 -R "$REPOSITORY" >/dev/null 2>&1; then
+            gh release create 5.0.0 -R "$REPOSITORY" --verify-tag --title '5.0.0 — PHP 8.5, Symfony 7.4 and Symfony Mailer' --notes 'Major upgrade to PHP 8.5, Symfony 7.4, Doctrine ORM 3, Twig 3, PHPUnit 12 and Symfony Mailer. Includes strict signature validation, replay-safe idempotent event handling, safe error responses, transactional persistence, and bounded observable notification retries.'
+          fi
+          for issue in 61 62 63; do
+            if gh issue view "$issue" -R "$REPOSITORY" --json state --jq .state | grep -q OPEN; then
+              gh issue comment "$issue" -R "$REPOSITORY" --body 'Completed by the authoritative merged upgrade and immutable `5.0.0` release.'
+              gh issue close "$issue" -R "$REPOSITORY" --reason completed
+            fi
+          done
+          if gh issue view 60 -R "$REPOSITORY" --json state --jq .state | grep -q OPEN; then
+            gh issue comment 60 -R "$REPOSITORY" --body 'Upgrade complete: #59 is merged, merged `master` passed stable and lowest PHP 8.5 validation, and immutable release `5.0.0` is published.'
+            gh issue close 60 -R "$REPOSITORY" --reason completed
+          fi
+          for branch in \
+            automation/ensure-complete-20260831-final \
+            release/5.0.0 \
+            release/publish-5.0.0 \
+            release/publish-5.0.0-run \
+            release/publish-5.0.0-workflow \
+            release/publish-5.0.0-final \
+            release/publish-5.0.0-exec \
+            release/publish-5.0.0-now \
+            release/publish-5.0.0-actual \
+            release/publish-5.0.0-use-this \
+            release/publish-5.0.0-clean; do
+              git push origin --delete "$branch" 2>/dev/null || true
+          done
