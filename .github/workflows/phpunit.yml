@@ -9,15 +9,18 @@ permissions:
 
 jobs:
   test:
-    name: "PHPUnit (PHP ${{ matrix.php-version }}, deps: ${{ matrix.dependency-mode }})"
+    name: "PHP 8.5 / dependencies ${{ matrix.dependency-mode }}"
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['8.5']
         dependency-mode: ['stable', 'lowest']
+
+    env:
+      COMPOSER_NO_INTERACTION: '1'
+      COMPOSER_NO_AUDIT: '1'
 
     steps:
       - name: Checkout
@@ -26,8 +29,8 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
-          extensions: curl, json, mailparse
+          php-version: '8.5'
+          extensions: curl, json, mailparse, mbstring, xml
           coverage: none
           tools: composer:v2
 
@@ -37,20 +40,32 @@ jobs:
       - name: Cache Composer
         uses: actions/cache@v5
         with:
-          path: |
-            ~/.composer/cache/files
-            ~/.cache/composer/files
-          key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependency-mode }}-${{ hashFiles('composer.json') }}
+          path: ~/.composer/cache/files
+          key: ${{ runner.os }}-php85-${{ matrix.dependency-mode }}-${{ hashFiles('composer.json') }}
           restore-keys: |
-            ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependency-mode }}-
+            ${{ runner.os }}-php85-${{ matrix.dependency-mode }}-
 
       - name: Install dependencies (stable)
         if: matrix.dependency-mode == 'stable'
-        run: composer update --no-interaction --prefer-dist
+        run: composer update --prefer-dist
 
       - name: Install dependencies (lowest)
         if: matrix.dependency-mode == 'lowest'
-        run: composer update --no-interaction --prefer-lowest --prefer-stable
+        run: composer update --prefer-lowest --prefer-stable --prefer-dist
 
-      - name: Run PHPUnit
-        run: vendor/bin/phpunit -c phpunit.xml.dist
+      - name: Lint PHP
+        run: find src Tests -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Run PHPUnit with diagnostics
+        run: >-
+          vendor/bin/phpunit -c phpunit.xml.dist
+          --display-deprecations
+          --display-phpunit-deprecations
+          --display-phpunit-notices
+          --display-notices
+          --display-skipped
+          --fail-on-deprecation
+          --fail-on-phpunit-deprecation
+          --fail-on-phpunit-notice
+          --fail-on-notice
+          --fail-on-skipped
