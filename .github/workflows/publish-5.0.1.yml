@@ -1,0 +1,28 @@
+name: Publish Mailgun Webhooks 5.0.1
+
+on:
+  push:
+    branches: [master]
+    paths: ['.github/workflows/publish-5.0.1.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: master
+          fetch-depth: 0
+      - name: Remove temporary workflow and tag release
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          rm .github/workflows/publish-5.0.1.yml
+          git add -A
+          git commit -m 'Remove temporary 5.0.1 publisher'
+          git push origin HEAD:master
+          git tag -a 5.0.1 -m 'PHP 8.5 / Symfony 7.4 release'
+          git push origin 5.0.1
