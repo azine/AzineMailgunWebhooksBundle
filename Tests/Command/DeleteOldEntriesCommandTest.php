@@ -3,6 +3,7 @@
 namespace Azine\MailgunWebhooksBundle\Tests\Command;
 
 use Azine\MailgunWebhooksBundle\Command\DeleteOldEntriesCommand;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -23,7 +24,6 @@ class DeleteOldEntriesCommandTest extends \PHPUnit\Framework\TestCase
         $application = new Application();
         $application->addCommand(new DeleteOldEntriesCommand($this->mailgunServiceMock));
         $command = $this->getDeleteOldEntriesCommand($application);
-
         $display = $command->getHelp();
         $this->assertStringContainsString('Mailgun accepted the request to send/forward the email and the message has been placed in queue.', $display);
     }
@@ -33,14 +33,11 @@ class DeleteOldEntriesCommandTest extends \PHPUnit\Framework\TestCase
         $application = new Application();
         $application->addCommand(new DeleteOldEntriesCommand($this->mailgunServiceMock));
         $command = $this->getDeleteOldEntriesCommand($application);
-
         self::$days = 60;
         self::$count = 14;
         self::$type = null;
         $this->mailgunServiceMock->expects($this->once())->method('removeEvents')->willReturnCallback(array($this, 'removeEventsCallback'));
-
         $tester = new CommandTester($command);
-
         $tester->execute(array(''));
         $display = $tester->getDisplay();
         $this->assertStringContainsString('deleting entries of any type.', $display);
@@ -58,15 +55,9 @@ class DeleteOldEntriesCommandTest extends \PHPUnit\Framework\TestCase
         $checkDate = new \DateTime(self::$days.' days ago');
         self::assertSame(self::$type, $type, 'type null expected.');
         self::assertSame($checkDate->format('Y-m-d H:i'), $date->format('Y-m-d H:i'), 'wrong date.');
-
         return self::$count;
     }
 
-    /**
-     * @param Application $application
-     *
-     * @return DeleteOldEntriesCommand
-     */
     private function getDeleteOldEntriesCommand($application)
     {
         return $application->find('mailgun:delete-events');
@@ -77,14 +68,11 @@ class DeleteOldEntriesCommandTest extends \PHPUnit\Framework\TestCase
         $application = new Application();
         $application->addCommand(new DeleteOldEntriesCommand($this->mailgunServiceMock));
         $command = $this->getDeleteOldEntriesCommand($application);
-
         self::$days = 21;
         self::$count = 11;
         self::$type = null;
         $this->mailgunServiceMock->expects($this->once())->method('removeEvents')->willReturnCallback(array($this, 'removeEventsCallback'));
-
         $tester = new CommandTester($command);
-
         $tester->execute(array('date' => '21 days ago'));
         $display = $tester->getDisplay();
         $this->assertStringContainsString('deleting entries of any type.', $display);
@@ -97,12 +85,10 @@ class DeleteOldEntriesCommandTest extends \PHPUnit\Framework\TestCase
         $application = new Application();
         $application->addCommand(new DeleteOldEntriesCommand($this->mailgunServiceMock));
         $command = $this->getDeleteOldEntriesCommand($application);
-
         self::$days = 33;
         self::$count = 77;
         self::$type = 'opened';
         $this->mailgunServiceMock->expects($this->once())->method('removeEvents')->willReturnCallback(array($this, 'removeEventsCallback'));
-
         $tester = new CommandTester($command);
         $tester->execute(array('date' => '33 days ago', 'type' => self::$type));
         $display = $tester->getDisplay();
@@ -116,7 +102,6 @@ class DeleteOldEntriesCommandTest extends \PHPUnit\Framework\TestCase
         $application = new Application();
         $application->addCommand(new DeleteOldEntriesCommand($this->mailgunServiceMock));
         $command = $this->getDeleteOldEntriesCommand($application);
-
         $tester = new CommandTester($command);
         $tester->execute(array('date' => '33 days ago', 'type' => 'invalidType'));
     }
