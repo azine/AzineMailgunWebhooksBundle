@@ -2,19 +2,11 @@
     "name": "azine/mailgunwebhooks-bundle",
     "type": "symfony-bundle",
     "description": "Symfony bundle to capture Mailgun webhook events and send delivery-health notifications.",
-    "keywords": [
-        "email",
-        "mailgun",
-        "symfony",
-        "webhooks"
-    ],
+    "keywords": ["email", "mailgun", "symfony", "webhooks"],
     "homepage": "https://github.com/azine/AzineMailgunWebhooksBundle",
     "license": "MIT",
     "authors": [
-        {
-            "name": "Azine IT Services AG",
-            "email": "github@azine-it.ch"
-        }
+        {"name": "Azine IT Services AG", "email": "github@azine-it.ch"}
     ],
     "require": {
         "php": "^8.5",
@@ -29,6 +21,7 @@
         "symfony/dependency-injection": "^7.4",
         "symfony/dom-crawler": "^7.4",
         "symfony/event-dispatcher": "^7.4",
+        "symfony/event-dispatcher-contracts": "^3.6",
         "symfony/framework-bundle": "^7.4",
         "symfony/http-foundation": "^7.4",
         "symfony/http-kernel": "^7.4",
@@ -43,22 +36,14 @@
         "phpunit/phpunit": "^12.0"
     },
     "autoload": {
-        "psr-4": {
-            "Azine\\MailgunWebhooksBundle\\": "src/"
-        }
+        "psr-4": {"Azine\\MailgunWebhooksBundle\\": "src/"}
     },
     "autoload-dev": {
-        "psr-4": {
-            "Azine\\MailgunWebhooksBundle\\Tests\\": "Tests/"
-        }
+        "psr-4": {"Azine\\MailgunWebhooksBundle\\Tests\\": "Tests/"}
     },
     "config": {
-        "allow-plugins": {
-            "symfony/flex": true
-        },
-        "preferred-install": {
-            "*": "dist"
-        },
+        "allow-plugins": {"symfony/flex": true},
+        "preferred-install": {"*": "dist"},
         "process-timeout": 590,
         "sort-packages": true
     },
