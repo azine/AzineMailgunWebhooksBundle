@@ -18,14 +18,13 @@ class AzineMailgunWebhooksExtensionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * This should throw an exception.
-     *
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
     public function testEmptyConfig()
     {
+        $this->expectException(\Symfony\Component\Config\Definition\Exception\InvalidConfigurationException::class);
+
         $loader = new AzineMailgunWebhooksExtension();
-        $config = $this->getEmptyConfig();
-        $loader->load(array($config), new ContainerBuilder());
+        $loader->load(array(), new ContainerBuilder());
     }
 
     /**
@@ -82,21 +81,6 @@ EOF;
 
 # api-key
 api_key:       someKey_adf4343lki5432543cfcab54325fabiacbzfac
-
-EOF;
-        $parser = new Parser();
-
-        return $parser->parse($yaml);
-    }
-
-    /**
-     * Get the minimal config.
-     *
-     * @return array
-     */
-    protected function getEmptyConfig()
-    {
-        $yaml = <<<EOF
 
 EOF;
         $parser = new Parser();

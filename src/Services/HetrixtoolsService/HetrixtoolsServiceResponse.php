@@ -8,61 +8,32 @@ class HetrixtoolsServiceResponse
     const RESPONSE_STATUS_ERROR = 'ERROR';
     const BLACKLIST_CHECK_IN_PROGRESS = 'blacklist check in progress for this ipv4';
 
-    /**
-     * @var string
-     */
     public $status;
-
-    /**
-     * @var int
-     */
     public $api_calls_left;
-
-    /**
-     * @var int
-     */
     public $blacklist_check_credits_left;
-
-    /**
-     * @var int
-     */
     public $blacklisted_count;
-
-    /**
-     * @var array
-     */
     public $blacklisted_on;
-
-    /**
-     * @var array
-     */
     public $links;
-
-    /**
-     * @var string
-     */
     public $error_message;
 
     /**
-     * @param string $response
-     *
      * @throws \InvalidArgumentException
-     *
-     * @return HetrixtoolsServiceResponse $responseObject
      */
-    public static function fromJson($response)
+    public static function fromJson(?string $response): self
     {
-        $response = json_decode($response, true);
+        if (null === $response || '' === $response) {
+            throw new \InvalidArgumentException('Invalid JSON provided');
+        }
 
-        if (!is_array($response)) {
+        $data = json_decode($response, true);
+        if (!is_array($data)) {
             throw new \InvalidArgumentException('Invalid JSON provided');
         }
 
         $responseObject = new self();
-
         foreach ($responseObject as $key => $value) {
-            if (isset($response[$key])) {
-                $responseObject->$key = $response[$key];
+            if (array_key_exists($key, $data)) {
+                $responseObject->$key = $data[$key];
             }
         }
 

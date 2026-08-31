@@ -2,35 +2,47 @@
 
 namespace Azine\MailgunWebhooksBundle\Controller;
 
-use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
 use Azine\MailgunWebhooksBundle\Entity\MailgunAttachment;
 use Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable;
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary;
 use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * MailgunEvent controller.
  */
-class MailgunWebhookController extends AbstractController
+final class MailgunWebhookController
 {
+    public function __construct(
+        private readonly ManagerRegistry $doctrine,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly LoggerInterface $logger,
+        private readonly string $apiKey,
+    ) {
+    }
+
     public function createFromWebhookAction(Request $request)
     {
         // old webhooks api
         $params = $request->request->all();
 
         if (is_array($params) && !empty($params)) {
-            $this->get('logger')->info('Creating MailgunEvent via old API.');
+            $this->logger->info('Creating MailgunEvent via old API.');
 
             return $this->createEventOldApi($params);
         }
         // new webhooks api
-        $this->get('logger')->info('Creating MailgunEvent via new API.');
+        $this->logger->info('Creating MailgunEvent via new API.');
         $params = json_decode($request->getContent(), true);
+        if (!is_array($params)) {
+            return new Response('Invalid webhook payload.', 400);
+        }
 
         return $this->createEventNewApi($params);
     }
@@ -45,8 +57,15 @@ class MailgunWebhookController extends AbstractController
 
         /////////////////////////////////////////////////////
         // signature validation
+        if (!isset($params['signature'], $params['event-data']) || !is_array($params['signature']) || !is_array($params['event-data'])) {
+            return new Response('Invalid webhook payload.', 400);
+        }
+
         $signatureData = $params['signature'];
         $eventData = $params['event-data'];
+        if (!isset($signatureData['timestamp'], $signatureData['token'], $signatureData['signature'])) {
+            return new Response('Invalid webhook payload.', 400);
+        }
 
         // check if the timestamp is fresh
         $timestamp = $signatureData['timestamp'];
@@ -56,14 +75,22 @@ class MailgunWebhookController extends AbstractController
         }
 
         // validate post-data
-        $key = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
+        $key = $this->apiKey;
         $token = $signatureData['token'];
         $expectedSignature = hash_hmac('SHA256', $timestamp.$token, $key);
-        if ($expectedSignature != $signatureData['signature']) {
+        if (!hash_equals($expectedSignature, (string) $signatureData['signature'])) {
             return new Response('Signature verification failed.', 401);
         }
 
         /////////////////////////////////////////////////////
+        $manager = $this->doctrine->getManager();
+        if (null !== $manager->getRepository(MailgunEvent::class)->findOneBy([
+            'token' => (string) $token,
+            'timestamp' => (int) $timestamp,
+        ])) {
+            return new Response('Webhook already processed.', 200);
+        }
+
         // create event-entity
         try {
             // create event & populate with supplied data
@@ -234,9 +261,8 @@ class MailgunWebhookController extends AbstractController
                 unset($eventData['recipients']);
             }
 
-            $manager = $this->container->get('doctrine.orm.entity_manager');
             $manager->persist($event);
-            $eventSummary = $this->getDoctrine()->getRepository(MailgunMessageSummary::class)->createOrUpdateMessageSummary($event);
+            $eventSummary = $manager->getRepository(MailgunMessageSummary::class)->createOrUpdateMessageSummary($event);
 
             $eventData = $this->removeEmptyArrayElements($eventData);
 
@@ -269,12 +295,12 @@ class MailgunWebhookController extends AbstractController
             $manager->flush();
 
             // Dispatch an event about the logging of a Webhook-call
-            $this->get('event_dispatcher')->dispatch(MailgunEvent::CREATE_EVENT, new MailgunWebhookEvent($event));
+            $this->eventDispatcher->dispatch(new MailgunWebhookEvent($event), MailgunEvent::CREATE_EVENT);
         } catch (\Exception $e) {
-            $this->container->get('logger')->warning('AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage());
-            $this->container->get('logger')->warning($e->getTraceAsString());
+            $this->logger->warning('AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage());
+            $this->logger->warning($e->getTraceAsString());
 
-            return new Response(print_r($params, true).'AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage(), 500);
+            return new Response('Webhook processing failed.', 500);
         }
 
         // send response
@@ -289,8 +315,12 @@ class MailgunWebhookController extends AbstractController
             $params['params_contained_duplicate_keys'] = $paramsPre;
         }
 
+        if (!isset($params['timestamp'], $params['token'], $params['signature'])) {
+            return new Response('Invalid webhook payload.', 400);
+        }
+
         // validate post-data
-        $key = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::API_KEY);
+        $key = $this->apiKey;
         $timestamp = $params['timestamp'];
 
         // check if the timestamp is fresh
@@ -302,8 +332,16 @@ class MailgunWebhookController extends AbstractController
 
         $token = $params['token'];
         $expectedSignature = hash_hmac('SHA256', $timestamp.$token, $key);
-        if ($expectedSignature != $params['signature']) {
+        if (!hash_equals($expectedSignature, (string) $params['signature'])) {
             return new Response('Signature verification failed.', 401);
+        }
+
+        $manager = $this->doctrine->getManager();
+        if (null !== $manager->getRepository(MailgunEvent::class)->findOneBy([
+            'token' => (string) $token,
+            'timestamp' => (int) $timestamp,
+        ])) {
+            return new Response('Webhook already processed.', 200);
         }
 
         // drop unused variables
@@ -463,10 +501,9 @@ class MailgunWebhookController extends AbstractController
                 unset($params['signature']);
             }
 
-            $manager = $this->container->get('doctrine.orm.entity_manager');
             $manager->persist($event);
 
-            $this->getDoctrine()->getRepository(MailgunMessageSummary::class)->createOrUpdateMessageSummary($event);
+            $manager->getRepository(MailgunMessageSummary::class)->createOrUpdateMessageSummary($event);
 
             $params = $this->removeEmptyArrayElements($params);
 
@@ -497,12 +534,12 @@ class MailgunWebhookController extends AbstractController
             $manager->flush();
 
             // Dispatch an event about the logging of a Webhook-call
-            $this->get('event_dispatcher')->dispatch(MailgunEvent::CREATE_EVENT, new MailgunWebhookEvent($event));
+            $this->eventDispatcher->dispatch(new MailgunWebhookEvent($event), MailgunEvent::CREATE_EVENT);
         } catch (\Exception $e) {
-            $this->container->get('logger')->warning('AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage());
-            $this->container->get('logger')->warning($e->getTraceAsString());
+            $this->logger->warning('AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage());
+            $this->logger->warning($e->getTraceAsString());
 
-            return new Response('AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage(), 500);
+            return new Response('Webhook processing failed.', 500);
         }
 
         // send response

@@ -1,21 +1,22 @@
-parameters:
-
 services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+
     azine_mailgun.service:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunService
-        arguments: ["@doctrine"]
+        arguments: ['@doctrine']
         public: true
-        
+
     azine_mailgun.cockpit_service:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunCockpitService
-        arguments: 
+        arguments:
             - '@doctrine'
             - '@twig'
             - '%azine_mailgun_webhooks_email_domain%'
 
     azine.mailgun.webhooks.bundle.twig.filters:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunTwigExtension
-        public: false
         tags:
             - { name: twig.extension }
 
@@ -28,13 +29,13 @@ services:
 
     azine.mailgun.webhooks.event_listener.created:
         class: Azine\MailgunWebhooksBundle\EventListener\EventCreatedListener
-        tags: 
-            - { name: kernel.event_listener, event: azine.mailgun.webhooks.event.create, method: onEventCreated}
+        tags:
+            - { name: kernel.event_listener, event: azine.mailgun.webhooks.event.create, method: onEventCreated }
         arguments:
             - '@azine.mailgun.mailer'
             - '%azine_mailgun_webhooks_spam_alerts_enabled%'
-            
-    azine.mailgun.mailer: 
+
+    azine.mailgun.mailer:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService
         arguments:
             - '@mailer'
@@ -67,11 +68,19 @@ services:
             - { name: console.command }
 
     Azine\MailgunWebhooksBundle\Controller\MailgunWebhookController:
-        calls:
-            - [setContainer, ["@service_container"]]
+        public: true
+        arguments:
+            $doctrine: '@doctrine'
+            $eventDispatcher: '@event_dispatcher'
+            $logger: '@logger'
+            $apiKey: '%azine_mailgun_webhooks_api_key%'
 
     Azine\MailgunWebhooksBundle\Controller\MailgunController:
-        calls:
-            - [setContainer, ["@service_container"]]
-
-
+        public: true
+        arguments:
+            $doctrine: '@doctrine'
+            $cockpitService: '@azine_mailgun.cockpit_service'
+            $emailWebViewRoute: '%azine_mailgun_webhooks_web_view_route%'
+            $emailWebViewToken: '%azine_mailgun_webhooks_web_view_token%'
+        tags:
+            - { name: controller.service_arguments }

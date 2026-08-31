@@ -1,37 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.5/phpunit.xsd"
          bootstrap="Tests/bootstrap.php"
-	>
-
-    <php>
-        <env name="KERNEL_CLASS" value="AppKernel" />
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
-    </php>
-
+         cacheDirectory=".phpunit.cache"
+         colors="true"
+         beStrictAboutOutputDuringTests="true"
+         failOnRisky="true"
+         failOnWarning="true">
     <testsuites>
         <testsuite name="Azine/MailgunWebhooksBundle Test Suite">
-            <directory>./Tests</directory>
+            <directory suffix="Test.php">Tests</directory>
         </testsuite>
     </testsuites>
-
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true"
-                   addUncoveredFilesFromWhitelist="false">
-            <directory suffix=".php">src/Command</directory>
-            <directory suffix=".php">src/Controller</directory>
-            <directory suffix=".php">src/DependencyInjection</directory>
-            <directory suffix=".php">src/Entity</directory>
-            <directory suffix=".php">src/Services</directory>
-            <!-- <exclude>
-            </exclude> -->
-        </whitelist>
-    </filter>
+    <source>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </source>
 </phpunit>

@@ -43,31 +43,28 @@ class HetrixtoolsServiceResponseTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(3, $response->blacklisted_count);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testHetrixtoolsServiceResponseEmptyJson()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         //Test with empty string
         $responseJson = '';
         HetrixtoolsServiceResponse::fromJson($responseJson);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testHetrixtoolsServiceResponseWrongJson()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         //Test with invalid Json
         $responseJson = 'invalidJson';
         HetrixtoolsServiceResponse::fromJson($responseJson);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testHetrixtoolsServiceResponseNullJson()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         //Test with invalid Json
         HetrixtoolsServiceResponse::fromJson(null);
     }

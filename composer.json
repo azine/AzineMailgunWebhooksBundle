@@ -1,45 +1,52 @@
 {
     "name": "azine/mailgunwebhooks-bundle",
     "type": "symfony-bundle",
-    "description": "Symfony2 Bundle to easily capture feedback from mailgun.com via their provided webhooks",
-    "keywords": ["Mailgun", "mailgun.com", "transactional email", "email", "webhooks"],
-    "homepage": "https://github.com/azine/AzineMailgunWebhooksBundle.git",
+    "description": "Symfony bundle to capture Mailgun webhook events and send delivery-health notifications.",
+    "keywords": ["email", "mailgun", "symfony", "webhooks"],
+    "homepage": "https://github.com/azine/AzineMailgunWebhooksBundle",
     "license": "MIT",
     "authors": [
-        {
-            "name": "Azine IT src/Services AG",
-            "email": "github@azine-it.ch"
-        }
+        {"name": "Azine IT Services AG", "email": "github@azine-it.ch"}
     ],
-    "config": {
-        "process-timeout": 590,
-        "github-protocols": ["https", "git", "ssh"],
-        "github-domains": ["github.com"]
-        },
     "require": {
-        "php": ">=7.0",
+        "php": "^8.5",
+        "ext-curl": "*",
+        "ext-json": "*",
         "ext-mailparse": "*",
-        "symfony/framework-bundle": "^4.0|^5.4|^6.3",
-        "symfony/config": "^4.0|^5.4|^6.3",
-        "symfony/console": "^4.0|^5.4|^6.3",
-        "symfony/dependency-injection": "^4.0|^5.4|^6.3",
-        "symfony/dom-crawler": "^4.0|^5.4|^6.3",
-        "symfony/event-dispatcher": "^4.0|^5.4|^6.3",
-        "symfony/http-foundation": "^4.0|^5.4|^6.3",
-        "symfony/http-kernel": ">=4.4.50,^4.0|^5.4",
-        "symfony/yaml": "^4.0|^5.4|^6.3",
-        "symfony/process": "^4.0|^5.4|^6.3",
-        "symfony/routing": "^4.0|^5.4|^6.3",
-        "symfony/translation": "^4.0|^5.4|^6.3",
-        "twig/twig": ">=1.34,^1.0|^2.0|^3.0 ",
-        "doctrine/orm": "~2.2,>=2.2.3",
-        "doctrine/common": "~2.2,>=2.2.3"
+        "doctrine/orm": "^3.6",
+        "doctrine/persistence": "^3.3 || ^4.0",
+        "psr/log": "^3.0",
+        "symfony/config": "^7.4",
+        "symfony/console": "^7.4",
+        "symfony/dependency-injection": "^7.4",
+        "symfony/dom-crawler": "^7.4",
+        "symfony/event-dispatcher": "^7.4",
+        "symfony/event-dispatcher-contracts": "^3.6",
+        "symfony/framework-bundle": "^7.4",
+        "symfony/http-foundation": "^7.4",
+        "symfony/http-kernel": "^7.4",
+        "symfony/mailer": "^7.4",
+        "symfony/mime": "^7.4",
+        "symfony/routing": "^7.4",
+        "symfony/translation": "^7.4",
+        "symfony/yaml": "^7.4",
+        "twig/twig": "^3.14"
     },
     "require-dev": {
-        "phpunit/phpunit":  "^6.0|^7.0|^8.0"
+        "phpunit/phpunit": "^12.0"
     },
     "autoload": {
-        "psr-4": { "Azine\\MailgunWebhooksBundle\\": "src/" }
+        "psr-4": {"Azine\\MailgunWebhooksBundle\\": "src/"}
     },
-    "minimum-stability": "dev"
+    "autoload-dev": {
+        "psr-4": {"Azine\\MailgunWebhooksBundle\\Tests\\": "Tests/"}
+    },
+    "config": {
+        "allow-plugins": {"symfony/flex": true},
+        "preferred-install": {"*": "dist"},
+        "process-timeout": 590,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

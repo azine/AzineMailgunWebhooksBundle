@@ -2,11 +2,12 @@
 
 namespace Azine\MailgunWebhooksBundle\Controller;
 
-use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary;
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunMessageSummaryRepository;
+use Azine\MailgunWebhooksBundle\Services\AzineMailgunCockpitService;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,8 +15,16 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Mailgun controller.
  */
-class MailgunController extends AbstractController
+final class MailgunController extends AbstractController
 {
+    public function __construct(
+        private readonly ManagerRegistry $doctrine,
+        private readonly AzineMailgunCockpitService $cockpitService,
+        private readonly string $emailWebViewRoute,
+        private readonly string $emailWebViewToken,
+    ) {
+    }
+
     /**
      * Show MailgunEvent-Overview.
      */
@@ -30,10 +39,10 @@ class MailgunController extends AbstractController
         $params['complained'] = $eventRepository->getEventCount(array('eventType' => 'complained'));
         $params['unsubscribed'] = $eventRepository->getEventCount(array('eventType' => 'unsubscribed'));
         $params['unopened'] = $eventRepository->getEventCount(array('eventType' => 'unopened'));
-        $params['emailWebViewRoute'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_ROUTE);
-        $params['emailWebViewToken'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
+        $params['emailWebViewRoute'] = $this->emailWebViewRoute;
+        $params['emailWebViewToken'] = $this->emailWebViewToken;
 
-        return $this->render('AzineMailgunWebhooksBundle::overview.html.twig', $params);
+        return $this->render('@AzineMailgunWebhooks/overview.html.twig', $params);
     }
 
     /**
@@ -127,8 +136,8 @@ class MailgunController extends AbstractController
 
         // get the events
         $params['events'] = $eventRepository->getEvents($currentFilter, array($orderBy => $orderDirection), $pageSize, ($page - 1) * $pageSize);
-        $params['emailWebViewRoute'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_ROUTE);
-        $params['emailWebViewToken'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
+        $params['emailWebViewRoute'] = $this->emailWebViewRoute;
+        $params['emailWebViewToken'] = $this->emailWebViewToken;
 
         // set the params for the pager
         $params['paginatorParams'] = array(
@@ -141,7 +150,7 @@ class MailgunController extends AbstractController
             'showAlwaysFirstAndLast' => true,
         );
 
-        return $this->render('AzineMailgunWebhooksBundle:MailgunEvent:index.html.twig', $params);
+        return $this->render('@AzineMailgunWebhooks/MailgunEvent/index.html.twig', $params);
     }
 
     /**
@@ -149,7 +158,7 @@ class MailgunController extends AbstractController
      */
     public function eventShowAction($id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->doctrine->getManager();
 
         $entity = $em->getRepository('AzineMailgunWebhooksBundle:MailgunEvent')->find($id);
 
@@ -157,9 +166,9 @@ class MailgunController extends AbstractController
             throw $this->createNotFoundException('Unable to find MailgunEvent entity.');
         }
 
-        return $this->render('AzineMailgunWebhooksBundle:MailgunEvent:show.html.twig', array(
-            'emailWebViewRoute' => $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_ROUTE),
-            'emailWebViewToken' => $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN),
+        return $this->render('@AzineMailgunWebhooks/MailgunEvent/show.html.twig', array(
+            'emailWebViewRoute' => $this->emailWebViewRoute,
+            'emailWebViewToken' => $this->emailWebViewToken,
             'entity' => $entity,
         ));
     }
@@ -175,7 +184,7 @@ class MailgunController extends AbstractController
             throw $this->createNotFoundException('Unable to find MailgunEvent entity.');
         }
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->doctrine->getManager();
         $em->remove($entity);
         $em->flush();
 
@@ -275,8 +284,8 @@ class MailgunController extends AbstractController
 
         // get the events
         $params['messageSummaries'] = $messageSummaryRepository->getMessageSummaries($currentFilter, array($orderBy => $orderDirection), $pageSize, ($page - 1) * $pageSize);
-        $params['emailWebViewRoute'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_ROUTE);
-        $params['emailWebViewToken'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
+        $params['emailWebViewRoute'] = $this->emailWebViewRoute;
+        $params['emailWebViewToken'] = $this->emailWebViewToken;
 
         // set the params for the pager
         $params['paginatorParams'] = array(
@@ -289,21 +298,21 @@ class MailgunController extends AbstractController
             'showAlwaysFirstAndLast' => true,
         );
 
-        return $this->render('AzineMailgunWebhooksBundle::messageSummaryIndex.html.twig', $params);
+        return $this->render('@AzineMailgunWebhooks/messageSummaryIndex.html.twig', $params);
     }
 
     public function messageSummaryShowAction(Request $request, MailgunMessageSummary $messageSummary)
     {
         $params = array('messageSummary' => $messageSummary);
-        $params['emailWebViewRoute'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_ROUTE);
-        $params['emailWebViewToken'] = $this->container->getParameter(AzineMailgunWebhooksExtension::PREFIX.'_'.AzineMailgunWebhooksExtension::WEB_VIEW_TOKEN);
+        $params['emailWebViewRoute'] = $this->emailWebViewRoute;
+        $params['emailWebViewToken'] = $this->emailWebViewToken;
 
-        return $this->render('AzineMailgunWebhooksBundle::messageSummaryShow.html.twig', $params);
+        return $this->render('@AzineMailgunWebhooks/messageSummaryShow.html.twig', $params);
     }
 
     public function cockpitAction()
     {
-        return $this->render('@AzineMailgunWebhooks/cockpit.html.twig', $this->get('azine_mailgun.cockpit_service')->getCockpitDataAsArray());
+        return $this->render('@AzineMailgunWebhooks/cockpit.html.twig', $this->cockpitService->getCockpitDataAsArray());
     }
 
     /**
@@ -313,7 +322,7 @@ class MailgunController extends AbstractController
      */
     private function getMessageSummaryRepository()
     {
-        return $this->getDoctrine()->getManager()->getRepository(MailgunMessageSummary::class);
+        return $this->doctrine->getManager()->getRepository(MailgunMessageSummary::class);
     }
 
     /**
@@ -323,7 +332,7 @@ class MailgunController extends AbstractController
      */
     private function getEventRepository()
     {
-        return $this->getDoctrine()->getManager()->getRepository(MailgunEvent::class);
+        return $this->doctrine->getManager()->getRepository(MailgunEvent::class);
     }
 
     public function getMessageSummaryAction(Request $request)

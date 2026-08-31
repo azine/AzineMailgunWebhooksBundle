@@ -16,7 +16,7 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder(AzineMailgunWebhooksExtension::PREFIX);
         $rootNode = $this->getRootNode($treeBuilder, AzineMailgunWebhooksExtension::PREFIX);
@@ -55,7 +55,9 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode(AzineMailgunWebhooksExtension::TICKET_SUBJECT)->defaultValue('IP on spam-list, please fix.')->info('Mailgun HelpDesk ticket subject')->end()
                         ->scalarNode(AzineMailgunWebhooksExtension::TICKET_MESSAGE)->defaultValue('It looks like my ip is on a spam-list. Please, assign a clean IP to my domain.')->info('Mailgun HelpDesk ticket subject')->end()
                         ->scalarNode(AzineMailgunWebhooksExtension::ALERTS_RECIPIENT_EMAIL)->defaultValue('')->info('Admin E-Mail to send notification about spam complaints')->end()
-        ->end();
+                    ->end()
+                ->end()
+            ->end();
     }
 
     /**
@@ -72,7 +74,9 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode(AzineMailgunWebhooksExtension::BLACKLIST_CHECK_API_KEY)->defaultValue('')->info('Your public-api-key for hetrixtools => see https://hetrixtools.com/')->end()
                         ->scalarNode(AzineMailgunWebhooksExtension::BLACKLIST_CHECK_IP_URL)->defaultValue('https://api.hetrixtools.com/v2/<API_TOKEN>/blacklist-check/ipv4/<IP_ADDRESS>/')->info('Url for checking if ip is in blacklist => see https://docs.hetrixtools.com/blacklist-check-api/')->end()
                         ->integerNode(AzineMailgunWebhooksExtension::BLACKLIST_CHECK_IP_REPEAT_NOTIFICATION_DURATION)->defaultValue(0)->info("Number of days to mute the blacklist-notification if the reported blacklists didn't change.")->end()
-        ->end();
+                    ->end()
+                ->end()
+            ->end();
     }
 
     /**
