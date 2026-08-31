@@ -79,7 +79,7 @@ class MailgunEventRepository extends EntityRepository
         }
 
         if ($lookForUnopened) {
-            $qb->andWhere("NOT EXISTS (SELECT o.id FROM AzineMailgunWebhooksBundle:MailgunEvent o WHERE o.messageId like e.messageId AND o.event in ('opened', 'clicked', 'unsubscribed', 'complained'))");
+            $qb->andWhere("NOT EXISTS (SELECT o.id FROM Azine\\MailgunWebhooksBundle\\Entity\\MailgunEvent o WHERE o.messageId like e.messageId AND o.event in ('opened', 'clicked', 'unsubscribed', 'complained'))");
         }
 
         return $qb;
