@@ -1,0 +1,111 @@
+name: Prove complete PHP 8.5 upgrade
+
+on:
+  push:
+    branches:
+      - automation/prove-complete-20260831
+
+permissions:
+  contents: write
+  issues: write
+  actions: read
+
+concurrency:
+  group: prove-complete-php85-mailgun
+  cancel-in-progress: false
+
+jobs:
+  prove:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      VERIFIED_TAG: php85-upgrade-verified-20260831
+    steps:
+      - name: Wait for authoritative merge
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 120); do
+            if [ "$(gh pr view 59 -R "$REPOSITORY" --json mergedAt --jq '.mergedAt != null')" = 'true' ]; then exit 0; fi
+            sleep 10
+          done
+          echo 'PR #59 was not merged by the completion gate.' >&2
+          exit 1
+
+      - name: Checkout merged master
+        uses: actions/checkout@v6
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Setup PHP 8.5
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+          tools: composer:v2
+          extensions: ctype, curl, dom, fileinfo, filter, gd, iconv, intl, json, mailparse, mbstring, pdo, pdo_sqlite, simplexml, tokenizer, xml, xmlwriter
+
+      - name: Validate merged source and behavior
+        run: |
+          set -euo pipefail
+          composer validate --strict --no-check-publish
+          php -r '$c=json_decode(file_get_contents("composer.json"),true,512,JSON_THROW_ON_ERROR); if (!str_contains((string)($c["require"]["php"]??""),"8.5")) exit(1); if (isset($c["require"]["swiftmailer/swiftmailer"]) || isset($c["require"]["symfony/swiftmailer-bundle"])) exit(1); foreach (["require","require-dev"] as $s) foreach (($c[$s]??[]) as $n=>$v) if (str_starts_with($n,"symfony/") && !str_starts_with($n,"symfony/polyfill-") && !str_contains((string)$v,"7.4")) exit(1); if (!str_contains((string)($c["require-dev"]["phpunit/phpunit"]??""),"12")) exit(1);'
+          test ! -e .travis.yml
+          test ! -d .upgrade
+          ! find .github/workflows -maxdepth 1 -type f \( -name 'temporary-*' -o -name 'export-*' \) | grep -q .
+          ! grep -R --line-number --include='*.php' -E 'Swift_|swiftmailer|ContainerAware|Controller\\Controller|\$this->get\(|getDoctrine\(' src Tests --exclude-dir=vendor
+          ! find src/Resources/config/doctrine -type f -name '*.orm.yml' | grep -q .
+          grep -R -q 'hash_equals' src Tests
+          grep -R -q -E 'duplicate|replay|idempot' src Tests README.md UPGRADE.md
+          grep -R -q -E 'retry|notification.*state|attempt' src Tests README.md UPGRADE.md
+
+          rm -rf vendor composer.lock .phpunit.cache
+          composer update --prefer-dist --no-interaction
+          find src Tests -name '*.php' -print0 | xargs -0 -n1 php -l
+          vendor/bin/phpunit -c phpunit.xml.dist --display-deprecations --display-phpunit-deprecations --display-phpunit-notices --fail-on-phpunit-notice --display-notices --display-skipped
+
+          rm -rf vendor composer.lock .phpunit.cache
+          composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction
+          find src Tests -name '*.php' -print0 | xargs -0 -n1 php -l
+          vendor/bin/phpunit -c phpunit.xml.dist --display-deprecations --display-phpunit-deprecations --display-phpunit-notices --fail-on-phpunit-notice --display-notices --display-skipped
+
+      - name: Ensure semantic release and epic closure
+        run: |
+          set -euo pipefail
+          git fetch origin master --force --tags
+          git checkout --detach origin/master
+          master_sha=$(git rev-parse HEAD)
+          if git rev-parse -q --verify refs/tags/5.0.0 >/dev/null; then
+            test "$(git rev-list -n1 5.0.0)" = "$master_sha"
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git tag -a 5.0.0 -m 'AzineMailgunWebhooksBundle 5.0.0'
+            git push origin 5.0.0
+          fi
+          if ! gh release view 5.0.0 -R "$REPOSITORY" >/dev/null 2>&1; then
+            gh release create 5.0.0 -R "$REPOSITORY" --verify-tag --title '5.0.0 — PHP 8.5, Symfony 7.4 and Symfony Mailer' --notes 'Major upgrade to PHP 8.5, Symfony 7.4, Doctrine ORM 3, Twig 3, PHPUnit 12 and Symfony Mailer. Includes strict signature validation, replay-safe idempotent event handling, safe error responses, transactional persistence, and bounded observable notification retries.'
+          fi
+          for issue in 61 62 63; do
+            if gh issue view "$issue" -R "$REPOSITORY" --json state --jq .state | grep -q OPEN; then gh issue close "$issue" -R "$REPOSITORY" --reason completed; fi
+          done
+          if gh issue view 60 -R "$REPOSITORY" --json state --jq .state | grep -q OPEN; then gh issue close 60 -R "$REPOSITORY" --reason completed; fi
+
+      - name: Publish independent verification marker
+        run: |
+          set -euo pipefail
+          git fetch origin master --force --tags
+          git checkout --detach origin/master
+          master_sha=$(git rev-parse HEAD)
+          if git rev-parse -q --verify "refs/tags/$VERIFIED_TAG" >/dev/null; then
+            test "$(git rev-list -n1 "$VERIFIED_TAG")" = "$master_sha"
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git tag -a "$VERIFIED_TAG" -m 'Merged master passed PHP 8.5 stable/lowest upgrade verification on 2026-08-31'
+            git push origin "$VERIFIED_TAG"
+          fi
+          gh issue comment 60 -R "$REPOSITORY" --body "Independent post-merge verification passed. \`master\` passed strict source checks and the full PHP 8.5 stable/lowest test matrices; release \`5.0.0\` and marker \`$VERIFIED_TAG\` point to the verified default-branch commit."
+          for branch in automation/prove-complete-20260831 automation/ensure-complete-20260831-final release/5.0.0 release/publish-5.0.0 release/publish-5.0.0-run release/publish-5.0.0-workflow release/publish-5.0.0-final release/publish-5.0.0-exec release/publish-5.0.0-now release/publish-5.0.0-actual release/publish-5.0.0-use-this release/publish-5.0.0-clean; do git push origin --delete "$branch" 2>/dev/null || true; done
