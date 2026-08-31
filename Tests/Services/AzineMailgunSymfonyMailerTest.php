@@ -5,6 +5,7 @@ namespace Azine\MailgunWebhooksBundle\Tests\Services;
 use Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService;
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
 use Doctrine\Persistence\ManagerRegistry;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
@@ -12,6 +13,7 @@ use Symfony\Component\Translation\IdentityTranslator;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
 
+#[AllowMockObjectsWithoutExpectations]
 class AzineMailgunSymfonyMailerTest extends TestCase
 {
     public function testBlacklistNotificationUsesMultipartSymfonyEmail(): void

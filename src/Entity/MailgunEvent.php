@@ -885,7 +885,7 @@ class MailgunEvent
      *
      * @return MailgunEvent
      */
-    public function setEventSummary(MailgunMessageSummary $eventSummary = null)
+    public function setEventSummary(?MailgunMessageSummary $eventSummary = null)
     {
         $this->eventSummary = $eventSummary;
 

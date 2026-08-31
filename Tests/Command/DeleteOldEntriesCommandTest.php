@@ -6,6 +6,7 @@ use Azine\MailgunWebhooksBundle\Command\DeleteOldEntriesCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
+#[AllowMockObjectsWithoutExpectations]
 class DeleteOldEntriesCommandTest extends \PHPUnit\Framework\TestCase
 {
     private $mailgunServiceMock;

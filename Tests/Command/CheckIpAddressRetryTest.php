@@ -9,11 +9,13 @@ use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\AzineMailgunHetrixto
 use Azine\MailgunWebhooksBundle\Services\HetrixtoolsService\HetrixtoolsServiceResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
+#[AllowMockObjectsWithoutExpectations]
 class CheckIpAddressRetryTest extends TestCase
 {
     public function testTransientHetrixFailureIsRetriedInProcess(): void

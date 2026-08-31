@@ -12,6 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
+#[AllowMockObjectsWithoutExpectations]
 class CheckIpAddressIsBlacklistedCommandTest extends \PHPUnit\Framework\TestCase
 {
     private $registry;
