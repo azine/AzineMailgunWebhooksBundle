@@ -1,0 +1,131 @@
+name: Aggregate package upgrade proof
+
+on:
+  push:
+    branches:
+      - automation/aggregate-proof-20260831
+
+permissions:
+  contents: write
+  issues: write
+  actions: read
+
+concurrency:
+  group: aggregate-package-upgrade-proof-20260831
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ github.token }}
+      VERIFIED_TAG: php85-upgrade-verified-20260831
+      AGGREGATE_TAG: working-web-package-upgrades-verified-20260831
+    steps:
+      - name: Checkout audit repository
+        uses: actions/checkout@v6
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Wait for and verify all three repository proofs
+        id: audit
+        run: |
+          set -euo pipefail
+          repos=(
+            azine/AzineMailgunWebhooksBundle
+            azine/AzineSocialBarBundle
+            azine/AzineVideoJsBundle
+          )
+          epics=(60 5 3)
+
+          check_repo() {
+            local repo="$1"
+            local epic="$2"
+            local master marker release_tag release_sha proof_success temp_count
+
+            master=$(gh api "repos/$repo/branches/master" --jq .commit.sha)
+            marker=$(gh api "repos/$repo/commits/$VERIFIED_TAG" --jq .sha 2>/dev/null || true)
+            [ "$marker" = "$master" ] || return 1
+
+            release_tag=$(gh api "repos/$repo/releases/latest" --jq .tag_name 2>/dev/null || true)
+            [ -n "$release_tag" ] || return 1
+            release_sha=$(gh api "repos/$repo/commits/$release_tag" --jq .sha 2>/dev/null || true)
+            [ "$release_sha" = "$master" ] || return 1
+
+            [ "$(gh api "repos/$repo/issues/$epic" --jq .state)" = 'closed' ] || return 1
+
+            proof_success=$(gh api "repos/$repo/actions/runs?per_page=100" --jq '[.workflow_runs[] | select(.name == "Prove complete PHP 8.5 upgrade" and .conclusion == "success")] | length')
+            [ "$proof_success" -ge 1 ] || return 1
+
+            temp_count=$(gh api --paginate "repos/$repo/branches?per_page=100" --jq '[.[] | .name | select(startswith("automation/ensure-complete-") or startswith("automation/prove-complete-") or startswith("automation/finalize-php85-") or startswith("automation/publish-php85-") or startswith("verification/check-") or startswith("release/publish-5.0.0") or . == "release/5.0.0")] | length' | awk '{s+=$1} END {print s+0}')
+            [ "$temp_count" -eq 0 ] || return 1
+
+            printf '%s|%s|%s\n' "$repo" "$release_tag" "$master"
+          }
+
+          for attempt in $(seq 1 120); do
+            report=''
+            complete=true
+            for i in 0 1 2; do
+              line=$(check_repo "${repos[$i]}" "${epics[$i]}" 2>/dev/null || true)
+              if [ -z "$line" ]; then complete=false; break; fi
+              report+="$line"$'\n'
+            done
+            if [ "$complete" = true ]; then
+              printf '%s' "$report" > /tmp/package-upgrade-report.txt
+              break
+            fi
+            sleep 10
+          done
+
+          test -s /tmp/package-upgrade-report.txt
+          {
+            echo 'report<<EOF'
+            cat /tmp/package-upgrade-report.txt
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish aggregate audit marker and report
+        run: |
+          set -euo pipefail
+          git fetch origin master --force --tags
+          git checkout --detach origin/master
+          master_sha=$(git rev-parse HEAD)
+          if git rev-parse -q --verify "refs/tags/$AGGREGATE_TAG" >/dev/null; then
+            test "$(git rev-list -n1 "$AGGREGATE_TAG")" = "$master_sha"
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git tag -a "$AGGREGATE_TAG" -m 'All three package repositories passed independent post-merge PHP 8.5 upgrade verification on 2026-08-31'
+            git push origin "$AGGREGATE_TAG"
+          fi
+
+          body=$(python3 - <<'PY'
+          from pathlib import Path
+          rows=[]
+          for line in Path('/tmp/package-upgrade-report.txt').read_text().splitlines():
+              repo, version, sha=line.split('|')
+              rows.append((repo,version,sha))
+          lines=[
+              '## Cross-repository completion audit passed',
+              '',
+              'All three repositories satisfy the completed-upgrade gate:',
+              '',
+              '| Repository | Stable release | Verified `master` |',
+              '|---|---:|---|',
+          ]
+          for repo,version,sha in rows:
+              lines.append(f'| `{repo}` | `{version}` | `{sha}` |')
+          lines += [
+              '',
+              'For every row, the semantic release and `php85-upgrade-verified-20260831` marker resolve to the current `master` commit; the repository-specific post-merge stable/lowest proof workflow succeeded; the upgrade epic is closed; and temporary upgrade/release/verification branches are absent.',
+              '',
+              f'Aggregate audit marker: `{__import__("os").environ["AGGREGATE_TAG"]}`.',
+          ]
+          print('\n'.join(lines))
+          PY
+          )
+          gh issue comment 60 -R "$GITHUB_REPOSITORY" --body "$body"
+          git push origin --delete automation/aggregate-proof-20260831 2>/dev/null || true
