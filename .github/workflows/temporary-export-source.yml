@@ -1,0 +1,24 @@
+name: Export upgrade source
+
+on:
+  push:
+    branches:
+      - codex/fix-all-phpunit-tests
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Package repository
+        run: tar --exclude=.git --exclude=vendor --exclude=.phpunit.cache -czf repository.tar.gz .
+      - name: Upload repository
+        uses: actions/upload-artifact@v4
+        with:
+          name: mailgun-webhooks-source
+          path: repository.tar.gz
+          retention-days: 1
