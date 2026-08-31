@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.2/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.5/phpunit.xsd"
          bootstrap="Tests/bootstrap.php"
          cacheDirectory=".phpunit.cache"
          colors="true"
-         stopOnFailure="false">
-
-    <php>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
-    </php>
-
+         beStrictAboutOutputDuringTests="true"
+         failOnRisky="true"
+         failOnWarning="true">
     <testsuites>
         <testsuite name="Azine/MailgunWebhooksBundle Test Suite">
-            <directory>./Tests</directory>
+            <directory suffix="Test.php">Tests</directory>
         </testsuite>
     </testsuites>
-
-    <coverage includeUncoveredFiles="false">
+    <source>
         <include>
-            <directory suffix=".php">src/Command</directory>
-            <directory suffix=".php">src/Controller</directory>
-            <directory suffix=".php">src/DependencyInjection</directory>
-            <directory suffix=".php">src/Entity</directory>
-            <directory suffix=".php">src/Services</directory>
+            <directory suffix=".php">src</directory>
         </include>
-    </coverage>
+    </source>
 </phpunit>
