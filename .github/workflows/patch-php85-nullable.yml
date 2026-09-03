@@ -29,3 +29,4 @@ jobs:
           git add src/Entity/MailgunCustomVariable.php src/Entity/MailgunAttachment.php
           git commit -m 'Make nullable Mailgun event setters explicit'
           git push origin HEAD:fix/php85-nullable-entity-setters
+      # Trigger after workflow registration.
