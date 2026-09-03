@@ -1,0 +1,26 @@
+name: Publish 5.0.2
+
+on:
+  push:
+    branches: [release/publish-5.0.2]
+    paths: ['.github/workflows/publish-5.0.2.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Publish annotated 5.0.2 tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test "$(git rev-parse HEAD)" = "eb68a26951a04d3f1e9f65fec84a09d5db86a008"
+          git tag -a 5.0.2 eb68a26951a04d3f1e9f65fec84a09d5db86a008 -m 'Doctrine ORM 3 XML metadata compatibility release'
+          git push origin 5.0.2
