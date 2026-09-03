@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping">
+  <entity name="Azine\MailgunWebhooksBundle\Entity\MailgunEvent" table="mailgun_event" repository-class="Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository">
+    <id name="id" type="integer"><generator strategy="AUTO"/></id>
+    <field name="event" type="string" length="63"/>
+    <field name="domain" type="string" length="255"/>
+    <field name="description" type="text" nullable="true"/>
+    <field name="reason" type="string" length="255" nullable="true"/>
+    <field name="recipient" type="string" length="255"/>
+    <field name="sender" type="string" length="255" nullable="true"/>
+    <field name="errorCode" column="error_code" type="string" length="255" nullable="true"/>
+    <field name="ip" type="string" length="15" nullable="true"/>
+    <field name="country" type="string" length="7" nullable="true"/>
+    <field name="city" type="string" length="255" nullable="true"/>
+    <field name="region" type="string" length="31" nullable="true"/>
+    <field name="campaignId" column="campaign_id" type="string" length="255" nullable="true"/>
+    <field name="campaignName" column="campaign_name" type="string" length="255" nullable="true"/>
+    <field name="clientName" column="client_name" type="string" length="255" nullable="true"/>
+    <field name="clientOs" column="client_os" type="string" length="255" nullable="true"/>
+    <field name="clientType" column="client_type" type="string" length="31" nullable="true"/>
+    <field name="deviceType" column="device_type" type="string" length="255" nullable="true"/>
+    <field name="mailingList" column="mailing_list" type="string" length="255" nullable="true"/>
+    <field name="messageHeaders" column="message_headers" type="json" nullable="true"/>
+    <field name="messageId" column="message_id" type="string" length="190"/>
+    <field name="tag" type="string" length="255" nullable="true"/>
+    <field name="userAgent" column="user_agent" type="text" nullable="true"/>
+    <field name="url" type="string" length="255" nullable="true"/>
+    <field name="token" type="string" length="50"/>
+    <field name="timestamp" type="integer"/>
+    <field name="signature" type="string" length="255"/>
+    <one-to-many field="variables" target-entity="Azine\MailgunWebhooksBundle\Entity\MailgunCustomVariable" mapped-by="event"/>
+    <one-to-many field="attachments" target-entity="Azine\MailgunWebhooksBundle\Entity\MailgunAttachment" mapped-by="event"/>
+    <many-to-one field="eventSummary" target-entity="Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary" inversed-by="events">
+      <join-column name="message_id" referenced-column-name="id" on-delete="CASCADE"/>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>
