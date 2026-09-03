@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping">
+  <entity name="Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary" table="mailgun_message_summary" repository-class="Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunMessageSummaryRepository">
+    <id name="id" type="string" length="190"/>
+    <field name="fromAddress" type="string" length="190" nullable="true"/>
+    <field name="toAddress" type="text"/>
+    <field name="firstOpened" type="datetime" nullable="true"/>
+    <field name="lastOpened" type="datetime" nullable="true"/>
+    <field name="openCount" type="integer"/>
+    <field name="sendDate" type="datetime"/>
+    <field name="deliveryStatus" type="string" length="95"/>
+    <field name="senderIp" type="string" length="15"/>
+    <field name="subject" type="text"/>
+    <one-to-many field="events" target-entity="Azine\MailgunWebhooksBundle\Entity\MailgunEvent" mapped-by="eventSummary"/>
+  </entity>
+</doctrine-mapping>
