@@ -134,7 +134,7 @@ class MailgunCustomVariable
      *
      * @return MailgunCustomVariable
      */
-    public function setEvent(MailgunEvent $event = null)
+    public function setEvent(?MailgunEvent $event = null)
     {
         $this->event = $event;
 
