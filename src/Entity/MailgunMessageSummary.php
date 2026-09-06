@@ -45,7 +45,7 @@ class MailgunMessageSummary
     /**
      * @var string
      */
-    private $deliveryStatus;
+    private $deliveryStatus = '';
 
     /**
      * @var string
@@ -84,7 +84,7 @@ class MailgunMessageSummary
      */
     public function updateDeliveryStatus($eventType)
     {
-        if (false === stripos($this->deliveryStatus, $eventType)) {
+        if (false === stripos($this->deliveryStatus ?? '', $eventType)) {
             $this->deliveryStatus = $this->deliveryStatus."$eventType, ";
         }
     }
@@ -206,7 +206,7 @@ class MailgunMessageSummary
      */
     public function getDeliveryStatus()
     {
-        return trim($this->deliveryStatus, ', ');
+        return trim($this->deliveryStatus ?? '', ', ');
     }
 
     /**
