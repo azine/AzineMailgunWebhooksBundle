@@ -2,7 +2,7 @@
 
 namespace Azine\MailgunWebhooksBundle\Entity;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Event for the symfony EventDispatcher-System.
