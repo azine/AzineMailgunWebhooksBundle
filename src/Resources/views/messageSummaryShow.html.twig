@@ -1,8 +1,8 @@
-{% extends 'AzineMailgunWebhooksBundle::layout.html.twig' %}
+{% extends '@AzineMailgunWebhooks/layout.html.twig' %}
 
 {% block body %}
 	{{ parent() }}
-	{{ render(controller('AzineMailgunWebhooksBundle:Mailgun:cockpit')) }}
+	{{ render(path('mailgun_cockpit')) }}
 
 	<h1>Mailgun Message Summary</h1>
 	<p>
@@ -22,7 +22,7 @@
 			</td></tr>
 	</table>
 
-	{{ include('AzineMailgunWebhooksBundle:MailgunEvent:eventList.html.twig', {events: messageSummary.events, emailWebViewRoute: emailWebViewRoute}) }}
+	{{ include('@AzineMailgunWebhooks/MailgunEvent/eventList.html.twig', {events: messageSummary.events, emailWebViewRoute: emailWebViewRoute}) }}
 
 {% endblock %}
 
