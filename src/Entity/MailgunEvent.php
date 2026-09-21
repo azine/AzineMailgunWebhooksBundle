@@ -687,7 +687,7 @@ class MailgunEvent
      */
     public function getMessageId()
     {
-        return $this->messageId;
+        return $this->messageId ?? $this->eventSummary?->getId();
     }
 
     /**
@@ -917,6 +917,9 @@ class MailgunEvent
     public function setEventSummary(?MailgunMessageSummary $eventSummary = null)
     {
         $this->eventSummary = $eventSummary;
+        if (null !== $eventSummary) {
+            $this->messageId = $eventSummary->getId();
+        }
 
         return $this;
     }

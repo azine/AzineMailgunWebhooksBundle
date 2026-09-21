@@ -1,4 +1,4 @@
-{% extends 'AzineMailgunWebhooksBundle:Email:email.base.layout.txt.twig' %}
+{% extends '@AzineMailgunWebhooks/Email/email.base.layout.txt.twig' %}
 {% block content %}
 
 {{ 'notification.blacklist_received.%ipAddress%' | trans({"%ipAddress%" : ipAddress}) }}

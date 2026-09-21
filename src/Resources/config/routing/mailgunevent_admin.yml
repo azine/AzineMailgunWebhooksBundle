@@ -36,3 +36,9 @@ mailgun_overview:
     path: /mailgun/
     defaults:
         _controller: 'Azine\MailgunWebhooksBundle\Controller\MailgunController::eventOverviewAction'
+
+mailgun_cockpit:
+    path: /mailgun/cockpit
+    defaults:
+        _controller: 'Azine\MailgunWebhooksBundle\Controller\MailgunController::cockpitAction'
+    methods: [GET]
