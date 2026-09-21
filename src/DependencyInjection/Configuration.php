@@ -23,7 +23,13 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode(AzineMailgunWebhooksExtension::API_KEY)->isRequired()->cannotBeEmpty()->info('Your api-key for mailgun => see https://mailgun.com/cp')->end()
+                ->scalarNode(AzineMailgunWebhooksExtension::WEBHOOK_SIGNING_KEY)->defaultNull()->info('Mailgun Webhook Signing Key used to verify webhook signatures')->end()
+                ->integerNode(AzineMailgunWebhooksExtension::WEBHOOK_MAX_TIMESTAMP_AGE)->min(0)->defaultValue(28800)->info('Maximum accepted webhook signature age in seconds')->end()
+                ->scalarNode(AzineMailgunWebhooksExtension::API_KEY)
+                    ->defaultNull()
+                    ->setDeprecated('azine/mailgunwebhooks-bundle', '5.1', 'The "%node%" option is deprecated; configure "webhook_signing_key" instead.')
+                    ->info('Deprecated legacy webhook signing key')
+                ->end()
                 ->scalarNode(AzineMailgunWebhooksExtension::PUBLIC_API_KEY)->defaultValue('')->info('Your public-api-key for mailgun => see https://mailgun.com/cp')->end()
                 ->scalarNode(AzineMailgunWebhooksExtension::EMAIL_DOMAIN)->defaultValue('example.com')->info('Your email domain configured on Mailgun')->end()
                 ->scalarNode(AzineMailgunWebhooksExtension::NO_REPLY_EMAIL)->info('The mail-address to use when sending out delivery error notifications etc.')->end()
