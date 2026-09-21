@@ -3,6 +3,7 @@
 namespace Azine\MailgunWebhooksBundle\Entity\Repositories;
 
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
+use Azine\MailgunWebhooksBundle\Services\AddressParser;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
@@ -155,8 +156,8 @@ class MailgunEventRepository extends EntityRepository
     private function processEmailLists($emailLists){
         $result = array();
         foreach ($emailLists as $next) {
-            foreach (mailparse_rfc822_parse_addresses($next['address']) as $recipient ){
-                $email = strtolower($recipient['address']);
+            foreach (AddressParser::parse((string) $next['address']) as $recipient) {
+                $email = strtolower($recipient->getAddress());
                 if(array_search($email,$result) === false){
                     $result[] = $email;
                 }
