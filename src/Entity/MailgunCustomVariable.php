@@ -76,7 +76,7 @@ class MailgunCustomVariable
      */
     public function getEventId()
     {
-        return $this->eventId;
+        return $this->eventId ?? $this->event?->getId();
     }
 
     /**
@@ -137,6 +137,9 @@ class MailgunCustomVariable
     public function setEvent(?MailgunEvent $event = null)
     {
         $this->event = $event;
+        if (null !== $event && null !== $event->getId()) {
+            $this->eventId = $event->getId();
+        }
 
         return $this;
     }
