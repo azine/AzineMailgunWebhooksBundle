@@ -130,6 +130,10 @@ azine_mailgun_webhooks:
     # reply-name for delivery-error-notifications
     no_reply_name:  "MuBu Properties Mailer"
     
+    # Set to false when the host application owns permanent-failure alerting.
+    delivery_failure_notifications:
+        enabled: true
+
     spam_alerts:
     
         # Whether to send notifications about spam complaints
