@@ -36,6 +36,18 @@ final class EventCreatedListenerTest extends TestCase
         (new EventCreatedListener($mailer, false))->onEventCreated(new MailgunWebhookEvent($event));
     }
 
+    public function testPermanentFailureNotificationCanBeDisabled(): void
+    {
+        $mailer = $this->createMock(AzineMailgunMailerService::class);
+        $mailer->expects(self::never())->method('sendErrorNotification');
+
+        $event = (new MailgunEvent())
+            ->setEvent('failed')
+            ->setSeverity(MailgunEvent::FAILURE_SEVERITY_PERMANENT);
+
+        (new EventCreatedListener($mailer, false, false))->onEventCreated(new MailgunWebhookEvent($event));
+    }
+
     public function testLegacyBounceStillTriggersDeliveryErrorNotification(): void
     {
         $event = (new MailgunEvent())->setEvent('bounced');
