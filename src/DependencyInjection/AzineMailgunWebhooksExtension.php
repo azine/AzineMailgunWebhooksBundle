@@ -21,6 +21,7 @@ class AzineMailgunWebhooksExtension extends Extension
     const PUBLIC_API_KEY = 'public_api_key';
     const EMAIL_DOMAIN = 'email_domain';
     const SPAM_ALERTS_PREFIX = 'spam_alerts';
+    const DELIVERY_FAILURE_NOTIFICATIONS_PREFIX = 'delivery_failure_notifications';
     const SEND_ENABLED = 'enabled';
     const SEND_INTERVAL = 'interval';
     const TICKET_ID = 'ticket_id';
@@ -82,6 +83,11 @@ class AzineMailgunWebhooksExtension extends Extension
         $container->setParameter(self::PREFIX.'_'.self::SPAM_ALERTS_PREFIX.'_'.self::TICKET_SUBJECT, $config[self::SPAM_ALERTS_PREFIX][self::TICKET_SUBJECT]);
         $container->setParameter(self::PREFIX.'_'.self::SPAM_ALERTS_PREFIX.'_'.self::TICKET_MESSAGE, $config[self::SPAM_ALERTS_PREFIX][self::TICKET_MESSAGE]);
         $container->setParameter(self::PREFIX.'_'.self::SPAM_ALERTS_PREFIX.'_'.self::ALERTS_RECIPIENT_EMAIL, $config[self::SPAM_ALERTS_PREFIX][self::ALERTS_RECIPIENT_EMAIL]);
+
+        $container->setParameter(
+            self::PREFIX.'_'.self::DELIVERY_FAILURE_NOTIFICATIONS_PREFIX.'_'.self::SEND_ENABLED,
+            $config[self::DELIVERY_FAILURE_NOTIFICATIONS_PREFIX][self::SEND_ENABLED]
+        );
 
         $container->setParameter(self::PREFIX.'_'.self::HETRIXTOOLS_PREFIX.'_'.self::BLACKLIST_CHECK_API_KEY, $config[self::HETRIXTOOLS_PREFIX][self::BLACKLIST_CHECK_API_KEY]);
         $container->setParameter(self::PREFIX.'_'.self::HETRIXTOOLS_PREFIX.'_'.self::BLACKLIST_CHECK_IP_URL, $config[self::HETRIXTOOLS_PREFIX][self::BLACKLIST_CHECK_IP_URL]);
