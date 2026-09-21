@@ -43,8 +43,9 @@ class EventCreatedListener
                 $this->mailer->sendSpamComplaintNotification($event->getMailgunEvent()->getId());
             }
         }
-        if(in_array($eventType, ['rejected', 'failed', 'dropped', 'bounced'])){
-            $this->mailer->sendErrorNotification($event->getMailgunEvent());
+        $mailgunEvent = $event->getMailgunEvent();
+        if ($mailgunEvent->isPermanentFailure() || in_array($eventType, ['rejected', 'dropped', 'bounced'], true)) {
+            $this->mailer->sendErrorNotification($mailgunEvent);
         }
     }
 }
