@@ -73,7 +73,8 @@ services:
             $doctrine: '@doctrine'
             $eventDispatcher: '@event_dispatcher'
             $logger: '@logger'
-            $apiKey: '%azine_mailgun_webhooks_api_key%'
+            $webhookSigningKey: '%azine_mailgun_webhooks_webhook_signing_key%'
+            $webhookMaxTimestampAge: '%azine_mailgun_webhooks_webhook_max_timestamp_age%'
 
     Azine\MailgunWebhooksBundle\Controller\MailgunController:
         public: true
