@@ -11,6 +11,8 @@ class MailgunEvent
     const SEVERITY_INFO = 'info';
     const SEVERITY_WARN = 'warning';
     const SEVERITY_ERROR = 'error';
+    const FAILURE_SEVERITY_TEMPORARY = 'temporary';
+    const FAILURE_SEVERITY_PERMANENT = 'permanent';
 
     public function getEventTitle()
     {
@@ -80,6 +82,11 @@ class MailgunEvent
      * @var string
      */
     private $domain;
+
+    /**
+     * @var string|null
+     */
+    private $severity;
 
     /**
      * @var string
@@ -247,6 +254,28 @@ class MailgunEvent
     public function getEvent()
     {
         return $this->event;
+    }
+
+    public function setSeverity(?string $severity): self
+    {
+        $this->severity = $severity;
+
+        return $this;
+    }
+
+    public function getSeverity(): ?string
+    {
+        return $this->severity;
+    }
+
+    public function isTemporaryFailure(): bool
+    {
+        return 'failed' === $this->event && self::FAILURE_SEVERITY_TEMPORARY === $this->severity;
+    }
+
+    public function isPermanentFailure(): bool
+    {
+        return 'failed' === $this->event && self::FAILURE_SEVERITY_PERMANENT === $this->severity;
     }
 
     /**
