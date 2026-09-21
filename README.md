@@ -21,7 +21,6 @@ delete them when you don't need them anymore (or when you need to save some disk
 - Symfony **7.4** components
 - Twig **3.x**
 - Doctrine ORM **3.3+**
-- PHP extension: **mailparse**
 
 ## Local test execution
 1. Install dependencies:
@@ -107,11 +106,17 @@ This is the complete list of configuration options with their defaults.
 # Default configuration for "AzineMailgunWebhooksBundle"
 azine_mailgun_webhooks:
 
-    # Your api-key for mailgun => see https://mailgun.com/cp
-    api_key:              ~ # Required
+    # Mailgun Webhook Signing Key (not the HTTP API key or SMTP password).
+    webhook_signing_key: '%env(MAILGUN_WEBHOOK_SIGNING_KEY)%'
 
-    # Your public-api-key for mailgun => see https://mailgun.com/cp
-    public_api_key:       ''
+    # Maximum accepted signature age. Mailgun can retry webhook delivery for hours.
+    webhook_max_timestamp_age: 28800
+
+    # Deprecated compatibility option. Use webhook_signing_key instead.
+    # api_key: ''
+
+    # Optional legacy/public API key used by older integrations.
+    public_api_key: ''
 
     # Your domain as configured on mailgun.com
     email_domain:     ''
@@ -213,12 +218,14 @@ php bin/console router:debug -e prod | grep mailgun_overview
 ```
 
 ## Events
-Whenever mailgun posts an event via the webhook, an MailgunWebhookEvent containing the 
-new MailgunEvent is dispatched.
+Whenever Mailgun posts an event via the webhook, a `MailgunWebhookEvent` containing the
+persisted `MailgunEvent` is dispatched.
 
-You can implement your own means of notification for failures or if you configured your
-application to use the swiftmailer, you can use the SwiftMailerMailgunWebhookEventListener,
-to send emails to an address you specified.
+Current Mailgun failure payloads use `event=failed` plus `severity=temporary|permanent`.
+The bundle persists that severity explicitly. Temporary failures are stored and dispatched
+without sending a delivery-error notification; permanent failures remain eligible for
+notification. Applications can subscribe to the dispatched event and implement their own
+alerting/task workflow.
 
 # Cli Commands
 This bundle offers two commands for you to automate things via a scheduler (cronjob).
