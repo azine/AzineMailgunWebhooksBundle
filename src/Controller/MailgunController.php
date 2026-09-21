@@ -160,7 +160,7 @@ final class MailgunController extends AbstractController
     {
         $em = $this->doctrine->getManager();
 
-        $entity = $em->getRepository('AzineMailgunWebhooksBundle:MailgunEvent')->find($id);
+        $entity = $em->getRepository(MailgunEvent::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find MailgunEvent entity.');
