@@ -22,7 +22,6 @@
     <field name="deviceType" column="device_type" type="string" length="255" nullable="true"/>
     <field name="mailingList" column="mailing_list" type="string" length="255" nullable="true"/>
     <field name="messageHeaders" column="message_headers" type="json" nullable="true"/>
-    <field name="messageId" column="message_id" type="string" length="190"/>
     <field name="tag" type="string" length="255" nullable="true"/>
     <field name="userAgent" column="user_agent" type="text" nullable="true"/>
     <field name="url" type="string" length="255" nullable="true"/>
