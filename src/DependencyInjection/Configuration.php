@@ -39,6 +39,7 @@ class Configuration implements ConfigurationInterface
             ->end();
 
         $this->addSpamAlertsSection($rootNode);
+        $this->addDeliveryFailureNotificationsSection($rootNode);
         $this->addBlacklistCheckSection($rootNode);
 
         return $treeBuilder;
@@ -61,6 +62,22 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode(AzineMailgunWebhooksExtension::TICKET_SUBJECT)->defaultValue('IP on spam-list, please fix.')->info('Mailgun HelpDesk ticket subject')->end()
                         ->scalarNode(AzineMailgunWebhooksExtension::TICKET_MESSAGE)->defaultValue('It looks like my ip is on a spam-list. Please, assign a clean IP to my domain.')->info('Mailgun HelpDesk ticket subject')->end()
                         ->scalarNode(AzineMailgunWebhooksExtension::ALERTS_RECIPIENT_EMAIL)->defaultValue('')->info('Admin E-Mail to send notification about spam complaints')->end()
+                    ->end()
+                ->end()
+            ->end();
+    }
+
+    private function addDeliveryFailureNotificationsSection(ArrayNodeDefinition $node): void
+    {
+        $node
+            ->children()
+                ->arrayNode(AzineMailgunWebhooksExtension::DELIVERY_FAILURE_NOTIFICATIONS_PREFIX)
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode(AzineMailgunWebhooksExtension::SEND_ENABLED)
+                            ->defaultTrue()
+                            ->info('Whether the bundle sends its own notification email for permanent delivery failures')
+                        ->end()
                     ->end()
                 ->end()
             ->end();
