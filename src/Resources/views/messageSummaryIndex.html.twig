@@ -1,8 +1,8 @@
-{% extends 'AzineMailgunWebhooksBundle::layout.html.twig' %}
+{% extends '@AzineMailgunWebhooks/layout.html.twig' %}
 
 {% block body %}
 	{{ parent() }}
-	{{ render(controller('AzineMailgunWebhooksBundle:Mailgun:cockpit')) }}
+	{{ render(path('mailgun_cockpit')) }}
 
 	<h1>Mailgun Message Summaries</h1>
 	<p>
@@ -57,7 +57,7 @@
 	</form>
 	<hr/>
 
-	{{ include('AzineMailgunWebhooksBundle::paginator.html.twig', paginatorParams) }}
+	{{ include('@AzineMailgunWebhooks/paginator.html.twig', paginatorParams) }}
 
 	<table class="tablesorter-blue eventsTable">
 		<thead>
@@ -120,7 +120,7 @@
 		</tbody>
 	</table>
 
-	{{ include('AzineMailgunWebhooksBundle::paginator.html.twig', paginatorParams) }}
+	{{ include('@AzineMailgunWebhooks/paginator.html.twig', paginatorParams) }}
 
 
 {% endblock %}
