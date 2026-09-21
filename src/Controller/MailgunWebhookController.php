@@ -23,7 +23,8 @@ final class MailgunWebhookController
         private readonly ManagerRegistry $doctrine,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly LoggerInterface $logger,
-        private readonly string $apiKey,
+        private readonly string $webhookSigningKey,
+        private readonly int $webhookMaxTimestampAge,
     ) {
     }
 
@@ -70,12 +71,12 @@ final class MailgunWebhookController
         // check if the timestamp is fresh
         $timestamp = $signatureData['timestamp'];
         $tsAge = abs(time() - $timestamp);
-        if ($tsAge > 15) {
+        if ($tsAge > $this->webhookMaxTimestampAge) {
             return new Response('Signature verification failed. Timestamp too old abs('.time()." - $timestamp) = $tsAge", 401);
         }
 
         // validate post-data
-        $key = $this->apiKey;
+        $key = $this->webhookSigningKey;
         $token = $signatureData['token'];
         $expectedSignature = hash_hmac('SHA256', $timestamp.$token, $key);
         if (!hash_equals($expectedSignature, (string) $signatureData['signature'])) {
@@ -116,6 +117,10 @@ final class MailgunWebhookController
             if (array_key_exists('event', $eventData)) {
                 $event->setEvent($eventData['event']);
                 unset($eventData['event']);
+            }
+            if (array_key_exists('severity', $eventData)) {
+                $event->setSeverity((string) $eventData['severity']);
+                unset($eventData['severity']);
             }
             // domain
             if (array_key_exists('envelope', $eventData)) {
@@ -320,13 +325,13 @@ final class MailgunWebhookController
         }
 
         // validate post-data
-        $key = $this->apiKey;
+        $key = $this->webhookSigningKey;
         $timestamp = $params['timestamp'];
 
         // check if the timestamp is fresh
         $now = time();
         $tsAge = abs($now - $timestamp);
-        if ($tsAge > 15) {
+        if ($tsAge > $this->webhookMaxTimestampAge) {
             return new Response("Signature verification failed. Timestamp too old abs($now - $timestamp)=$tsAge", 401);
         }
 
@@ -360,6 +365,11 @@ final class MailgunWebhookController
             if (array_key_exists('event', $params)) {
                 $event->setEvent($params['event']);
                 unset($params['event']);
+            }
+
+            if (array_key_exists('severity', $params)) {
+                $event->setSeverity((string) $params['severity']);
+                unset($params['severity']);
             }
 
             // domain
