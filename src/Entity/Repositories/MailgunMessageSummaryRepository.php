@@ -4,6 +4,7 @@ namespace Azine\MailgunWebhooksBundle\Entity\Repositories;
 
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Entity\MailgunMessageSummary;
+use Azine\MailgunWebhooksBundle\Services\AddressParser;
 
 /**
  * MailgunMessageSummaryRepository.
@@ -73,8 +74,8 @@ class MailgunMessageSummaryRepository extends \Doctrine\ORM\EntityRepository
     private function processEmailLists($emailLists){
         $result = array();
         foreach ($emailLists as $next) {
-            foreach (mailparse_rfc822_parse_addresses($next['address']) as $recipient ){
-                $email = strtolower($recipient['address']);
+            foreach (AddressParser::parse((string) $next['address']) as $recipient) {
+                $email = strtolower($recipient->getAddress());
                 if(array_search($email,$result) === false){
                     $result[] = $email;
                 }
@@ -130,7 +131,8 @@ class MailgunMessageSummaryRepository extends \Doctrine\ORM\EntityRepository
     public function findSummary($fromAddress, $toAddresses, $sendTime, $subject)
     {
         // extract email-address part
-        $from = mailparse_rfc822_parse_addresses($fromAddress)[0];
+        $fromAddresses = AddressParser::parse((string) $fromAddress);
+        $from = $fromAddresses[0]->getAddress();
 
         $qb = $this->createQueryBuilder('m');
         $qb->where('m.sendDate < :higherBound AND m.sendDate > :lowerBound AND m.fromAddress like :fromAddress')
@@ -140,8 +142,8 @@ class MailgunMessageSummaryRepository extends \Doctrine\ORM\EntityRepository
 
         // extract email-address parts
         $to = '';
-        foreach (mailparse_rfc822_parse_addresses($toAddresses) as $nextMatch) {
-            $to += "'".$nextMatch['address']."',";
+        foreach (AddressParser::parse((string) $toAddresses) as $nextMatch) {
+            $to .= "'".$nextMatch->getAddress()."',";
         }
         $to = '('.trim($to, ', ').')';
 

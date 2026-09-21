@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 final class MailgunWebhookSecurityTest extends TestCase
 {
-    private const API_KEY = 'test-signing-key';
+    private const WEBHOOK_SIGNING_KEY = 'test-signing-key';
 
     public function testMalformedJsonIsRejected(): void
     {
@@ -62,17 +62,45 @@ final class MailgunWebhookSecurityTest extends TestCase
         self::assertSame(401, $response->getStatusCode());
     }
 
-    public function testStaleSignatureIsRejected(): void
+    public function testDelayedSignatureWithinConfiguredWindowIsAcceptedAndDeduplicated(): void
     {
         $timestamp = time() - 60;
-        $token = 'stale-token';
-        $signature = hash_hmac('SHA256', $timestamp.$token, self::API_KEY);
+        $token = 'delayed-token';
+        $signature = hash_hmac('SHA256', $timestamp.$token, self::WEBHOOK_SIGNING_KEY);
+
+        $repository = $this->createStub(ObjectRepository::class);
+        $repository->method('findOneBy')->willReturn(new MailgunEvent());
+
+        $manager = $this->createStub(ObjectManager::class);
+        $manager->method('getRepository')->willReturn($repository);
+
+        $registry = $this->createStub(ManagerRegistry::class);
+        $registry->method('getManager')->willReturn($manager);
+
         $payload = [
             'signature' => compact('timestamp', 'token', 'signature'),
             'event-data' => ['event' => 'delivered'],
         ];
 
-        $response = $this->controller()->createFromWebhookAction(
+        $response = $this->controller($registry, 300)->createFromWebhookAction(
+            Request::create('/mailgun/event/webhook/create', 'POST', [], [], [], [], json_encode($payload, JSON_THROW_ON_ERROR)),
+        );
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame('Webhook already processed.', $response->getContent());
+    }
+
+    public function testSignatureOlderThanConfiguredWindowIsRejected(): void
+    {
+        $timestamp = time() - 301;
+        $token = 'stale-token';
+        $signature = hash_hmac('SHA256', $timestamp.$token, self::WEBHOOK_SIGNING_KEY);
+        $payload = [
+            'signature' => compact('timestamp', 'token', 'signature'),
+            'event-data' => ['event' => 'delivered'],
+        ];
+
+        $response = $this->controller(null, 300)->createFromWebhookAction(
             Request::create('/mailgun/event/webhook/create', 'POST', [], [], [], [], json_encode($payload, JSON_THROW_ON_ERROR)),
         );
 
@@ -83,7 +111,7 @@ final class MailgunWebhookSecurityTest extends TestCase
     {
         $timestamp = time();
         $token = 'replayed-token';
-        $signature = hash_hmac('SHA256', $timestamp.$token, self::API_KEY);
+        $signature = hash_hmac('SHA256', $timestamp.$token, self::WEBHOOK_SIGNING_KEY);
 
         $repository = $this->createStub(ObjectRepository::class);
         $repository->method('findOneBy')->willReturn(new MailgunEvent());
@@ -107,13 +135,14 @@ final class MailgunWebhookSecurityTest extends TestCase
         self::assertSame('Webhook already processed.', $response->getContent());
     }
 
-    private function controller(?ManagerRegistry $registry = null): MailgunWebhookController
+    private function controller(?ManagerRegistry $registry = null, int $maxTimestampAge = 28800): MailgunWebhookController
     {
         return new MailgunWebhookController(
             $registry ?? $this->createStub(ManagerRegistry::class),
             $this->createStub(EventDispatcherInterface::class),
             new NullLogger(),
-            self::API_KEY,
+            self::WEBHOOK_SIGNING_KEY,
+            $maxTimestampAge,
         );
     }
 }

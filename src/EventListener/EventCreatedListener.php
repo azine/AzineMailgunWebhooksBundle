@@ -26,8 +26,11 @@ class EventCreatedListener
      * @param AzineMailgunMailerService $mailer
      * @param bool                      $sendNotifications
      */
-    public function __construct(AzineMailgunMailerService $mailer, $sendNotifications)
-    {
+    public function __construct(
+        AzineMailgunMailerService $mailer,
+        $sendNotifications,
+        private readonly bool $sendDeliveryFailureNotifications = true,
+    ) {
         $this->mailer = $mailer;
         $this->sendNotifications = $sendNotifications;
     }
@@ -43,8 +46,12 @@ class EventCreatedListener
                 $this->mailer->sendSpamComplaintNotification($event->getMailgunEvent()->getId());
             }
         }
-        if(in_array($eventType, ['rejected', 'failed', 'dropped', 'bounced'])){
-            $this->mailer->sendErrorNotification($event->getMailgunEvent());
+        $mailgunEvent = $event->getMailgunEvent();
+        if (
+            $this->sendDeliveryFailureNotifications
+            && ($mailgunEvent->isPermanentFailure() || in_array($eventType, ['rejected', 'dropped', 'bounced'], true))
+        ) {
+            $this->mailer->sendErrorNotification($mailgunEvent);
         }
     }
 }

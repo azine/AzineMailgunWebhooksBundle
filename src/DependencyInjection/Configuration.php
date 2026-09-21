@@ -23,7 +23,13 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode(AzineMailgunWebhooksExtension::API_KEY)->isRequired()->cannotBeEmpty()->info('Your api-key for mailgun => see https://mailgun.com/cp')->end()
+                ->scalarNode(AzineMailgunWebhooksExtension::WEBHOOK_SIGNING_KEY)->defaultNull()->info('Mailgun Webhook Signing Key used to verify webhook signatures')->end()
+                ->integerNode(AzineMailgunWebhooksExtension::WEBHOOK_MAX_TIMESTAMP_AGE)->min(0)->defaultValue(28800)->info('Maximum accepted webhook signature age in seconds')->end()
+                ->scalarNode(AzineMailgunWebhooksExtension::API_KEY)
+                    ->defaultNull()
+                    ->setDeprecated('azine/mailgunwebhooks-bundle', '5.1', 'The "%node%" option is deprecated; configure "webhook_signing_key" instead.')
+                    ->info('Deprecated legacy webhook signing key')
+                ->end()
                 ->scalarNode(AzineMailgunWebhooksExtension::PUBLIC_API_KEY)->defaultValue('')->info('Your public-api-key for mailgun => see https://mailgun.com/cp')->end()
                 ->scalarNode(AzineMailgunWebhooksExtension::EMAIL_DOMAIN)->defaultValue('example.com')->info('Your email domain configured on Mailgun')->end()
                 ->scalarNode(AzineMailgunWebhooksExtension::NO_REPLY_EMAIL)->info('The mail-address to use when sending out delivery error notifications etc.')->end()
@@ -33,6 +39,7 @@ class Configuration implements ConfigurationInterface
             ->end();
 
         $this->addSpamAlertsSection($rootNode);
+        $this->addDeliveryFailureNotificationsSection($rootNode);
         $this->addBlacklistCheckSection($rootNode);
 
         return $treeBuilder;
@@ -55,6 +62,22 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode(AzineMailgunWebhooksExtension::TICKET_SUBJECT)->defaultValue('IP on spam-list, please fix.')->info('Mailgun HelpDesk ticket subject')->end()
                         ->scalarNode(AzineMailgunWebhooksExtension::TICKET_MESSAGE)->defaultValue('It looks like my ip is on a spam-list. Please, assign a clean IP to my domain.')->info('Mailgun HelpDesk ticket subject')->end()
                         ->scalarNode(AzineMailgunWebhooksExtension::ALERTS_RECIPIENT_EMAIL)->defaultValue('')->info('Admin E-Mail to send notification about spam complaints')->end()
+                    ->end()
+                ->end()
+            ->end();
+    }
+
+    private function addDeliveryFailureNotificationsSection(ArrayNodeDefinition $node): void
+    {
+        $node
+            ->children()
+                ->arrayNode(AzineMailgunWebhooksExtension::DELIVERY_FAILURE_NOTIFICATIONS_PREFIX)
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode(AzineMailgunWebhooksExtension::SEND_ENABLED)
+                            ->defaultTrue()
+                            ->info('Whether the bundle sends its own notification email for permanent delivery failures')
+                        ->end()
                     ->end()
                 ->end()
             ->end();

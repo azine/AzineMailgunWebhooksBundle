@@ -15,10 +15,13 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 class AzineMailgunWebhooksExtension extends Extension
 {
     const PREFIX = 'azine_mailgun_webhooks';
+    const WEBHOOK_SIGNING_KEY = 'webhook_signing_key';
+    const WEBHOOK_MAX_TIMESTAMP_AGE = 'webhook_max_timestamp_age';
     const API_KEY = 'api_key';
     const PUBLIC_API_KEY = 'public_api_key';
     const EMAIL_DOMAIN = 'email_domain';
     const SPAM_ALERTS_PREFIX = 'spam_alerts';
+    const DELIVERY_FAILURE_NOTIFICATIONS_PREFIX = 'delivery_failure_notifications';
     const SEND_ENABLED = 'enabled';
     const SEND_INTERVAL = 'interval';
     const TICKET_ID = 'ticket_id';
@@ -42,7 +45,20 @@ class AzineMailgunWebhooksExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        if (array_key_exists(self::API_KEY, $config)) {
+        $webhookSigningKey = $config[self::WEBHOOK_SIGNING_KEY] ?? null;
+        if ((null === $webhookSigningKey || '' === trim((string) $webhookSigningKey)) && !empty($config[self::API_KEY])) {
+            $webhookSigningKey = $config[self::API_KEY];
+        }
+        if (null === $webhookSigningKey || '' === trim((string) $webhookSigningKey)) {
+            throw new \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException(
+                'Configure azine_mailgun_webhooks.webhook_signing_key with the Mailgun Webhook Signing Key.'
+            );
+        }
+
+        $container->setParameter(self::PREFIX.'_'.self::WEBHOOK_SIGNING_KEY, $webhookSigningKey);
+        $container->setParameter(self::PREFIX.'_'.self::WEBHOOK_MAX_TIMESTAMP_AGE, $config[self::WEBHOOK_MAX_TIMESTAMP_AGE]);
+
+        if (array_key_exists(self::API_KEY, $config) && null !== $config[self::API_KEY]) {
             $container->setParameter(self::PREFIX.'_'.self::API_KEY, $config[self::API_KEY]);
         }
 
@@ -67,6 +83,11 @@ class AzineMailgunWebhooksExtension extends Extension
         $container->setParameter(self::PREFIX.'_'.self::SPAM_ALERTS_PREFIX.'_'.self::TICKET_SUBJECT, $config[self::SPAM_ALERTS_PREFIX][self::TICKET_SUBJECT]);
         $container->setParameter(self::PREFIX.'_'.self::SPAM_ALERTS_PREFIX.'_'.self::TICKET_MESSAGE, $config[self::SPAM_ALERTS_PREFIX][self::TICKET_MESSAGE]);
         $container->setParameter(self::PREFIX.'_'.self::SPAM_ALERTS_PREFIX.'_'.self::ALERTS_RECIPIENT_EMAIL, $config[self::SPAM_ALERTS_PREFIX][self::ALERTS_RECIPIENT_EMAIL]);
+
+        $container->setParameter(
+            self::PREFIX.'_'.self::DELIVERY_FAILURE_NOTIFICATIONS_PREFIX.'_'.self::SEND_ENABLED,
+            $config[self::DELIVERY_FAILURE_NOTIFICATIONS_PREFIX][self::SEND_ENABLED]
+        );
 
         $container->setParameter(self::PREFIX.'_'.self::HETRIXTOOLS_PREFIX.'_'.self::BLACKLIST_CHECK_API_KEY, $config[self::HETRIXTOOLS_PREFIX][self::BLACKLIST_CHECK_API_KEY]);
         $container->setParameter(self::PREFIX.'_'.self::HETRIXTOOLS_PREFIX.'_'.self::BLACKLIST_CHECK_IP_URL, $config[self::HETRIXTOOLS_PREFIX][self::BLACKLIST_CHECK_IP_URL]);

@@ -2,6 +2,8 @@
 
 namespace Azine\MailgunWebhooksBundle\Entity;
 
+use Azine\MailgunWebhooksBundle\Services\AddressParser;
+
 /**
  * MailgunMessageSummary.
  */
@@ -270,7 +272,13 @@ class MailgunMessageSummary
      */
     public function setFromAddress($fromAddress)
     {
-        $this->fromAddress = mailparse_rfc822_parse_addresses($fromAddress)[0]['address'];
+        $addresses = AddressParser::parse($fromAddress);
+        if ([] === $addresses) {
+            throw new \InvalidArgumentException(sprintf('No valid sender address could be parsed from "%s".', $fromAddress));
+        }
+
+        $this->fromAddress = $addresses[0]->getAddress();
+
         return $this;
     }
 
@@ -281,9 +289,9 @@ class MailgunMessageSummary
      */
     public function appendToToAddress($toAddress)
     {
-        $emailDetails = mailparse_rfc822_parse_addresses($toAddress);
+        $emailDetails = AddressParser::parse($toAddress);
         foreach ($emailDetails as $nextEmailDetail) {
-            $email = $nextEmailDetail['address'];
+            $email = $nextEmailDetail->getAddress();
             if (false === stripos($this->toAddress, $email)) {
                 $this->toAddress = trim($this->toAddress.', '.$email, ', ');
             }

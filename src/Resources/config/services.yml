@@ -34,6 +34,7 @@ services:
         arguments:
             - '@azine.mailgun.mailer'
             - '%azine_mailgun_webhooks_spam_alerts_enabled%'
+            - '%azine_mailgun_webhooks_delivery_failure_notifications_enabled%'
 
     azine.mailgun.mailer:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService
@@ -73,7 +74,8 @@ services:
             $doctrine: '@doctrine'
             $eventDispatcher: '@event_dispatcher'
             $logger: '@logger'
-            $apiKey: '%azine_mailgun_webhooks_api_key%'
+            $webhookSigningKey: '%azine_mailgun_webhooks_webhook_signing_key%'
+            $webhookMaxTimestampAge: '%azine_mailgun_webhooks_webhook_max_timestamp_age%'
 
     Azine\MailgunWebhooksBundle\Controller\MailgunController:
         public: true

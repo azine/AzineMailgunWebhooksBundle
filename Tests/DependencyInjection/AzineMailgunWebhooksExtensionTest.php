@@ -38,7 +38,7 @@ class AzineMailgunWebhooksExtensionTest extends \PHPUnit\Framework\TestCase
         $loader->load(array($config), $this->configuration);
 
         $this->assertTrue($this->configuration instanceof ContainerBuilder);
-        $this->assertParameter('someKey_adf4343lki5432543cfcab54325fabiacbzfac', 'azine_mailgun_webhooks_api_key');
+        $this->assertParameter('someSigningKey_adf4343lki5432543cfcab54325fabiacbzfac', 'azine_mailgun_webhooks_webhook_signing_key');
     }
 
     public function testFullConfig()
@@ -49,8 +49,9 @@ class AzineMailgunWebhooksExtensionTest extends \PHPUnit\Framework\TestCase
         $loader->load(array($config), $this->configuration);
 
         $this->assertTrue($this->configuration instanceof ContainerBuilder);
-        $this->assertParameter('someKey_adf4343lki5432543cfcab54325fabiacbzfac', 'azine_mailgun_webhooks_api_key');
+        $this->assertParameter('someSigningKey_adf4343lki5432543cfcab54325fabiacbzfac', 'azine_mailgun_webhooks_webhook_signing_key');
         $this->assertParameter('somePublicKey_adflkiacfcajkhkhkjhkj8767654654bfabiacbzfac', 'azine_mailgun_webhooks_public_api_key');
+        $this->assertParameter(3600, 'azine_mailgun_webhooks_webhook_max_timestamp_age');
     }
 
     /**
@@ -60,8 +61,9 @@ class AzineMailgunWebhooksExtensionTest extends \PHPUnit\Framework\TestCase
     {
         $yaml = <<<EOF
 
-# api-key
-api_key:       someKey_adf4343lki5432543cfcab54325fabiacbzfac
+# webhook signing key
+webhook_signing_key: someSigningKey_adf4343lki5432543cfcab54325fabiacbzfac
+webhook_max_timestamp_age: 3600
 
 # public api-key
 public_api_key:  somePublicKey_adflkiacfcajkhkhkjhkj8767654654bfabiacbzfac
@@ -79,8 +81,8 @@ EOF;
     {
         $yaml = <<<EOF
 
-# api-key
-api_key:       someKey_adf4343lki5432543cfcab54325fabiacbzfac
+# webhook signing key
+webhook_signing_key: someSigningKey_adf4343lki5432543cfcab54325fabiacbzfac
 
 EOF;
         $parser = new Parser();

@@ -101,11 +101,11 @@ class AzineMailgunMailerService
             throw new \InvalidArgumentException(sprintf('No valid sender address could be parsed from "%s".', $fromAddress));
         }
 
-        $parsedSender = mailparse_rfc822_parse_addresses($fromAddress)[0] ?? [];
+        $parsedSender = AddressParser::parse($fromAddress)[0] ?? null;
         $templateVariables = [
             'mailgunEvent' => $event,
             'mailgunMessageSummary' => $event->getEventSummary(),
-            'recipient' => ['displayName' => (string) ($parsedSender['display'] ?? '')],
+            'recipient' => ['displayName' => $parsedSender?->getName() ?? ''],
             'sendDateTime' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
         ];
 
@@ -157,16 +157,6 @@ class AzineMailgunMailerService
      */
     private function extractValidEmail(string $address): array
     {
-        $addresses = [];
-        foreach (mailparse_rfc822_parse_addresses($address) as $parsedAddress) {
-            $email = (string) ($parsedAddress['address'] ?? '');
-            if ('' === $email || false === filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                continue;
-            }
-
-            $addresses[] = new Address($email, (string) ($parsedAddress['display'] ?? ''));
-        }
-
-        return $addresses;
+        return AddressParser::parse($address);
     }
 }
