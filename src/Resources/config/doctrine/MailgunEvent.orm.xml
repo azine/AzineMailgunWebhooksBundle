@@ -4,6 +4,7 @@
     <id name="id" type="integer"><generator strategy="AUTO"/></id>
     <field name="event" type="string" length="63"/>
     <field name="domain" type="string" length="255"/>
+    <field name="severity" type="string" length="31" nullable="true"/>
     <field name="description" type="text" nullable="true"/>
     <field name="reason" type="string" length="255" nullable="true"/>
     <field name="recipient" type="string" length="255"/>
