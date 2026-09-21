@@ -34,6 +34,7 @@ services:
         arguments:
             - '@azine.mailgun.mailer'
             - '%azine_mailgun_webhooks_spam_alerts_enabled%'
+            - '%azine_mailgun_webhooks_delivery_failure_notifications_enabled%'
 
     azine.mailgun.mailer:
         class: Azine\MailgunWebhooksBundle\Services\AzineMailgunMailerService
