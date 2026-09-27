@@ -4,19 +4,20 @@ namespace Azine\MailgunWebhooksBundle\Services;
 
 use Azine\MailgunWebhooksBundle\Entity\MailgunEvent;
 use Azine\MailgunWebhooksBundle\Entity\Repositories\MailgunEventRepository;
-use Symfony\Bridge\Doctrine\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
+use Twig\Environment;
 
 class AzineMailgunCockpitService
 {
     private $emailDomain;
     /** @var ManagerRegistry */
     private $managerRegistry;
-    /** @var \Twig_Environment */
+    /** @var Environment */
     private $twig;
 
     private $cachedLastKnownIp;
 
-    public function __construct(ManagerRegistry $managerRegistry, \Twig_Environment $twig, $emailDomain)
+    public function __construct(ManagerRegistry $managerRegistry, Environment $twig, $emailDomain)
     {
         $this->emailDomain = $emailDomain;
         $this->managerRegistry = $managerRegistry;

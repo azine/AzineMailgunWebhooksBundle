@@ -3,6 +3,7 @@
 namespace Azine\MailgunWebhooksBundle\Services;
 
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 
 /**
  * Class AzineMailgunTwigExtension
@@ -16,7 +17,7 @@ class AzineMailgunTwigExtension extends AbstractExtension
     public function getFilters()
     {
         return array(
-            'printArray' => new \Twig_SimpleFilter('printArray', array($this, 'printArray'), array('is_safe' => array('html'))),
+            new TwigFilter('printArray', array($this, 'printArray'), array('is_safe' => array('html'))),
         );
     }
 

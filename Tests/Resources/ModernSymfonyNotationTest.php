@@ -29,6 +29,9 @@ final class ModernSymfonyNotationTest extends TestCase
                 'AzineMailgunWebhooksBundle:Mailgun:',
                 'AzineMailgunWebhooksBundle:MailgunEvent:',
                 'AzineMailgunWebhooksBundle:Email:',
+                'Twig_',
+                '{% spaceless',
+                '{% endspaceless',
             ] as $legacyNotation) {
                 if (str_contains($contents, $legacyNotation)) {
                     $violations[] = str_replace($root.'/', '', $file->getPathname()).' => '.$legacyNotation;
