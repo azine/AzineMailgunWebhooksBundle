@@ -32,6 +32,7 @@ final class ModernSymfonyNotationTest extends TestCase
                 'Twig_',
                 '{% spaceless',
                 '{% endspaceless',
+                'gedmo:timestampable',
             ] as $legacyNotation) {
                 if (str_contains($contents, $legacyNotation)) {
                     $violations[] = str_replace($root.'/', '', $file->getPathname()).' => '.$legacyNotation;
