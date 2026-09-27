@@ -2,6 +2,7 @@
 
 namespace Azine\MailgunWebhooksBundle\Tests\DependencyInjection;
 
+use Azine\MailgunWebhooksBundle\Controller\MailgunController;
 use Azine\MailgunWebhooksBundle\DependencyInjection\AzineMailgunWebhooksExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Yaml\Parser;
@@ -39,6 +40,20 @@ class AzineMailgunWebhooksExtensionTest extends \PHPUnit\Framework\TestCase
 
         $this->assertTrue($this->configuration instanceof ContainerBuilder);
         $this->assertParameter('someSigningKey_adf4343lki5432543cfcab54325fabiacbzfac', 'azine_mailgun_webhooks_webhook_signing_key');
+    }
+
+    public function testMailgunControllerUsesAutowiringAndAutoconfiguration(): void
+    {
+        $this->configuration = new ContainerBuilder();
+        $loader = new AzineMailgunWebhooksExtension();
+        $loader->load(array($this->getMinimalConfig()), $this->configuration);
+
+        $definition = $this->configuration->getDefinition(MailgunController::class);
+
+        $this->assertTrue($definition->isAutowired());
+        $this->assertTrue($definition->isAutoconfigured());
+        $this->assertTrue($definition->isPublic());
+        $this->assertArrayHasKey('controller.service_arguments', $definition->getTags());
     }
 
     public function testFullConfig()
