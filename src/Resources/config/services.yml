@@ -79,6 +79,8 @@ services:
 
     Azine\MailgunWebhooksBundle\Controller\MailgunController:
         public: true
+        autowire: true
+        autoconfigure: true
         arguments:
             $doctrine: '@doctrine'
             $cockpitService: '@azine_mailgun.cockpit_service'
