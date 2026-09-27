@@ -35,7 +35,7 @@ class MailgunEventRepository extends EntityRepository
         $qb = $this->getEventsQuery($criteria);
         $orderField = key($orderBy);
         $orderDirection = $orderBy[$orderField];
-        $qb->orderBy('e.'.$orderField, $orderDirection);
+        $qb->orderBy('messageId' === $orderField ? 'IDENTITY(e.eventSummary)' : 'e.'.$orderField, $orderDirection);
         if (-1 != $limit) {
             $qb->setMaxResults($limit);
             $qb->setFirstResult($offset);
@@ -75,12 +75,13 @@ class MailgunEventRepository extends EntityRepository
         }
 
         if (array_key_exists('search', $criteria) && '' != $criteria['search']) {
-            $qb->andWhere('(e.messageHeaders like :search OR e.description like :search OR e.reason like :search OR e.ip like :search OR e.country like :search OR e.city like :search OR e.campaignId like :search OR e.campaignName like :search OR e.clientName like :search OR e.clientOs like :search OR e.clientType like :search OR e.deviceType like :search OR e.mailingList like :search OR e.messageId like :search OR e.tag like :search OR e.userAgent like :search OR e.url like :search)')
+            $qb->andWhere('(e.messageHeaders like :search OR e.description like :search OR e.reason like :search OR e.ip like :search OR e.country like :search OR e.city like :search OR e.campaignId like :search OR e.campaignName like :search OR e.clientName like :search OR e.clientOs like :search OR e.clientType like :search OR e.deviceType like :search OR e.mailingList like :search OR IDENTITY(e.eventSummary) like :search OR e.tag like :search OR e.userAgent like :search OR e.url like :search)')
                 ->setParameter('search', '%'.$criteria['search'].'%');
         }
 
         if ($lookForUnopened) {
-            $qb->andWhere("NOT EXISTS (SELECT o.id FROM Azine\\MailgunWebhooksBundle\\Entity\\MailgunEvent o WHERE o.messageId like e.messageId AND o.event in ('opened', 'clicked', 'unsubscribed', 'complained'))");
+            $qb->andWhere('e.eventSummary IS NOT NULL')
+                ->andWhere("NOT EXISTS (SELECT o.id FROM Azine\\MailgunWebhooksBundle\\Entity\\MailgunEvent o WHERE o.eventSummary = e.eventSummary AND o.event in ('opened', 'clicked', 'unsubscribed', 'complained'))");
         }
 
         return $qb;
@@ -217,20 +218,17 @@ class MailgunEventRepository extends EntityRepository
                 'description',
                 'deviceType',
                 'domain',
-                'error',
                 'errorCode',
                 'event',
                 'ip',
                 'mailingList',
                 'messageHeaders',
                 'messageId',
-                'notification',
                 'reason',
                 'recipient',
                 'region',
                 'tag',
                 'timestamp',
-                'type',
                 'userAgent',
                 'url',
             );
