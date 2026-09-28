@@ -88,6 +88,13 @@ final class MailgunWebhookPayloadTest extends TestCase
             'future-field' => ['kept' => true],
         ];
 
+        if ('complained' === $eventType) {
+            // Mailgun omits envelope.sender for complaint events.
+            unset($eventData['envelope']['sender']);
+            $eventData['domain'] = ['name' => 'mg.example.com'];
+            $eventData['storage'] = [];
+        }
+
         if (null !== $severity) {
             $eventData['severity'] = $severity;
             $eventData['delivery-status'] = [
@@ -118,6 +125,8 @@ final class MailgunWebhookPayloadTest extends TestCase
         self::assertInstanceOf(MailgunWebhookEvent::class, $capturedWebhookEvent);
         self::assertSame($eventType, $capturedWebhookEvent->getMailgunEvent()->getEvent());
         self::assertSame($severity, $capturedWebhookEvent->getMailgunEvent()->getSeverity());
+        self::assertSame('Interim Homes <no-reply@example.com>', $capturedWebhookEvent->getMailgunEvent()->getSender());
+        self::assertSame('mg.example.com', $capturedWebhookEvent->getMailgunEvent()->getDomain());
 
         $customVariables = array_values(array_filter($persisted, static fn (object $entity): bool => $entity instanceof MailgunCustomVariable));
         self::assertNotEmpty($customVariables);
