@@ -10,6 +10,8 @@ use Azine\MailgunWebhooksBundle\Entity\MailgunWebhookEvent;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Exception\RetryableException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -48,7 +50,7 @@ final class MailgunWebhookController
         return $this->createEventNewApi($params);
     }
 
-    private function createEventNewApi($paramsPre)
+    private function createEventNewApi($paramsPre, int $attempt = 0)
     {
         $params = array_change_key_case($paramsPre, CASE_LOWER);
 
@@ -122,20 +124,23 @@ final class MailgunWebhookController
                 $event->setSeverity((string) $eventData['severity']);
                 unset($eventData['severity']);
             }
-            // domain
-            if (array_key_exists('envelope', $eventData)) {
+            // Some events (including complaints) have an envelope without a sender.
+            if (isset($eventData['envelope']) && is_array($eventData['envelope'])) {
                 $envelope = $eventData['envelope'];
-                $sender = $envelope['sender'];
-                $event->setSender($sender);
-                $event->setDomain(substr($sender, strrpos($sender, '@') + 1));
+                if (isset($envelope['sender']) && is_string($envelope['sender']) && '' !== $envelope['sender']) {
+                    $sender = $envelope['sender'];
+                    $event->setSender($sender);
+                    $event->setDomain(substr($sender, strrpos($sender, '@') + 1));
+                    unset($eventData['envelope']['sender']);
+                }
 
-                // ip
-                if (array_key_exists('sending-ip', $envelope)) {
+                if (isset($envelope['sending-ip'])) {
                     $event->setIp($envelope['sending-ip']);
                     unset($eventData['envelope']['sending-ip']);
                 }
-
-                unset($eventData['envelope']['sender']);
+            }
+            if (null === $event->getDomain() && isset($eventData['domain']['name'])) {
+                $event->setDomain($eventData['domain']['name']);
             }
             // description & reason
             if (array_key_exists('delivery-status', $eventData)) {
@@ -255,7 +260,7 @@ final class MailgunWebhookController
             if (array_key_exists('url', $eventData)) {
                 $event->setUrl($eventData['url']);
                 unset($eventData['url']);
-            } elseif (array_key_exists('storage', $eventData)) {
+            } elseif (isset($eventData['storage']['url'])) {
                 $event->setUrl($eventData['storage']['url']);
                 unset($eventData['storage']['url']);
             }
@@ -298,17 +303,33 @@ final class MailgunWebhookController
 
             // save all entities
             $manager->flush();
+        } catch (RetryableException|UniqueConstraintViolationException $e) {
+            if ($attempt < 2) {
+                // A failed flush closes the EntityManager. Rebuild the event and
+                // summary from the original payload using a fresh manager.
+                $this->doctrine->resetManager();
+                usleep(random_int(10_000, 50_000) * ($attempt + 1));
 
-            // Dispatch an event about the logging of a Webhook-call
-            $this->eventDispatcher->dispatch(new MailgunWebhookEvent($event), MailgunEvent::CREATE_EVENT);
-        } catch (\Exception $e) {
+                return $this->createEventNewApi($paramsPre, $attempt + 1);
+            }
+
+            $this->logger->warning('AzineMailgunWebhooksBundle: creating entities failed after retries: '.$e->getMessage());
+            return new Response('Webhook processing failed.', 500);
+        } catch (\Throwable $e) {
             $this->logger->warning('AzineMailgunWebhooksBundle: creating entities failed: '.$e->getMessage());
             $this->logger->warning($e->getTraceAsString());
 
             return new Response('Webhook processing failed.', 500);
         }
 
-        // send response
+        try {
+            // Run subscribers only once, after the database write succeeds.
+            $this->eventDispatcher->dispatch(new MailgunWebhookEvent($event), MailgunEvent::CREATE_EVENT);
+        } catch (\Throwable $e) {
+            $this->logger->warning('AzineMailgunWebhooksBundle: webhook event dispatch failed: '.$e->getMessage());
+            return new Response('Webhook processing failed.', 500);
+        }
+
         return new Response('Thanx, for the info.', 200);
     }
 
