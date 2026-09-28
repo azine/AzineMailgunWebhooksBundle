@@ -6,8 +6,8 @@
 
 <h3>{{ 'notification.spam_complaint_received.support.ticket' | trans }}</h3>
 {% if ticketId is defined and ticketId != '' %}
-    {{ 'notification.spam_complaint_received.update.support.ticket' | trans }}: <a href="https://app.mailgun.com/app/support/view/{{ ticketId }}">https://app.mailgun.com/app/support/view/{{ ticketId }}</a>
+    {{ 'notification.spam_complaint_received.update.support.ticket' | trans }} ({{ ticketId }}): <a href="https://app.mailgun.com/support">Mailgun Support</a>
 {% else %}
-    {{ 'notification.spam_complaint_received.create.support.ticket' | trans }}: <a href="https://app.mailgun.com/app/support/new">https://app.mailgun.com/app/support/create</a>
+    {{ 'notification.spam_complaint_received.create.support.ticket' | trans }}: <a href="https://help.mailgun.com/hc/en-us/requests/new">Create a Mailgun support ticket</a>
 {% endif %}
 {% endblock content %}
