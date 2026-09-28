@@ -7,6 +7,8 @@ namespace Azine\MailgunWebhooksBundle\Tests\Resources;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 final class CockpitLinksTest extends TestCase
 {
@@ -37,6 +39,37 @@ final class CockpitLinksTest extends TestCase
         self::assertStringContainsString('href="https://hetrixtools.com/blacklist-check/"', $html);
         self::assertStringContainsString('Email domain is not configured', $html);
         self::assertStringContainsString('Unable to get last sender IP', $html);
+    }
+
+    public function testExistingSupportTicketLinksToSupportWithTicketNumber(): void
+    {
+        $html = $this->notification('12345');
+
+        self::assertStringContainsString('href="https://app.mailgun.com/support"', $html);
+        self::assertStringContainsString('(12345)', $html);
+        self::assertStringNotContainsString('/app/support/view/', $html);
+    }
+
+    public function testNewSupportTicketLinksToRequestForm(): void
+    {
+        $html = $this->notification(null);
+
+        self::assertStringContainsString('href="https://help.mailgun.com/hc/en-us/requests/new"', $html);
+        self::assertStringNotContainsString('/app/support/new', $html);
+    }
+
+    private function notification(?string $ticketId): string
+    {
+        $loader = new FilesystemLoader();
+        $loader->addPath(dirname(__DIR__, 2).'/src/Resources/views', 'AzineMailgunWebhooks');
+        $twig = new Environment($loader, ['autoescape' => 'html']);
+        $twig->addFilter(new TwigFilter('trans', static fn (string $key): string => $key));
+        $twig->addFunction(new TwigFunction('url', static fn (string $route, array $parameters): string => 'https://example.com/mailgun/event/1/show'));
+
+        return $twig->render('@AzineMailgunWebhooks/Email/notification.html.twig', [
+            'eventId' => 1,
+            'ticketId' => $ticketId,
+        ]);
     }
 
     private function twig(): Environment
