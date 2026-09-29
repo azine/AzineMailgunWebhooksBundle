@@ -10,6 +10,7 @@ use Azine\MailgunWebhooksBundle\Services\AzineMailgunCockpitService;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
+use Twig\Loader\ArrayLoader;
 
 final class AzineMailgunCockpitServiceTest extends TestCase
 {
@@ -29,7 +30,7 @@ final class AzineMailgunCockpitServiceTest extends TestCase
             ->with(MailgunEvent::class)
             ->willReturn($repository);
 
-        $service = new AzineMailgunCockpitService($registry, $this->createMock(Environment::class), 'mg.example.com');
+        $service = new AzineMailgunCockpitService($registry, new Environment(new ArrayLoader()), 'mg.example.com');
 
         self::assertSame('203.0.113.12', $service->getLastKnownSenderIp());
         self::assertSame('203.0.113.12', $service->getCockpitDataAsArray()['lastKnownIp']);
