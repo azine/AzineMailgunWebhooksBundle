@@ -1,0 +1,58 @@
+<style>
+body.mailgun-admin { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #263446; }
+body.mailgun-admin > .container { max-width: 1540px; }
+.mailgun-admin h1 { font-size: 1.65rem; font-weight: 650; margin: 1.2rem 0 .5rem; }
+.mailgun-admin h3 { font-size: 1rem; font-weight: 600; margin: 1.3rem 0 .6rem; }
+.mailgun-admin a { text-underline-offset: 2px; }
+.mailgun-admin .backToOverview { display: inline-block; padding: .25rem .1rem; }
+.mailgun-admin .mailgun-cockpit { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .8rem 1.5rem; padding: .8rem 1rem; background: #f8fafc; border: 1px solid #dbe3eb; border-radius: .6rem; font-size: .87rem; }
+.mailgun-admin .mailgun-cockpit-main { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem 1rem; }
+.mailgun-admin .mailgun-cockpit-label { font-weight: 700; color: #243247; }
+.mailgun-admin .mailgun-cockpit-divider { height: 1rem; border-left: 1px solid #c7d0dc; }
+.mailgun-admin .mailgun-cockpit-ip { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; color: #566273; }
+.mailgun-admin .mailgun-cockpit-ip a { font-weight: 600; font-variant-numeric: tabular-nums; }
+.mailgun-admin #filter_event_form { width: 100%; padding: .8rem 1rem; background: #fff; border: 1px solid #dbe3eb; border-radius: .6rem; }
+.mailgun-admin #filter_event_form table { width: 100%; }
+.mailgun-admin #filter_event_form tr { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem .65rem; margin: .3rem 0; }
+.mailgun-admin #filter_event_form th, .mailgun-admin #filter_event_form td { padding: 0; border: 0; background: transparent; }
+.mailgun-admin #filter_event_form th { font-size: .82rem; font-weight: 600; white-space: nowrap; color: #475569; }
+.mailgun-admin #filter_event_form input, .mailgun-admin #filter_event_form select { width: auto; max-width: 100%; min-height: 2rem; padding: .25rem .45rem; border: 1px solid #cbd5e1; border-radius: .3rem; background: #fff; color: #1f2937; }
+.mailgun-admin #filter_event_form #filter_orderBy, .mailgun-admin #filter_event_form #filter_orderDirection { width: auto; }
+.mailgun-admin #filter_event_form button { margin: 0 0 0 .4rem; padding: .3rem .85rem; border: 1px solid #0d6efd; border-radius: .3rem; background: #0d6efd; color: #fff; }
+.mailgun-admin hr { border-color: #dbe3eb; }
+.mailgun-admin .mailgunEventPaginator { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem; margin: .9rem 0; color: #475569; font-size: .88rem; }
+.mailgun-admin .mailgunEventPaginator select { border: 1px solid #cbd5e1; border-radius: .3rem; padding: .15rem .35rem; }
+.mailgun-admin .mailgunEventPaginator .pagination { display: inline-flex; flex-wrap: wrap; gap: .3rem; margin: 0 0 0 auto; }
+.mailgun-admin .mailgunEventPaginator .pagination a, .mailgun-admin .mailgunEventPaginator .pagination span { padding: .1rem .35rem; }
+.mailgun-admin .mailgunEventPaginator .pagination .active { font-weight: 700; }
+.mailgun-admin .mailgun-table-wrap { overflow-x: auto; border: 1px solid #dbe3eb; border-radius: .55rem; }
+.mailgun-admin .eventsTable { width: 100%; border-collapse: collapse; font-size: .85rem; background: #fff; }
+.mailgun-admin .eventsTable thead th { padding: .6rem .7rem; border: 0; border-bottom: 1px solid #dbe3eb; background: #f1f5f9; color: #334155; text-align: left; white-space: nowrap; }
+.mailgun-admin .eventsTable tbody td { padding: .45rem .7rem; border: 0; border-bottom: 1px solid #e6ecf2; background: #fff; color: #263446; vertical-align: top; }
+.mailgun-admin .eventsTable tbody tr:nth-child(even) td { background: #f8fafc; }
+.mailgun-admin .eventsTable tbody tr:hover td { background: #eef6ff; }
+.mailgun-admin .mailgun-table-wrap > .eventsTable:not(.mailgun-table) { min-width: 1050px; }
+.mailgun-admin .eventsTable tbody td { overflow-wrap: anywhere; }
+.mailgun-admin .mailgun-table .mailgun-date { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.mailgun-admin .mailgun-table .mailgun-message { min-width: 13rem; overflow-wrap: anywhere; }
+.mailgun-admin .mailgun-table .mailgun-message strong, .mailgun-admin .mailgun-table .mailgun-message span, .mailgun-admin .mailgun-table .mailgun-description small { display: block; }
+.mailgun-admin .mailgun-table .mailgun-message span, .mailgun-admin .mailgun-table .mailgun-description small { color: #64748b; }
+.mailgun-admin .mailgun-table .mailgun-description { min-width: 12rem; max-width: 28rem; overflow-wrap: anywhere; }
+.mailgun-admin .mailgun-table .mailgun-actions { white-space: nowrap; }
+.mailgun-admin .mailgun-table .mailgun-actions a + a { margin-left: .55rem; }
+.mailgun-admin .mailgun-event-type { display: inline-block; padding: .12rem .45rem; border-radius: 1rem; background: #e8f1ff; color: #174a8b; font-weight: 600; }
+.mailgun-admin .mailgun-event-type-error { background: #fce8e8; color: #922b2b; }
+.mailgun-admin .mailgun-event-type-warning { background: #fff2d5; color: #855c10; }
+.mailgun-admin .mailgun-empty { text-align: center; padding: 1.5rem !important; }
+.mailgun-admin .record_properties { width: 100%; margin: 1rem 0; border-collapse: collapse; font-size: .9rem; }
+.mailgun-admin .record_properties td, .mailgun-admin .record_properties th { border: 0; border-bottom: 1px solid #e6ecf2; padding: .5rem .75rem; vertical-align: top; overflow-wrap: anywhere; }
+.mailgun-admin .record_properties td:first-child { width: 13rem; color: #475569; font-weight: 600; }
+.mailgun-admin pre { max-height: 18rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .78rem; }
+.mailgun-admin .actions { margin: 1rem 0; display: flex; gap: .75rem; }
+@media (max-width: 700px) {
+    .mailgun-admin #filter_event_form tr { align-items: flex-start; }
+    .mailgun-admin #filter_event_form td { max-width: 100%; }
+    .mailgun-admin .mailgun-table { min-width: 740px; }
+    .mailgun-admin .record_properties td:first-child { width: 7rem; }
+}
+</style>

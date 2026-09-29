@@ -1,38 +1,22 @@
-<table class="emailCockpitLinks" cellspacing="0">
-    <tr>
-        <th>Mailgun</th>
-    </tr>
-    <tr>
-        <td>
-            <a href="https://app.mailgun.com/app/dashboard" target="_blank" rel="noopener noreferrer" title="Mailgun dashboard">Dashboard</a>
-            |
-            <a href="https://app.mailgun.com/support" target="_blank" rel="noopener noreferrer" title="Mailgun support">Support</a>
-            |
-            <a href="https://app.mailgun.com/mg/sending/domains" target="_blank" rel="noopener noreferrer" title="Mailgun sending domains">Domain Configuration</a>
-        </td>
-    </tr>
-    <tr>
-        <th>Other Tools</th>
-    </tr>
-    <tr>
-        <td>
-            <a href="https://mail-tester.com/" target="_blank" rel="noopener noreferrer" title="Test an email's spam score">Mail Tester</a>
-            |
-            <a href="https://senderscore.org/assess/get-your-score/" target="_blank" rel="noopener noreferrer" title="Look up an IP address or domain">Sender Score</a>
-            <br/>
-            <a href="https://mxtoolbox.com/SuperTool.aspx{% if emailDomain != '' %}?action=mx%3A{{ emailDomain|url_encode }}&amp;run=toolpage{% endif %}" target="_blank" rel="noopener noreferrer" title="MX lookup for {{ emailDomain }}">MxToolbox</a>
-            |
-            <a href="https://hetrixtools.com/blacklist-check/{% if lastKnownIp != '' %}{{ lastKnownIp|url_encode }}{% endif %}" target="_blank" rel="noopener noreferrer" title="IP blacklist check">HetrixTools</a>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            {% if emailDomain == '' %}
-                <p class="warningMessage">Email domain is not configured</p>
-            {% endif %}
-            {% if lastKnownIp == '' %}
-                <p class="warningMessage">Unable to get last sender IP</p>
-            {% endif %}
-        </td>
-    </tr>
-</table>
+<aside class="mailgun-cockpit" aria-label="Mailgun tools">
+    <div class="mailgun-cockpit-main">
+        <span class="mailgun-cockpit-label">Mailgun</span>
+        <a href="https://app.mailgun.com/app/dashboard" target="_blank" rel="noopener noreferrer">Dashboard</a>
+        <a href="https://app.mailgun.com/mg/sending/domains" target="_blank" rel="noopener noreferrer">Domains</a>
+        <a href="https://app.mailgun.com/support" target="_blank" rel="noopener noreferrer">Support</a>
+        <span class="mailgun-cockpit-divider" aria-hidden="true"></span>
+        <a href="https://mail-tester.com/" target="_blank" rel="noopener noreferrer">Mail Tester</a>
+        <a href="https://senderscore.org/assess/get-your-score/" target="_blank" rel="noopener noreferrer">Sender Score</a>
+        <a href="https://mxtoolbox.com/SuperTool.aspx{% if emailDomain != '' %}?action=mx%3A{{ emailDomain|url_encode }}&amp;run=toolpage{% endif %}" target="_blank" rel="noopener noreferrer">MX lookup</a>
+        {% if emailDomain == '' %}<span>Email domain is not configured</span>{% endif %}
+    </div>
+    <div class="mailgun-cockpit-ip">
+        <span>Latest sending IP</span>
+        {% if lastKnownIp != '' %}
+            <a href="https://hetrixtools.com/blacklist-check/{{ lastKnownIp|url_encode }}" target="_blank" rel="noopener noreferrer" title="Check this IP on HetrixTools">{{ lastKnownIp }}</a>
+        {% else %}
+            <a href="https://hetrixtools.com/blacklist-check/" target="_blank" rel="noopener noreferrer">Blacklist check</a>
+            <span>No sending IP recorded</span>
+        {% endif %}
+    </div>
+</aside>

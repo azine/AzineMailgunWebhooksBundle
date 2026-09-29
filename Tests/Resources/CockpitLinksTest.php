@@ -38,7 +38,7 @@ final class CockpitLinksTest extends TestCase
         self::assertStringContainsString('href="https://mxtoolbox.com/SuperTool.aspx"', $html);
         self::assertStringContainsString('href="https://hetrixtools.com/blacklist-check/"', $html);
         self::assertStringContainsString('Email domain is not configured', $html);
-        self::assertStringContainsString('Unable to get last sender IP', $html);
+        self::assertStringContainsString('No sending IP recorded', $html);
     }
 
     public function testExistingSupportTicketLinksToSupportWithTicketNumber(): void

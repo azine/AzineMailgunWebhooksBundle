@@ -32,8 +32,8 @@ class AzineMailgunCockpitService
             $lastKnownIp = null;
             $ipAddressData = $eventRepository->getLastKnownSenderIpData();
 
-            if (isset($ipAddressData['id'])) {
-                $lastKnownIp = $ipAddressData['id'];
+            if (isset($ipAddressData['ip'])) {
+                $lastKnownIp = $ipAddressData['ip'];
             }
 
             $this->cachedLastKnownIp = $lastKnownIp;

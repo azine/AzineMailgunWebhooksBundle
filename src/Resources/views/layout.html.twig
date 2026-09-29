@@ -5,54 +5,7 @@
 
     <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.blue.css">
     <link type="text/css" rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/flick/jquery-ui.min.css" />
-    <style>
-        .emailCockpitLinks {
-            width: 320px;
-            float: right;
-            font-size: 13px;
-            text-align: center;
-            padding: 10px;
-            border: black solid 1px;
-        }
-        .emailCockpitLinks .warningMessage{
-            text-align: center;
-            margin: 0px;
-        }
-        .record_properties th, td {
-            border: 1px solid #000;
-        }
-        #filter_event_form {
-            width: 75%;
-        }
-        #filter_event_form td{
-            padding: 0px;
-        }
-        #filter_event_form select, #filter_event_form input{
-            margin: 0px;
-        }
-        #filter_event_form #filter_orderBy, #filter_event_form #filter_orderDirection{
-            width: 45%;
-        }
-        #filter_event_form td{
-            border: none;
-        }
-        #filter_event_form tr{
-            background-color: inherit;
-        }
-        #filter_event_form button{
-            margin-bottom: 2px;
-            margin-top: 2px;
-            margin-left: 50%;
-        }
-        .mailgunEventPaginator a{
-            display: unset;
-        }
-        .mailgunEventPaginator .pageSizeSelector{
-            width: unset;
-        }
-
-
-    </style>
+    {{ include('@AzineMailgunWebhooks/adminStyles.html.twig') }}
 {% endblock %}
 
 {% block body %}

@@ -175,6 +175,29 @@ class MailgunEventRepository extends EntityRepository
      */
     public function getLastKnownSenderIpData()
     {
+        // Current webhooks store envelope.sending-ip directly in e.ip. Open and
+        // click events may instead contain the recipient's IP address.
+        $senderIp = $this->getEntityManager()->createQueryBuilder()
+            ->select('e.ip AS ip, e.timestamp AS timestamp')
+            ->from($this->getEntityName(), 'e')
+            ->where('e.event IN (:events)')
+            ->andWhere('e.ip IS NOT NULL')
+            ->andWhere('e.ip <> :empty')
+            ->andWhere('e.ip <> :unknown')
+            ->setParameter('events', array('accepted', 'delivered', 'failed'))
+            ->setParameter('empty', '')
+            ->setParameter('unknown', 'unknown')
+            ->orderBy('e.timestamp', 'DESC')
+            ->addOrderBy('e.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if (null !== $senderIp) {
+            return $senderIp;
+        }
+
+        // Legacy webhook payloads put the sending IP in a message header.
         $q = $this->getEntityManager()->createQueryBuilder()
             ->select('e.messageHeaders as mh, e.timestamp as ts')
             ->from($this->getEntityName(), 'e')
@@ -184,20 +207,21 @@ class MailgunEventRepository extends EntityRepository
             ->setMaxResults(50)
             ->getQuery();
 
-        $returnData = null;
-
         foreach ($q->execute() as $next) {
-            if ($next['mh']) {
-                foreach ($next['mh'] as $nextHeader) {
-                    if ('X-Mailgun-Sending-Ip' == $nextHeader[0]) {
-                        $returnData['ip'] = $nextHeader[1];
-                        $returnData['timestamp'] = $next['ts'];
-                    }
+            if (!is_array($next['mh'] ?? null)) {
+                continue;
+            }
+            foreach ($next['mh'] as $name => $header) {
+                if (is_array($header) && isset($header[0], $header[1]) && is_string($header[0]) && 0 === strcasecmp($header[0], 'X-Mailgun-Sending-Ip')) {
+                    return array('ip' => $header[1], 'timestamp' => $next['ts']);
+                }
+                if (is_string($name) && 0 === strcasecmp($name, 'X-Mailgun-Sending-Ip') && is_string($header)) {
+                    return array('ip' => $header, 'timestamp' => $next['ts']);
                 }
             }
         }
 
-        return $returnData;
+        return null;
     }
 
     /**
