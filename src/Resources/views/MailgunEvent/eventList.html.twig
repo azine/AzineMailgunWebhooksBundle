@@ -1,104 +1,39 @@
-<table class="tablesorter-blue eventsTable">
-    <thead>
-    <tr>
-        <th>Event</th>
-        <th>Date</th>
-        <th>Subject / Recipient</th>
-        <th>Description / Notification</th>
-        <th>Reason / Errorcode</th>
-        <th>Location</th>
-        <th>Campaignid / Campaignname</th>
-        <th>Client</th>
-        <th>Messageid / Messageheaders</th>
-        <th>Tag</th>
-        <th>Customvariables</th>
-        <th>Url</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for eventEntry in events %}
-        <tr id="event{{ eventEntry.id }}" class="{{ cycle(['odd', 'even'], loop.index) }}">
-            <td>
-                <a href="{{ path('mailgunevent_show', { 'id': eventEntry.id }) }}">
-                    Event: {{ eventEntry.event }}
-                </a>
-                <br />
-                <br />
-                <a href="{{ path('mailgun_message_summary', { 'id': eventEntry.messageId }) }}">
-                    Message Summary
-                </a>
-            </td>
-            <td>
-                {{ eventEntry.dateTime | date("Y-m-d H:i:m", false) }} UTC
-            </td>
-            <td>
-                {{ eventEntry.eventTitle }}<br />
-                {{ eventEntry.recipient }}
-
-            </td>
-            <td>
-                {{ eventEntry.description }}
-            </td>
-            <td>
-                {{ eventEntry.reason }}<br />
-                {{ eventEntry.errorCode }}
-            </td>
-            <td title="IP: {{ eventEntry.ip }} Region: {{ eventEntry.region }}">
-                {{ eventEntry.city }}
-                {% if eventEntry.country %} ({{ eventEntry.country }}) {% endif %}
-            </td>
-            <td campaignId="{{ eventEntry.campaignId }}" campaignName="{{ eventEntry.campaignName }}">
-                {{ eventEntry.campaignId }}<br />
-                {{ eventEntry.campaignName }}
-            </td>
-            <td client="{{ eventEntry.clientName }}" os="{{ eventEntry.clientOs }}" device="{{ eventEntry.deviceType }}">
-                <span title="User-Agent: {{ eventEntry.userAgent }}">{{ eventEntry.clientName }}</span><br />
-                <span title="ClientType: {{ eventEntry.clientType }} | DeviceType: {{ eventEntry.deviceType }}">{{ eventEntry.clientOs }}</span>
-            </td>
-            <td>
-                MessageId: {{ eventEntry.messageId }}
-                {% if eventEntry.messageHeaders | length > 0 %}
-                <br />
-                MessageHeaders:
-                <ul class="expandcollapse">
-                    {% for key, value in eventEntry.messageHeaders %}
-                        {% if value is iterable %}
-                            <li>{{ key }}: <pre>{{ value | printArray }}</pre></li>
-                        {% elseif emailWebViewToken == key %}
-                            {{ key }} : <a href="{{ path(emailWebViewRoute, {'sentEmail': {'token' : value}}) }}" target="_blank">{{ value }}</a>
-                        {% else %}
-                            <li>{{ key }}: {{ value }}</li>
+<div class="mailgun-table-wrap">
+    <table class="eventsTable mailgun-table">
+        <thead>
+            <tr>
+                <th>Event</th>
+                <th>Date (UTC)</th>
+                <th>Message / recipient</th>
+                <th>Details</th>
+                <th>Event IP</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for eventEntry in events %}
+                <tr id="event{{ eventEntry.id }}">
+                    <td><span class="mailgun-event-type mailgun-event-type-{{ eventEntry.severity|default('info')|lower|replace({' ': '-'}) }}">{{ eventEntry.event }}</span></td>
+                    <td class="mailgun-date">{{ eventEntry.dateTime|date('Y-m-d H:i:s', 'UTC') }}</td>
+                    <td class="mailgun-message">
+                        {% if eventEntry.eventTitle %}<strong>{{ eventEntry.eventTitle }}</strong>{% endif %}
+                        <span>{{ eventEntry.recipient }}</span>
+                    </td>
+                    <td class="mailgun-description">
+                        {{ eventEntry.description ?: (eventEntry.reason ?: '—') }}
+                        {% if eventEntry.errorCode %}<small>Code {{ eventEntry.errorCode }}</small>{% endif %}
+                    </td>
+                    <td class="mailgun-date">{{ eventEntry.ip ?: '—' }}</td>
+                    <td class="mailgun-actions">
+                        <a href="{{ path('mailgunevent_show', {'id': eventEntry.id}) }}">View event</a>
+                        {% if eventEntry.messageId %}
+                            <a href="{{ path('mailgun_message_summary', {'id': eventEntry.messageId}) }}">Message</a>
                         {% endif %}
-                    {% endfor %}
-                    {% endif %}
-                </ul>
-            </td>
-            <td>
-                {{ eventEntry.tag }}
-            </td>
-            <td>
-                {% if eventEntry.variables | length > 0 %}
-                    <ul>
-                        {% for item in eventEntry.variables %}
-                            <li>{% if item.variableName != "" %} {{ item.variableName }} : {% endif %}
-                                {% if item.content is iterable %}
-                                    <pre>
-										{{ item.content | printArray }}
-										</pre>
-                                {% elseif emailWebViewToken == item.variableName %}
-                                    <a href="{{ path(emailWebViewRoute, {'sentEmail': {'token' : item.content}}) }}" target="_blank">{{ item.content }}</a>
-                                {% else %}
-                                    {{ item.content }}
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </td>
-            <td>
-                {{ eventEntry.url }}
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6" class="mailgun-empty">No events match these filters.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

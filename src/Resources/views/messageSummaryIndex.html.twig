@@ -59,6 +59,7 @@
 
 	{{ include('@AzineMailgunWebhooks/paginator.html.twig', paginatorParams) }}
 
+	<div class="mailgun-table-wrap">
 	<table class="tablesorter-blue eventsTable">
 		<thead>
 		<tr>
@@ -93,18 +94,18 @@
 				</td>
 				<td>
 					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
-						{{ summary.sendDate | date("Y-m-d H:i:m") }} UTC
+						{{ summary.sendDate | date("Y-m-d H:i:s", "UTC") }} UTC
 					</a>
 				</td>
 				<td>
 					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
-						{{ summary.firstOpened is empty ? "" : summary.firstOpened | date("Y-m-d H:i:m") }} UTC<br/>
+						{{ summary.firstOpened ? summary.firstOpened | date("Y-m-d H:i:s", "UTC") ~ " UTC" : "—" }}
 					</a>
 				</td>
 				<td>
 					<a href="{{ path('mailgun_message_summary', {'id' : summary.id }) }}">
-						{{ summary.lastOpened is empty ? "" : summary.lastOpened | date("Y-m-d H:i:m") }} UTC<br/>
-						Opened {{ summary.openCount }} times
+						{% if summary.lastOpened %}{{ summary.lastOpened | date("Y-m-d H:i:s", "UTC") }} UTC<br/>{% endif %}
+						<small>Opened {{ summary.openCount }} times</small>
 					</a>
 				</td>
 				<td>
@@ -119,6 +120,7 @@
 		{% endfor %}
 		</tbody>
 	</table>
+	</div>
 
 	{{ include('@AzineMailgunWebhooks/paginator.html.twig', paginatorParams) }}
 
