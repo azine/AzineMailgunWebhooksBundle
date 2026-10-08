@@ -30,7 +30,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.5'
-          extensions: curl, json, mbstring, xml, pdo_sqlite
+          extensions: curl, json, mbstring, xml, sqlite3
           coverage: none
           tools: composer:v2
 

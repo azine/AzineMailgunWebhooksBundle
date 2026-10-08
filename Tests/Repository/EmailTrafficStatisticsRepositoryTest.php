@@ -8,7 +8,7 @@ use Azine\MailgunWebhooksBundle\Entity\EmailTrafficStatistics;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
-use Doctrine\ORM\ORMSetup;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Tools\SchemaTool;
 use PHPUnit\Framework\TestCase;
 
@@ -18,11 +18,12 @@ final class EmailTrafficStatisticsRepositoryTest extends TestCase
 
     protected function setUp(): void
     {
-        $configuration = ORMSetup::createConfiguration(true);
+        $configuration = new Configuration();
+        $configuration->enableNativeLazyObjects(true);
         $configuration->setMetadataDriverImpl(new SimplifiedXmlDriver([
             __DIR__.'/../../src/Resources/config/doctrine' => 'Azine\\MailgunWebhooksBundle\\Entity',
         ]));
-        $connection = DriverManager::getConnection(['driver' => 'pdo_sqlite', 'memory' => true]);
+        $connection = DriverManager::getConnection(['driver' => 'sqlite3', 'memory' => true]);
         $this->manager = new EntityManager($connection, $configuration);
         (new SchemaTool($this->manager))->createSchema([
             $this->manager->getClassMetadata(EmailTrafficStatistics::class),
