@@ -28,7 +28,7 @@ class EmailTrafficStatisticsRepository extends EntityRepository
             ->from($this->getEntityName(), 'e')
             ->where('e.action = :action')
             ->orderBy('e.created ', 'desc')
-            ->setParameters(array('action' => $action));
+            ->setParameter('action', $action);
 
         try {
             return $q->getQuery()->getSingleResult();
