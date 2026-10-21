@@ -1,7 +1,7 @@
 ##################################
 ### Set the Pytest environment ###
 ##################################
-FROM php:apache
+FROM php:8.5.12-apache
 
 # Set the working directory
 WORKDIR /var/www/html

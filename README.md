@@ -17,7 +17,7 @@ delete them when you don't need them anymore (or when you need to save some disk
 
 
 ## Requirements (current)
-- PHP **8.5+**
+- PHP **8.5.12+**
 - Symfony **7.4** components
 - Twig **3.x**
 - Doctrine ORM **3.3+**

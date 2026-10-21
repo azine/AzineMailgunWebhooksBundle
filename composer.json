@@ -9,7 +9,7 @@
         {"name": "Azine IT Services AG", "email": "github@azine-it.ch"}
     ],
     "require": {
-        "php": "^8.5",
+        "php": "^8.5.12",
         "ext-curl": "*",
         "ext-json": "*",
         "doctrine/doctrine-bundle": "^2.19",

@@ -101,7 +101,7 @@ class Version20201228090100 extends AbstractMigration implements ContainerAwareI
 ```
 
 
-## Upgrade to PHP 8.5 and Symfony 7.4
+## Upgrade to PHP 8.5.12 and Symfony 7.4
 
 ### Breaking/runtime requirements
 - Minimum PHP version is now **8.5**.

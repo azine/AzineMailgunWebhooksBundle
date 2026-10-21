@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   test:
-    name: "PHP 8.5 / dependencies ${{ matrix.dependency-mode }}"
+    name: "PHP 8.5.12 / dependencies ${{ matrix.dependency-mode }}"
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -29,7 +29,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.5'
+          php-version: '8.5.12'
           extensions: curl, json, mbstring, xml, sqlite3
           coverage: none
           tools: composer:v2
